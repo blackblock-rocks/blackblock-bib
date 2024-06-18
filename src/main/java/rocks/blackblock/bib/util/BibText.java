@@ -10,11 +10,13 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
+import org.apache.commons.text.StringSubstitutor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 
 import java.io.StringReader;
+import java.util.Map;
 
 /**
  * Library class for working with strings and Texts
@@ -186,5 +188,15 @@ public final class BibText {
     @Contract("null -> null; !null -> !null")
     public static String toTranslatedString(Text text) {
         return toString(text);
+    }
+
+    /**
+     * Fill in placeholders
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static String fillPlaceholders(String haystack, Map<String, String> values) {
+        return StringSubstitutor.replace(haystack, values, "{", "}");
     }
 }
