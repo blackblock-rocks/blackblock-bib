@@ -1,11 +1,5 @@
 package rocks.blackblock.bib.platform;
 
-
-import me.lucko.spark.api.Spark;
-import me.lucko.spark.api.SparkProvider;
-import me.lucko.spark.api.statistic.StatisticWindow;
-import me.lucko.spark.api.statistic.misc.DoubleAverageInfo;
-import me.lucko.spark.api.statistic.types.GenericStatistic;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;

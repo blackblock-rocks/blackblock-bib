@@ -5,7 +5,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import rocks.blackblock.bib.runnable.TickRunnable;
 import rocks.blackblock.bib.util.BibServer;
+
+import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
@@ -22,5 +25,10 @@ public class MinecraftServerMixin {
     ))
     private void afterSetup(CallbackInfo ci) {
         BibServer.setServerWhenStarted((MinecraftServer) (Object) this);
+    }
+
+    @Inject(method="tickWorlds", at=@At("TAIL"))
+    private void checkQueuedRunnables(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+        TickRunnable.checkQueuedRunnables();
     }
 }
