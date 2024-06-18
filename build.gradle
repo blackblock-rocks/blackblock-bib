@@ -9,6 +9,29 @@ apply plugin: 'org.checkerframework'
 version = project.mod_version
 group = project.maven_group
 
+def localPropertiesFile = file('local.properties')
+def localProperties = new Properties()
+
+if (localPropertiesFile.exists()) {
+	localPropertiesFile.withInputStream { stream ->
+		localProperties.load(stream)
+	}
+}
+
+def currentEnvironment = localProperties.getProperty("environment", "dev")
+def isDevelopment = currentEnvironment == "dev"
+def localRepoDir = null
+
+if (localProperties.hasProperty("localRepoDir")) {
+	localRepoDir = localProperties.getProperty("localRepoDir")
+} else if (project.hasProperty("localRepoDir")) {
+	localRepoDir = project.findProperty("localRepoDir")
+}
+
+println("Info: currentEnvironment = $currentEnvironment")
+println("Info: isDevelopment = $isDevelopment")
+println("Info: localRepoDir = $localRepoDir")
+
 base {
 	archivesName = project.archives_base_name
 }
@@ -68,10 +91,16 @@ repositories {
 			includeGroup "curse.maven"
 		}
 	}
+
+	if (isDevelopment && localRepoDir) {
+		maven {
+			url localRepoDir
+		}
+	}
 }
 
 loom {
-    splitEnvironmentSourceSets()
+	splitEnvironmentSourceSets()
 
 	mods {
 		"modid" {
@@ -79,7 +108,6 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 dependencies {
@@ -144,16 +172,22 @@ jar {
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
 		}
 	}
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		if (isDevelopment && localRepoDir) {
+			maven {
+				name = 'local'
+				url = uri(localRepoDir)
+			}
+		}
 	}
 }
