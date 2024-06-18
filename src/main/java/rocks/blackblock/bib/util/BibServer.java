@@ -41,6 +41,16 @@ public final class BibServer {
     }
 
     /**
+     * Is the server ready? (Are all worlds loaded?)
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static boolean isReady() {
+        return SERVER_IS_READY;
+    }
+
+    /**
      * Get the server instance, which is available after the server has started.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
