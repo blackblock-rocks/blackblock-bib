@@ -1,6 +1,8 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,10 +19,16 @@ import java.util.function.Consumer;
 public final class BibServer {
 
     // The actual server instance
-    private static MinecraftDedicatedServer SERVER = null;
+    private static MinecraftServer SERVER = null;
 
-    // A list of things to do when the `MinecraftDedicatedServer` object is available
-    private static final List<Consumer<MinecraftDedicatedServer>> SERVER_START_HANDLERS = new ArrayList<>();
+    // Is the server fully ready?
+    private static boolean SERVER_IS_READY = false;
+
+    // A list of things to do when the `MinecraftServer` object is available
+    private static final List<Consumer<MinecraftServer>> SERVER_STARTING_HANDLERS = new ArrayList<>();
+
+    // A list of things to do when the server has started
+    private static final List<Consumer<MinecraftServer>> SERVER_STARTED_HANDLERS = new ArrayList<>();
 
     /**
      * Don't let anyone instantiate this class
@@ -39,39 +47,76 @@ public final class BibServer {
      * @since    0.1.0
      */
     @Nullable
-    public static MinecraftDedicatedServer getServer() {
+    public static MinecraftServer getServer() {
         return SERVER;
     }
 
     /**
-     * Set the server instance.
-     * This is automatically called by the `ServerMixin` class upon server start.
+     * The Minecraft server is starting
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static void setServer(MinecraftDedicatedServer server) {
+    @ApiStatus.Internal()
+    public static void setServerWhenStarting(MinecraftServer server) {
         SERVER = server;
 
         // Call all server start handlers
-        for (Consumer<MinecraftDedicatedServer> handler : SERVER_START_HANDLERS) {
+        for (Consumer<MinecraftServer> handler : SERVER_STARTING_HANDLERS) {
             handler.accept(server);
         }
 
-        SERVER_START_HANDLERS.clear();
+        SERVER_STARTING_HANDLERS.clear();
     }
 
     /**
-     * Perform the consumer once we have a server
+     * The Minecraft server has started
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static void withServer(Consumer<MinecraftDedicatedServer> consumer) {
+    @ApiStatus.Internal()
+    public static void setServerWhenStarted(MinecraftServer server) {
+
+        SERVER_IS_READY = true;
+
+        // Make sure any other "starting" callbacks are called
+        setServerWhenStarting(server);
+
+        // Call all server start handlers
+        for (Consumer<MinecraftServer> handler : SERVER_STARTED_HANDLERS) {
+            handler.accept(server);
+        }
+
+        SERVER_STARTED_HANDLERS.clear();
+    }
+
+    /**
+     * Perform the consumer once we have a server.
+     * The server might not be ready yet.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void withServer(Consumer<MinecraftServer> consumer) {
         if (SERVER != null) {
             consumer.accept(SERVER);
         } else {
-            SERVER_START_HANDLERS.add(consumer);
+            SERVER_STARTING_HANDLERS.add(consumer);
+        }
+    }
+
+    /**
+     * Perform the consumer once we have a server that is fully ready.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void withReadyServer(Consumer<MinecraftServer> consumer) {
+        if (SERVER_IS_READY) {
+            consumer.accept(SERVER);
+        } else {
+            SERVER_STARTED_HANDLERS.add(consumer);
         }
     }
 

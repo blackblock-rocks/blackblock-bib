@@ -1,9 +1,9 @@
 package rocks.blackblock.bib.util;
 
-import rocks.blackblock.bib.inventory.InternalBibBaseInventory;
-import rocks.blackblock.bib.inventory.InternalBibDummyInventory;
-import rocks.blackblock.bib.inventory.InternalBibEmptyInventory;
-import rocks.blackblock.bib.inventory.InternalBibProxyInventory;
+import net.minecraft.inventory.Inventory;
+import rocks.blackblock.bib.inventory.*;
+
+import java.util.List;
 
 /**
  * Library class for working with inventories
@@ -61,5 +61,18 @@ public final class BibInventory {
      * @since    0.1.0
      */
     public interface Proxy extends InternalBibProxyInventory {}
+
+    /**
+     * An inventory restricted to certain slots.
+     * Those slots will be remapped, starting at 0.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static class Partial extends InternalBibPartialInventory {
+        public Partial(Inventory inventory, List<Integer> slots) {
+            super(inventory, slots);
+        }
+    }
 
 }

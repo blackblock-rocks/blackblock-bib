@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import java.util.List;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
+@ApiStatus.Internal()
 public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack> {
 
     /**
@@ -178,7 +180,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
     /**
      * Remove a stack silently
      *
-     * @since    0.4.0
+     * @since    0.1.0
      */
     default ItemStack removeStackSilently(int slot) {
         return Inventories.removeStack(this.getContents(), slot);
@@ -187,7 +189,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
     /**
      * Remove a stack silently
      *
-     * @since    0.4.0
+     * @since    0.1.0
      */
     default ItemStack removeStackSilently(int slot, int amount) {
         return Inventories.splitStack(this.getContents(), slot, amount);
@@ -219,7 +221,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
     /**
      * Set the ItemStack at the given slot silently
      *
-     * @since    0.4.1
+     * @since    0.1.0
      */
     default void setStackSilently(int slot, ItemStack stack) {
         this.getContents().set(slot, stack);

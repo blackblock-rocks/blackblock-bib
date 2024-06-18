@@ -14,11 +14,60 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+	mavenCentral()
+
+	maven {
+		url 'https://jitpack.io'
+	}
+
+	// Lucko (spark)
+	maven {
+		url 'https://oss.sonatype.org/content/repositories/snapshots'
+	}
+
+	// NucleoidMC
+	maven {
+		url "https://maven.nucleoid.xyz/"
+	}
+
+	// PolyMC
+	maven {
+		url "https://maven.theepicblock.nl"
+		content {
+			includeGroup("nl.theepicblock")
+		}
+	}
+
+	// Blackblock
+	maven {
+		url 'https://maven.blackblock.rocks/releases'
+	}
+
+	// Modrinth offers a maven repository
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
+
+	// Curseforge also offers a maven repository,
+	// though dependencies have to use file id's
+	exclusiveContent {
+		forRepository {
+			maven {
+				url "https://cursemaven.com"
+			}
+		}
+		filter {
+			includeGroup "curse.maven"
+		}
+	}
 }
 
 loom {
@@ -39,11 +88,28 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+	// Gnembon's Carpet mod
+	// Carpet has no Maven repository (and the one on Modrinth is always outdated)
+	// So we have to use Curseforge
+	modImplementation "curse.maven:carpet-349239:${project.carpet_cf_file_id}"
+
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	//  Apache Commons Text is a library focused on algorithms working on strings
 	modImplementation include("org.apache.commons:commons-text:${project.apache_commons_text}")
+
+	// JColor allows you to print messages with a colored font or background on a terminal
 	modImplementation include("com.diogonunes:JColor:${project.jcolor_version}")
+
+	// Spark is a performance profiler
+	modImplementation "me.lucko:spark-api:${project.spark_api_version}"
+
+	// Servercore is a mod that aims to optimize the minecraft server
+	modImplementation "maven.modrinth:servercore:${project.servercore_version}"
+
+	// Luckperms permissions
+	modImplementation "net.luckperms:api:${project.luckperms_api_version}"
 }
 
 processResources {

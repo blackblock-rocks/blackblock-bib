@@ -3,6 +3,7 @@ package rocks.blackblock.bib.inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.util.BibInventory;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
+@ApiStatus.Internal()
 public class InternalBibDummyInventory implements BibInventory.Base {
 
     public final static InternalBibDummyInventory EMPTY = new InternalBibDummyInventory(0);

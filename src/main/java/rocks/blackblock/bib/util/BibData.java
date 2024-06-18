@@ -3,7 +3,6 @@ package rocks.blackblock.bib.util;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 
 import java.io.DataInput;
@@ -28,6 +27,23 @@ public final class BibData {
      */
     private BibData() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Get a list without checking the type
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static NbtList getList(NbtCompound compound, String key) {
+
+        NbtElement element = compound.get(key);
+
+        if (element == null) {
+            return null;
+        }
+
+        return (NbtList) element;
     }
 
     /**

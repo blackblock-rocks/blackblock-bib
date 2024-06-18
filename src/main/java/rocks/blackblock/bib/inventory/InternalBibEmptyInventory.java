@@ -3,6 +3,7 @@ package rocks.blackblock.bib.inventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * An inventory that is always empty
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
+@ApiStatus.Internal()
 public class InternalBibEmptyInventory implements Inventory {
 
     @Override

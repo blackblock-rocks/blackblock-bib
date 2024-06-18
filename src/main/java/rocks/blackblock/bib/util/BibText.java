@@ -159,4 +159,32 @@ public final class BibText {
 
         return slug.substring(0, index + 1) + (num + 1);
     }
+
+    /**
+     * Get the actual text's string contents
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Contract("null -> null; !null -> !null")
+    public static String toString(Text text) {
+
+        if (text == null) {
+            return null;
+        }
+
+        return text.getString();
+    }
+
+    /**
+     * Get the string contents of the given Text,
+     * and make sure it's translated
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Contract("null -> null; !null -> !null")
+    public static String toTranslatedString(Text text) {
+        return toString(text);
+    }
 }
