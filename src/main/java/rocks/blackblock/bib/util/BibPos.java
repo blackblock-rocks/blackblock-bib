@@ -1,6 +1,8 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.nbt.*;
 import net.minecraft.util.math.*;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Library class for working with positions & vectors
@@ -119,6 +121,44 @@ public final class BibPos {
      */
     public static Vec3i getVec3i(Position pos) {
         return getVec3i(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    /**
+     * Parse a BlockPos from an NBT element
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Nullable
+    public static BlockPos parseBlockPos(NbtElement element) {
+
+        if (element == null) {
+            return null;
+        }
+
+        if (element instanceof NbtIntArray nbt_int_array) {
+            var int_arr = nbt_int_array.getIntArray();
+            return new BlockPos(int_arr[0], int_arr[1], int_arr[2]);
+        }
+
+        if (element instanceof NbtCompound compound) {
+            if (compound.contains("X") && compound.contains("Y") && compound.contains("Z")) {
+                return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Serialize a BlockPos to an NBT element
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Nullable
+    public static NbtElement serializeBlockPos(BlockPos pos) {
+        return NbtHelper.fromBlockPos(pos);
     }
 
 }
