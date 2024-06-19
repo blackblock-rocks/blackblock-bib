@@ -1,14 +1,16 @@
 plugins {
 	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
-	id 'org.checkerframework' version '0.6.28'
+	id 'org.checkerframework' version '0.6.40'
 }
 
 apply plugin: 'org.checkerframework'
 
-version = project.mod_version
-group = project.maven_group
-
+/**
+ * Version setup
+ */
+def baseVersion = project.mod_version
+def baseGroup = project.maven_group
 def localPropertiesFile = file('local.properties')
 def localProperties = new Properties()
 
@@ -18,9 +20,11 @@ if (localPropertiesFile.exists()) {
 	}
 }
 
-def currentEnvironment = localProperties.getProperty("environment", "dev")
+def envVars = System.getenv()
+def currentEnvironment = envVars.getOrDefault("ENV", localProperties.getProperty("environment", "dev"))
 def isDevelopment = currentEnvironment == "dev"
 def localRepoDir = null
+ext.versionModifier = null
 
 if (localProperties.hasProperty("localRepoDir")) {
 	localRepoDir = localProperties.getProperty("localRepoDir")
@@ -28,9 +32,23 @@ if (localProperties.hasProperty("localRepoDir")) {
 	localRepoDir = project.findProperty("localRepoDir")
 }
 
+if (isDevelopment) {
+	versionModifier = "-SNAPSHOT"
+}
+
+def constructVersion(baseVersion) {
+	def result = baseVersion + versionModifier
+	return result
+}
+
+version = constructVersion(baseVersion)
+group = baseGroup
+
 println("Info: currentEnvironment = $currentEnvironment")
 println("Info: isDevelopment = $isDevelopment")
 println("Info: localRepoDir = $localRepoDir")
+println("Info: versionModifier = $versionModifier")
+println("Info: version = " + version)
 
 base {
 	archivesName = project.archives_base_name
@@ -140,11 +158,12 @@ dependencies {
 	modImplementation "net.luckperms:api:${project.luckperms_api_version}"
 }
 
+// Modify the contents of the "fabric.mod.json" file
 processResources {
-	inputs.property "version", project.version
+	inputs.property "version", baseVersion
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": baseVersion
 	}
 }
 
@@ -172,6 +191,8 @@ jar {
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
+			artifactId = archives_base_name
+
 			artifact(remapJar) {
 				builtBy remapJar
 			}
