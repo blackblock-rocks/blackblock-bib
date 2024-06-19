@@ -16,7 +16,6 @@ import java.util.function.Predicate;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-@ApiStatus.Internal()
 public interface InternalBibProxyInventory extends Inventory {
     /**
      * Get the proxied inventory

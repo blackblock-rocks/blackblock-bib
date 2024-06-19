@@ -1,6 +1,8 @@
 package rocks.blackblock.bib.inventory;
 
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -9,6 +11,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Nameable;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +26,6 @@ import java.util.List;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-@ApiStatus.Internal()
 public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack> {
 
     /**
@@ -60,9 +62,6 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      * @since    0.1.0
      */
     default ItemStack getItemStack() {
-        throw new RuntimeException("Oops");
-    }
-    /*default ItemStack getItemStack() {
 
         BlockItem item = this.getDroppedItem();
 
@@ -72,6 +71,13 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
 
         ItemStack stack = new ItemStack(item);
 
+        if (this instanceof BlockEntity block_entity) {
+            stack.applyComponentsFrom(block_entity.createComponentMap());
+        } else {
+            // Uhoh
+        }
+
+        /*
         if (!this.isEmpty()) {
             NbtCompound nbt = this.writeInventoryToNbt(new NbtCompound());
 
@@ -84,10 +90,10 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
             if (named.hasCustomName()) {
                 stack.setCustomName(named.getCustomName());
             }
-        }
+        }*/
 
         return stack;
-    }*/
+    }
 
     /**
      * Is this inventory empty?

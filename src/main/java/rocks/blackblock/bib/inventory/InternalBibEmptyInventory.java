@@ -12,7 +12,6 @@ import org.jetbrains.annotations.ApiStatus;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-@ApiStatus.Internal()
 public class InternalBibEmptyInventory implements Inventory {
 
     @Override

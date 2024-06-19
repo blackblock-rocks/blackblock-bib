@@ -15,7 +15,6 @@ import java.util.List;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-@ApiStatus.Internal()
 public class InternalBibDummyInventory implements BibInventory.Base {
 
     public final static InternalBibDummyInventory EMPTY = new InternalBibDummyInventory(0);
