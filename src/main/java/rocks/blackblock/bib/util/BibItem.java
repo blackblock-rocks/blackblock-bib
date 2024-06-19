@@ -14,6 +14,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 
@@ -138,6 +139,64 @@ public final class BibItem {
     }
 
     /**
+     * Get a custom sub-nbt value
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Nullable
+    public static NbtCompound getCustomSubNbt(ItemStack stack, String key) {
+
+        NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
+
+        if (data == null) {
+            return null;
+        }
+
+        NbtCompound nbt = data.getNbt();
+
+        if (nbt == null) {
+            return null;
+        }
+
+        if (!nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
+            return null;
+        }
+
+        return nbt.getCompound(key);
+    }
+
+    /**
+     * Get or create a custom sub-nbt value
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @NotNull
+    public static NbtCompound getOrCreateCustomSubNbt(ItemStack stack, String key) {
+
+        NbtCompound nbt = getCustomNbt(stack);
+
+        if (!nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
+            NbtCompound nbtCompound = new NbtCompound();
+            nbt.put(key, nbtCompound);
+            return nbtCompound;
+        }
+
+        return nbt.getCompound(key);
+    }
+
+    /**
+     * Set a custom sub-nbt value
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void setCustomSubNbt(ItemStack stack, String key, NbtElement element) {
+        getCustomNbt(stack).put(key, element);
+    }
+
+    /**
      * Create an ItemStack of the given Item and
      * set the given CustomModelData integer value on it
      *
@@ -154,10 +213,14 @@ public final class BibItem {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static ItemStack setCustomModelDataValue(ItemStack stack, int custom_model_data_value) {
+    public static ItemStack setCustomModelDataValue(ItemStack stack, Integer custom_model_data_value) {
 
-        var cmd_component = new CustomModelDataComponent(custom_model_data_value);
-        stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, cmd_component);
+        if (custom_model_data_value == null) {
+            stack.remove(DataComponentTypes.CUSTOM_MODEL_DATA);
+        } else {
+            var cmd_component = new CustomModelDataComponent(custom_model_data_value);
+            stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, cmd_component);
+        }
 
         return stack;
     }
@@ -169,7 +232,29 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static void setCustomName(ItemStack stack, Text text) {
-        stack.set(DataComponentTypes.CUSTOM_NAME, text);
+
+        if (text == null) {
+            stack.remove(DataComponentTypes.CUSTOM_NAME);
+        } else {
+            stack.set(DataComponentTypes.CUSTOM_NAME, text);
+        }
+    }
+
+    /**
+     * Does the given stack have a custom name?
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static boolean hasCustomName(ItemStack stack) {
+
+        if (stack == null || stack.isEmpty()) {
+            return false;
+        }
+
+        Text custom_name_component = stack.get(DataComponentTypes.CUSTOM_NAME);
+
+        return custom_name_component != null;
     }
 
     /**
@@ -203,7 +288,12 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static void replaceLore(ItemStack stack, Text text) {
-        stack.set(DataComponentTypes.LORE, new LoreComponent(List.of(text)));
+
+        if (text == null) {
+            stack.remove(DataComponentTypes.LORE);
+        } else {
+            stack.set(DataComponentTypes.LORE, new LoreComponent(List.of(text)));
+        }
     }
 
     /**
