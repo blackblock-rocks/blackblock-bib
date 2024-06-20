@@ -1,11 +1,13 @@
 package rocks.blackblock.bib.util;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -154,5 +156,25 @@ public final class BibServer {
      */
     public static void registerThrowable(Throwable t, String message) {
         GlitchGuru.registerThrowable(t, message);
+    }
+
+    /**
+     * Get the main world directory
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static Path getMainWorldDirectory() {
+        return FabricLoader.getInstance().getGameDir().resolve("world");
+    }
+
+    /**
+     * Get the main world data directory
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static Path getMainDataDirectory() {
+        return getMainWorldDirectory().resolve("data");
     }
 }

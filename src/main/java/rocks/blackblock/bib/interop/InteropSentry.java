@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Interop class for working with the Sentry API
  *
- * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
  */
 @ApiStatus.Internal()
@@ -69,8 +69,8 @@ public final class InteropSentry {
     /**
      * A transaction (to log performance & errors)
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static class Transaction {
 
@@ -95,8 +95,8 @@ public final class InteropSentry {
         /**
          * Initialize the transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public Transaction(Transaction parent, @NotNull String name) {
             this.parent = parent;
@@ -111,8 +111,8 @@ public final class InteropSentry {
         /**
          * Initialize the transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public Transaction(GlitchGuru.Transaction parent, @NotNull String name) {
 
@@ -137,8 +137,8 @@ public final class InteropSentry {
         /**
          * Get the parent transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public Transaction getParent() {
             return this.parent;
@@ -148,8 +148,8 @@ public final class InteropSentry {
          * Initialize debug logging
          * (Only called when debug is enabled)
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         private void initDebug() {
 
@@ -165,8 +165,8 @@ public final class InteropSentry {
         /**
          * Print a warning when the transaction has not yet finished
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         private void printWarningIfNotFinished() {
             if (!this.has_finished) {
@@ -179,8 +179,8 @@ public final class InteropSentry {
         /**
          * Initialize the Sentry.io instances
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         private void initSentry() {
             if (this.parent == null) {
@@ -194,8 +194,8 @@ public final class InteropSentry {
         /**
          * Set some context
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void setData(String key, Object value) {
             this.sentry_span.setData(key, value);
@@ -204,8 +204,8 @@ public final class InteropSentry {
         /**
          * Add a throwable to this transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void addThrowable(Throwable t) {
             this.setThrowable(t);
@@ -214,8 +214,8 @@ public final class InteropSentry {
         /**
          * Set the throwable of this transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void setThrowable(Throwable t) {
             if (this.sentry_span != null) {
@@ -226,8 +226,8 @@ public final class InteropSentry {
         /**
          * Log a message to the transaction (and debug)
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void log(Object... args) {
             BibLog.outputLevel(Level.INFO, args);
@@ -236,8 +236,8 @@ public final class InteropSentry {
         /**
          * Log a message to the transaction (and print the duration since the start)
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void logTime(Object... args) {
             long now = System.currentTimeMillis();
@@ -255,8 +255,8 @@ public final class InteropSentry {
         /**
          * Finish the transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void finish() {
 

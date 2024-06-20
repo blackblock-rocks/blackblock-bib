@@ -25,8 +25,8 @@ public class GlitchGuru {
     /**
      * Create a new transaction
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static GlitchGuru.Transaction startTransaction(String name) {
         return new GlitchGuru.Transaction(name);
@@ -35,8 +35,8 @@ public class GlitchGuru {
     /**
      * Log a warning
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void captureMessageSilently(StringBuilder message, Level level) {
         captureMessageSilently(message.toString(), level);
@@ -45,8 +45,8 @@ public class GlitchGuru {
     /**
      * Log a warning
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void captureMessageSilently(String message, Level level) {
         if (!GlitchGuru.sentry_initialized) {
@@ -59,8 +59,8 @@ public class GlitchGuru {
     /**
      * Set the DSN
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void setSentryOtions(String dsn, double sample_rate) {
         GlitchGuru.sentry_dsn = dsn;
@@ -74,8 +74,8 @@ public class GlitchGuru {
     /**
      * Register a throwable
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void registerThrowable(Throwable t) {
         registerThrowable(t, null);
@@ -84,8 +84,8 @@ public class GlitchGuru {
     /**
      * Register a throwable
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void registerThrowable(Throwable t, String message) {
 
@@ -102,8 +102,8 @@ public class GlitchGuru {
     /**
      * Silently register a throwable
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.3.1
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
      */
     public static void registerThrowableSilently(Throwable t, String message) {
         if (GlitchGuru.sentry_initialized) {
@@ -152,8 +152,8 @@ public class GlitchGuru {
         /**
          * Set some context
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void setData(String key, Object value) {
             if (this.sentry_transaction != null) {
@@ -164,8 +164,8 @@ public class GlitchGuru {
         /**
          * Add a throwable to this transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void addThrowable(Throwable t) {
             if (this.sentry_transaction != null) {
@@ -176,8 +176,8 @@ public class GlitchGuru {
         /**
          * Set the throwable of this transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void setThrowable(Throwable t) {
             if (this.sentry_transaction != null) {
@@ -188,8 +188,8 @@ public class GlitchGuru {
         /**
          * Log a message to the transaction (and debug)
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void log(Object... args) {
             BibLog.outputLevel(Level.INFO, args);
@@ -198,8 +198,8 @@ public class GlitchGuru {
         /**
          * Log a message to the transaction (and print the duration since the start)
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void logTime(Object... args) {
             long now = System.currentTimeMillis();
@@ -217,8 +217,8 @@ public class GlitchGuru {
         /**
          * Finish the transaction
          *
-         * @author   Jelle De Loecker   <jelle@elevenways.be>
-         * @since    0.3.1
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
          */
         public void finish() {
             if (this.sentry_transaction != null) {

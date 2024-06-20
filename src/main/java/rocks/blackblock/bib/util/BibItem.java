@@ -316,7 +316,7 @@ public final class BibItem {
     /**
      * See if these 2 stacks are equal for the given scenario
      *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
     public static boolean areEqualForScenario(ItemStack leftStack, ItemStack rightStack, String scenario) {
