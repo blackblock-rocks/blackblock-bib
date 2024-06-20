@@ -4,6 +4,8 @@ package rocks.blackblock.bib.augment;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -13,8 +15,10 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.nbt.NbtCompoundProxy;
 import rocks.blackblock.bib.util.BibLog;
+import rocks.blackblock.bib.util.BibServer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +94,7 @@ public interface Augment {
      * @param    nbt    An {@code NbtCompound} on which this augment's serializable data has been written
      */
     @Contract(mutates = "this")
-    void readFromNbt(NbtCompound nbt);
+    void readFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup);
 
     /**
      * Writes this augment's properties to a {@link NbtCompound}.
@@ -101,7 +105,7 @@ public interface Augment {
      * @param    nbt    An {@code NbtCompound} on which to write this augment's serializable data
      */
     @Contract(mutates = "param")
-    NbtCompound writeToNbt(@NotNull NbtCompound nbt);
+    NbtCompound writeToNbt(@NotNull NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup);
 
     /**
      * Writes this augment's properties to a {@link NbtCompound}.
@@ -109,9 +113,17 @@ public interface Augment {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    default NbtCompound writeToNbt() {
-        return writeToNbt(new NbtCompound());
+    default NbtCompound writeToNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return writeToNbt(new NbtCompound(), registryLookup);
     }
+
+    /**
+     * Get the registry manager
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    RegistryWrapper.WrapperLookup getRegistryManager();
 
     /**
      * A global augment: only one instance of this augment exists.
@@ -205,6 +217,17 @@ public interface Augment {
          * @since    0.1.0
          */
         default void onTick() {}
+
+        /**
+         * Get the registry manager from the World instance
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @Override
+        default RegistryWrapper.WrapperLookup getRegistryManager() {
+            return this.getWorld().getRegistryManager();
+        }
     }
 
     /**
@@ -334,6 +357,18 @@ public interface Augment {
          * @since    0.1.0
          */
         default void onTick() {}
+
+        /**
+         * Get the registry manager from the World instance
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @Override
+        default RegistryWrapper.WrapperLookup getRegistryManager() {
+            // @TODO: get correct one, we have to be able to find the World somehow?
+            return BibMod.getDynamicRegistry();
+        }
     }
 
     /**
@@ -419,6 +454,17 @@ public interface Augment {
          * @since    0.1.0
          */
         default void onTick() {}
+
+        /**
+         * Get the registry manager from the Player instance
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @Override
+        default RegistryWrapper.WrapperLookup getRegistryManager() {
+            return this.getPlayer().getRegistryManager();
+        }
     }
 
     /**

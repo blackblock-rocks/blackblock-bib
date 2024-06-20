@@ -35,7 +35,7 @@ public class AugmentManager<C extends Augment> {
     protected final AugmentKey<C> augment_key;
 
     /**
-     * Save as many augment instances that we know off.
+     * Save as many augment instances that we know of.
      * (Not all augments keep track of their instances, so those might be saved elsewhere)
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -121,7 +121,7 @@ public class AugmentManager<C extends Augment> {
 
             instance.setDirty(false);
 
-            NbtCompound augment_nbt = instance.writeToNbt();
+            NbtCompound augment_nbt = instance.writeToNbt(player.getRegistryManager());
 
             if (augment_nbt == null) {
                 continue;
@@ -179,7 +179,7 @@ public class AugmentManager<C extends Augment> {
             }
 
             Augment.PerPlayer instance = key.get(player);
-            instance.readFromNbt(augment_nbt);
+            instance.readFromNbt(augment_nbt, player.getRegistryManager());
         }
     }
 
@@ -249,7 +249,7 @@ public class AugmentManager<C extends Augment> {
 
             instance.setDirty(false);
 
-            NbtCompound augment_nbt = instance.writeToNbt();
+            NbtCompound augment_nbt = instance.writeToNbt(world.getRegistryManager());
 
             if (augment_nbt == null) {
                 return;
@@ -302,7 +302,7 @@ public class AugmentManager<C extends Augment> {
             }
 
             Augment.PerChunk instance = key.get(world, chunk);
-            instance.readFromNbt(augment_nbt);
+            instance.readFromNbt(augment_nbt, world.getRegistryManager());
         }
     }
 
@@ -390,7 +390,7 @@ public class AugmentManager<C extends Augment> {
      */
     public boolean saveToFile(@NotNull File file, @NotNull C instance) {
 
-        NbtCompound data = instance.writeToNbt(new NbtCompound());
+        NbtCompound data = instance.writeToNbt(new NbtCompound(), instance.getRegistryManager());
 
         if (data == null) {
             return false;
@@ -593,7 +593,7 @@ public class AugmentManager<C extends Augment> {
             return false;
         }
 
-        instance.readFromNbt(nbt_data);
+        instance.readFromNbt(nbt_data, instance.getRegistryManager());
 
         return true;
     }
