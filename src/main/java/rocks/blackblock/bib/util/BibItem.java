@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
+import rocks.blackblock.bib.collection.CompareForScenario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +134,13 @@ public final class BibItem {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static void setCustomNbt(ItemStack stack, NbtCompound nbt) {
+    public static void setCustomNbt(ItemStack stack, @Nullable NbtCompound nbt) {
+
+        if (nbt == null) {
+            stack.remove(DataComponentTypes.CUSTOM_DATA);
+            return;
+        }
+
         NbtComponent data = NbtComponent.of(nbt);
         stack.set(DataComponentTypes.CUSTOM_DATA, data);
     }
@@ -304,6 +311,35 @@ public final class BibItem {
      */
     public static boolean canCombine(ItemStack left, ItemStack right) {
         return ItemStack.areItemsAndComponentsEqual(left, right);
+    }
+
+    /**
+     * See if these 2 stacks are equal for the given scenario
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static boolean areEqualForScenario(ItemStack leftStack, ItemStack rightStack, String scenario) {
+
+        Item left = leftStack.getItem();
+        Item right = rightStack.getItem();
+
+        // Check if the items are the same
+        if (left != right) {
+            return false;
+        }
+
+        Boolean result = null;
+
+        if (left instanceof CompareForScenario scenarioItem && scenarioItem.supportsScenario(scenario)) {
+            result = scenarioItem.compareForScenario(leftStack, rightStack, scenario);
+
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return ItemStack.areEqual(leftStack, rightStack);
     }
 
     /**
