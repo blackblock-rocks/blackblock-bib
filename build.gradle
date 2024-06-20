@@ -156,6 +156,9 @@ dependencies {
 
 	// Luckperms permissions
 	modImplementation "net.luckperms:api:${project.luckperms_api_version}"
+
+	// The Sentry client for error reporting
+	modImplementation include("io.sentry:sentry:${project.sentry_version}")
 }
 
 // Modify the contents of the "fabric.mod.json" file

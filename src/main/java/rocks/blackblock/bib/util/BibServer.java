@@ -4,6 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,4 +146,13 @@ public final class BibServer {
         return SERVER.getTicks();
     }
 
+    /**
+     * Register a throwable/error
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void registerThrowable(Throwable t, String message) {
+        GlitchGuru.registerThrowable(t, message);
+    }
 }
