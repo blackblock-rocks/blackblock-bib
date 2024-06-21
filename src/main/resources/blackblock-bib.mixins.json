@@ -3,6 +3,7 @@
   "package": "rocks.blackblock.bib.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ArmorMaterialsAccessor",
     "ChunkSerializerMixin",
     "LockableContainerBlockEntityAccessor",
     "MinecraftServerMixin",
