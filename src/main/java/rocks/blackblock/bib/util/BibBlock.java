@@ -1,6 +1,7 @@
 package rocks.blackblock.bib.util;
 
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -60,6 +61,16 @@ public final class BibBlock {
      */
     public static void setBlockEntityData(ItemStack target, BlockEntity block_entity, NbtCompound data) {
         BlockItem.setBlockEntityData(target, block_entity.getType(), data);
+    }
+
+    /**
+     * Set the BlockEntity data in the given ItemStack.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void setBlockEntityData(ItemStack target, BlockEntityType<?> type, NbtCompound data) {
+        BlockItem.setBlockEntityData(target, type, data);
     }
 
     /**

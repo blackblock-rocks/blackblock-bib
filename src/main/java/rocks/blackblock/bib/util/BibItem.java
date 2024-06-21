@@ -4,6 +4,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -585,5 +586,20 @@ public final class BibItem {
         }
 
         // @TODO: copy component data
+    }
+
+    /**
+     * Apply (durability) damage to the given stack held by the given entity
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void damageStack(ItemStack stack, int damage_amount, LivingEntity entity) {
+
+        if (entity == null) {
+            return;
+        }
+
+        stack.damage(damage_amount, entity, LivingEntity.getSlotForHand(entity.getActiveHand()));
     }
 }
