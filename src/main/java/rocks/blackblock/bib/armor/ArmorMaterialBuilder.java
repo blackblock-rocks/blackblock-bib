@@ -8,6 +8,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import rocks.blackblock.bib.material.MaterialBuilder;
 import rocks.blackblock.bib.mixin.ArmorMaterialsAccessor;
 
 import java.util.EnumMap;
@@ -20,27 +21,18 @@ import java.util.List;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-public class ArmorMaterialBuilder {
-
-    // Has it been registered?
-    private boolean has_been_registered = false;
+public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> {
 
     // The eventual registry entry
     private RegistryEntry<ArmorMaterial> registry_entry = null;
 
-    // The identifier of this material
-    private final String id;
     private final EnumMap<ArmorItem.Type, Integer> defenses = new EnumMap<>(ArmorItem.Type.class);
-
-    // The lowest enchantability in use is 9, so default to that
-    private int enchantability = 9;
 
     // Use the generic sound by default
     private RegistryEntry<SoundEvent> equip_sound = SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
 
     private float toughness = 0.0F;
     private float knockback_resistance = 0.0F;
-    private Ingredient repair_ingredient = null;
 
     // This is for leather only, not implemented here
     private List<ArmorMaterial.Layer> layers = null;
@@ -62,7 +54,7 @@ public class ArmorMaterialBuilder {
      * @since    0.1.0
      */
     private ArmorMaterialBuilder(String id) {
-        this.id = id;
+        super(id);
     }
 
     /**
@@ -73,19 +65,6 @@ public class ArmorMaterialBuilder {
      */
     public ArmorMaterialBuilder setDefense(ArmorItem.Type armor_type, int amount) {
         this.defenses.put(armor_type, amount);
-        return this;
-    }
-
-    /**
-     * Set the enchantability (for the enchanting table):
-     * The higher a material's enchantability,
-     * the greater the chances of getting multiple and high-level enchantments
-     *
-     * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
-     */
-    public ArmorMaterialBuilder setEnchantability(int enchantability) {
-        this.enchantability = enchantability;
         return this;
     }
 
@@ -125,28 +104,6 @@ public class ArmorMaterialBuilder {
      */
     public ArmorMaterialBuilder setKnockbackResistance(float resistance) {
         this.knockback_resistance = resistance;
-        return this;
-    }
-
-    /**
-     * Set the ingredient (item) that can be used to repair the armor
-     *
-     * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
-     */
-    public ArmorMaterialBuilder setRepairItem(Item repair_item) {
-        this.repair_ingredient = Ingredient.ofItems(repair_item);
-        return this;
-    }
-
-    /**
-     * Set the ingredient (item) that can be used to repair the armor
-     *
-     * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
-     */
-    public ArmorMaterialBuilder setRepairItem(Ingredient repair_ingredient) {
-        this.repair_ingredient = repair_ingredient;
         return this;
     }
 
