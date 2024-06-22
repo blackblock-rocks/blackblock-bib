@@ -4,9 +4,12 @@ package rocks.blackblock.bib.util;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
+import net.minecraft.component.Component;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -474,6 +477,9 @@ public class BibLog {
                             String world = player.getWorld() == null ? "~NULL~" : player.getWorld().toString();
                             BlockPos pos = player.getBlockPos();
                             entry = "Player{" + player.getName().getString() + ",l=" + world + ",x=" + pos.getX() + ",y=" + pos.getY() + ",z=" + pos.getZ() + "}";
+                        } else if (arg instanceof ItemStack stack) {
+                            Arg sarg = createArg(stack);
+                            entry = sarg.toIndentedString(0);
                         }
 
                         entry = MagentaText.format(entry);
@@ -524,7 +530,19 @@ public class BibLog {
             } else if (value != null) {
                 String name;
 
-                if (value instanceof WrapperProtoChunk roc) {
+                if (value instanceof ItemStack stack) {
+                    name = "ItemStack";
+                    String item = stack.getItem().toString();
+
+                    this.add("item", item);
+                    this.add("count", stack.getCount());
+
+                    ComponentMap components = stack.getComponents();
+
+                    for (Component<?> component : components) {
+                        this.add(String.valueOf(component.type()), component.value());
+                    }
+                } else if (value instanceof WrapperProtoChunk roc) {
                     name = "WrapperProtoChunk";
                     this.add("pos", roc.getPos());
                 } else if (value instanceof ProtoChunk proto) {

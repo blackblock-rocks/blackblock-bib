@@ -51,8 +51,7 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static String toDebugString(ItemStack stack) {
-        String result = stack.toString() + "[" + "" + "]";
-        return result;
+        return BibLog.createArg(stack).toString();
     }
 
     /**
