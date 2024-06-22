@@ -1,15 +1,22 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
-import net.minecraft.util.Nameable;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.mixin.LockableContainerBlockEntityAccessor;
@@ -89,5 +96,30 @@ public final class BibBlock {
         }
 
         return nbtComponent.getNbt();
+    }
+
+    /**
+     * Get the comparator output of an expected BlockEntity
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static int calculateComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return BibBlock.calculateComparatorOutput(world.getBlockEntity(pos));
+    }
+
+    /**
+     * Get the comparator output of an expected BlockEntity
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static int calculateComparatorOutput(@Nullable BlockEntity entity) {
+
+        if (entity instanceof Inventory block_inv) {
+            return BibInventory.calculateComparatorOutput(block_inv);
+        }
+
+        return 0;
     }
 }

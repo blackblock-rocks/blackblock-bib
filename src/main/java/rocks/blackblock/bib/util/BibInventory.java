@@ -1,6 +1,9 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.screen.ScreenHandler;
+import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.inventory.*;
 
 import java.util.List;
@@ -75,4 +78,13 @@ public final class BibInventory {
         }
     }
 
+    /**
+     * Get the comparator output of an inventory
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static int calculateComparatorOutput(@Nullable Inventory inventory) {
+        return ScreenHandler.calculateComparatorOutput(inventory);
+    }
 }
