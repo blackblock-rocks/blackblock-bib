@@ -19,6 +19,9 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.interaction.InternalBibBlockBaseInteraction;
+import rocks.blackblock.bib.interaction.InternalBibBlockInteraction;
+import rocks.blackblock.bib.interaction.InternalBibBlockWithItemInteraction;
 import rocks.blackblock.bib.mixin.LockableContainerBlockEntityAccessor;
 
 /**
@@ -29,6 +32,55 @@ import rocks.blackblock.bib.mixin.LockableContainerBlockEntityAccessor;
  */
 @SuppressWarnings("unused")
 public final class BibBlock {
+
+    /**
+     * The base Block Interaction class
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public abstract static class BaseInteraction extends InternalBibBlockBaseInteraction {
+        public BaseInteraction(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+            super(state, world, pos, player, hit);
+        }
+
+        /**
+         * Get ourselves as a BibBlock.BaseInteraction class
+         * Basically just for the compiler
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @ApiStatus.Internal
+        @Override
+        protected BibBlock.BaseInteraction getSelfAsBaseInteraction() {
+            return this;
+        }
+    }
+
+    /**
+     * Our own Block Interaction class
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static class Interaction extends InternalBibBlockInteraction {
+        public Interaction(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+            super(state, world, pos, player, hit);
+        }
+    }
+
+    /**
+     * Our own Block Interaction With Item class
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static class InteractionWithItem extends InternalBibBlockWithItemInteraction {
+        public InteractionWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+            super(stack, state, world, pos, player, hand, hit);
+        }
+    }
 
     /**
      * Don't let anyone instantiate this class
@@ -121,5 +173,100 @@ public final class BibBlock {
         }
 
         return 0;
+    }
+
+    /**
+     * Interaction result enum
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public enum InteractionResult {
+        SUCCESS(ActionResult.SUCCESS),
+        SUCCESS_NO_ITEM_USED(ActionResult.SUCCESS_NO_ITEM_USED),
+        CONSUME(ActionResult.CONSUME),
+        CONSUME_PARTIAL(ActionResult.CONSUME_PARTIAL),
+        PASS(ActionResult.PASS),
+        FAIL(ActionResult.FAIL);
+
+        public final ActionResult actual_result;
+
+        InteractionResult(ActionResult actual_result) {
+            this.actual_result = actual_result;
+        }
+
+        public ActionResult getVanillaResult() {
+            return this.actual_result;
+        }
+    }
+
+    /**
+     * Interaction with item result enum
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public enum InteractionWithItemResult {
+        SUCCESS(ItemActionResult.SUCCESS),
+        CONSUME(ItemActionResult.CONSUME),
+        CONSUME_PARTIAL(ItemActionResult.CONSUME_PARTIAL),
+        PASS_TO_DEFAULT_BLOCK_INTERACTION(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION),
+        SKIP_DEFAULT_BLOCK_INTERACTION(ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION),
+        FAIL(ItemActionResult.FAIL);
+
+        public final ItemActionResult actual_result;
+
+        InteractionWithItemResult(ItemActionResult actual_result) {
+            this.actual_result = actual_result;
+        }
+
+        public ItemActionResult getVanillaResult() {
+            return this.actual_result;
+        }
+    }
+
+    /**
+     * Block/BlockEntities with this interface will have a
+     * custom method to handle an interaction
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public interface InteractionHandler {
+        void handleBlockInteraction(BibBlock.Interaction interaction);
+    }
+
+    /**
+     * Block/BlockEntities with this interface will have a
+     * custom method to handle an interaction (with an item)
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public interface InteractionWithItemHandler {
+        void handleBlockInteractionWithItem(BibBlock.InteractionWithItem interaction);
+    }
+
+    /**
+     * Block/BlockEntities with this interface will implement a
+     * check to see if the given player can actually open the GUI
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public interface PlayerGuiPermissionCheck {
+        boolean guiCanBeOpenedBy(BibBlock.BaseInteraction interaction);
+    }
+
+    /**
+     * Block/BlockEntities with this interface will implement a
+     * method that returns an identifier of a statistic to increase
+     * after an interaction takes place
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public interface HasInteractionStatistic {
+        Identifier getInteractionStatisticIdentifier();
     }
 }
