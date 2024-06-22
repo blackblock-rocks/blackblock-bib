@@ -1,5 +1,10 @@
 package rocks.blackblock.bib.util;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
@@ -7,12 +12,14 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +32,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static net.minecraft.item.ItemStack.ITEM_CODEC;
+
 /**
  * Library class for working with Items & ItemStacks
  *
@@ -33,6 +42,10 @@ import java.util.Optional;
  */
 @SuppressWarnings("unused")
 public final class BibItem {
+
+    private static final String UNWRAPPED_ITEM_KEY = "BB:BackupItem";
+    private static final Codec<ItemStack> ITEM_DATA_COPY_CODEC = RecordCodecBuilder.create((instance) -> instance.group(ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry), ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(ItemStack::getComponentChanges)).apply(instance, (id, components) -> new ItemStack(id, 1, components)));
+    private static final MapCodec<Optional<ItemStack>> ORIGINAL_ITEM_CODEC = ITEM_DATA_COPY_CODEC.optionalFieldOf(UNWRAPPED_ITEM_KEY);
 
     /**
      * Don't let anyone instantiate this class
@@ -610,5 +623,144 @@ public final class BibItem {
         }
 
         stack.damage(damage_amount, entity, LivingEntity.getSlotForHand(entity.getActiveHand()));
+    }
+
+    /**
+     * Create an "overlayed" ItemStack:
+     * This creates a copy of the stack *and* puts all of the
+     * original information in the custom NBT,
+     * so it can be restored later.
+     *
+     * Do note: the count is not backed up.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static ItemStack createOverlay(ItemStack stack) {
+        return createOverlay(stack, UNWRAPPED_ITEM_KEY, ORIGINAL_ITEM_CODEC);
+    }
+
+    /**
+     * Create an "overlayed" ItemStack:
+     * This creates a copy of the stack *and* puts all of the
+     * original information in the custom NBT,
+     * so it can be restored later.
+     *
+     * Do note: the count is not backed up.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static ItemStack createOverlay(ItemStack stack, String overlay_name) {
+        return createOverlay(stack, overlay_name, ITEM_DATA_COPY_CODEC.optionalFieldOf(overlay_name));
+    }
+
+    /**
+     * Create an "overlayed" ItemStack:
+     * This creates a copy of the stack *and* puts all of the
+     * original information in the custom NBT,
+     * so it can be restored later.
+     *
+     * Do note: the count is not backed up.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    private static ItemStack createOverlay(ItemStack original_stack, String overlay_key, MapCodec<Optional<ItemStack>> overlay_codec) {
+
+        if (original_stack == null) {
+            return null;
+        }
+
+        if (original_stack == ItemStack.EMPTY) {
+            return original_stack;
+        }
+
+        NbtCompound original_nbt = null;
+
+        if (BibItem.hasCustomNbt(original_stack)) {
+            original_nbt = BibItem.getCustomNbt(original_stack);
+        }
+
+        // See if it is already wrapped.
+        // If it is, don't wrap it again!
+        if (original_nbt != null && original_nbt.contains(overlay_key)) {
+            return original_stack.copy();
+        }
+
+        // Create a new stack that will be wrapped
+        ItemStack wrapped_stack = original_stack.copy();
+
+        // Put the entire original item into the custom NBT data
+        NbtComponent.DEFAULT.with(overlay_codec, Optional.of(original_stack)).result().ifPresent((nbt) -> {
+            wrapped_stack.set(DataComponentTypes.CUSTOM_DATA, nbt);
+        });
+
+        // Get the wrapped NBT we just created
+        NbtCompound wrapped_nbt = BibItem.getCustomNbt(wrapped_stack);
+
+        // Copy over all the other custom NBT data
+        BibData.assignDefaults(wrapped_nbt, original_nbt);
+
+        // Set it as the new custom NBT again
+        BibItem.setCustomNbt(wrapped_stack, wrapped_nbt);
+
+        return wrapped_stack;
+    }
+
+    /**
+     * Return the original stack, without the overlay.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static ItemStack withoutOverlay(ItemStack wrapped_stack) {
+        return withoutOverlay(wrapped_stack, UNWRAPPED_ITEM_KEY, ORIGINAL_ITEM_CODEC);
+    }
+
+    /**
+     * Return the original stack, without the overlay.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static ItemStack withoutOverlay(ItemStack wrapped_stack, String overlay_name) {
+        return withoutOverlay(wrapped_stack, overlay_name, ITEM_DATA_COPY_CODEC.optionalFieldOf(overlay_name));
+    }
+
+    /**
+     * Return the original stack, without the overlay.
+     * If there is no overlay, a copy of the stack is returned.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    private static ItemStack withoutOverlay(ItemStack wrapped_stack, String overlay_key, MapCodec<Optional<ItemStack>> overlay_codec) {
+
+        ItemStack unwrapped = null;
+
+        NbtComponent custom_data = wrapped_stack.get(DataComponentTypes.CUSTOM_DATA);
+
+        if (custom_data == null || custom_data.isEmpty()) {
+            return wrapped_stack.copy();
+        }
+
+        DataResult<Optional<ItemStack>> unwrap_result = custom_data.get(overlay_codec);
+
+        if (unwrap_result.error().isPresent()) {
+            unwrapped = new ItemStack(Items.ROTTEN_FLESH);
+            unwrapped.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Invalid Item").formatted(Formatting.ITALIC));
+        } else {
+            // Return the original only if it's present
+            unwrapped = unwrap_result.getOrThrow().orElse(null);
+        }
+
+        if (unwrapped == null) {
+            unwrapped = wrapped_stack.copy();
+        } else {
+            unwrapped.setCount(wrapped_stack.getCount());
+        }
+
+        return unwrapped;
     }
 }
