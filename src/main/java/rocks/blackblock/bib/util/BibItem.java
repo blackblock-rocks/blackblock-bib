@@ -272,10 +272,20 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static void appendLore(ItemStack stack, Text text) {
-        var lore_component = stack.getOrDefault(DataComponentTypes.LORE, new LoreComponent(List.of()));
 
-        List<Text> list = lore_component.lines();
-        list.add(text);
+        if (text == null) {
+            return;
+        }
+
+        var lore_component = stack.get(DataComponentTypes.LORE);
+
+        if (lore_component == null) {
+            lore_component = new LoreComponent(List.of(text));
+        } else {
+            lore_component = lore_component.with(text);
+        }
+
+        stack.set(DataComponentTypes.LORE, lore_component);
     }
 
     /**
