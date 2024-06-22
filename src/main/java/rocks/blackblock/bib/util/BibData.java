@@ -117,4 +117,42 @@ public final class BibData {
         NbtIo.write(nbt, file);
     }
 
+    /**
+     * Copy over the data, overwriting existing properties
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void assign(NbtCompound target, NbtCompound source) {
+
+        if (source == null || source.isEmpty()) {
+            return;
+        }
+
+        for (String key : source.getKeys()) {
+            target.put(key, source.get(key));
+        }
+    }
+
+    /**
+     * Copy over the data, but only non-existing properties
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void assignDefaults(NbtCompound target, NbtCompound source) {
+
+        if (source == null || source.isEmpty()) {
+            return;
+        }
+
+        for (String key : source.getKeys()) {
+
+            if (target.contains(key)) {
+                continue;
+            }
+
+            target.put(key, source.get(key));
+        }
+    }
 }
