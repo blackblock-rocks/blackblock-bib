@@ -269,4 +269,14 @@ public final class BibBlock {
     public interface HasInteractionStatistic {
         Identifier getInteractionStatisticIdentifier();
     }
+
+    /**
+     * Get an ItemStack representation of the current block
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public interface ItemStackRepresentation {
+        ItemStack getBlockAsItemStackRepresentation();
+    }
 }
