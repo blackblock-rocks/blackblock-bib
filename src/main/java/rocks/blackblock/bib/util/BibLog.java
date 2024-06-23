@@ -477,8 +477,8 @@ public class BibLog {
                             String world = player.getWorld() == null ? "~NULL~" : player.getWorld().toString();
                             BlockPos pos = player.getBlockPos();
                             entry = "Player{" + player.getName().getString() + ",l=" + world + ",x=" + pos.getX() + ",y=" + pos.getY() + ",z=" + pos.getZ() + "}";
-                        } else if (arg instanceof ItemStack stack) {
-                            Arg sarg = createArg(stack);
+                        } else {
+                            Arg sarg = createArg(arg);
                             entry = sarg.toIndentedString(0);
                         }
 

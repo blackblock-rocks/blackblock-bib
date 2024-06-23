@@ -15,6 +15,8 @@ import net.minecraft.util.Nameable;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.util.BibInventory;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +65,11 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      */
     default ItemStack getItemStack() {
 
+        BibLog.log("Getting Itemstack for", this);
+
         BlockItem item = this.getDroppedItem();
+
+        BibLog.log("  »» Item is", item);
 
         if (item == null) {
             return null;
@@ -72,10 +78,15 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
         ItemStack stack = new ItemStack(item);
 
         if (this instanceof BlockEntity block_entity) {
+            BibLog.log("  »» BlockEntity!");
             stack.applyComponentsFrom(block_entity.createComponentMap());
         } else {
+            BibLog.log("  »» Uhoh");
             // Uhoh
         }
+
+
+        BibLog.log("  »» Result:", stack);
 
         /*
         if (!this.isEmpty()) {

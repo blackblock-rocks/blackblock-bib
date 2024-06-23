@@ -4,7 +4,6 @@ package rocks.blackblock.bib.augment;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.nbt.NbtCompoundProxy;
 import rocks.blackblock.bib.util.BibLog;
-import rocks.blackblock.bib.util.BibServer;
 
 import java.util.HashMap;
 import java.util.Map;

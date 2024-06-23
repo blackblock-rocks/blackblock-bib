@@ -2,12 +2,12 @@ package rocks.blackblock.bib.util;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;

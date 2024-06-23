@@ -16,8 +16,10 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -691,8 +693,11 @@ public final class BibItem {
         // Create a new stack that will be wrapped
         ItemStack wrapped_stack = original_stack.copy();
 
+        // The NBT encoder requires a registry since 1.21
+        RegistryOps<NbtElement> registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
+
         // Put the entire original item into the custom NBT data
-        NbtComponent.DEFAULT.with(overlay_codec, Optional.of(original_stack)).result().ifPresent((nbt) -> {
+        NbtComponent.DEFAULT.with(registry_ops, overlay_codec, Optional.of(original_stack)).result().ifPresent((nbt) -> {
             wrapped_stack.set(DataComponentTypes.CUSTOM_DATA, nbt);
         });
 
