@@ -11,6 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.WorldChunk;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.monitor.GlitchGuru;
@@ -57,6 +58,7 @@ public class AugmentManager<C extends Augment> {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
+    @ApiStatus.Internal
     public static void initialize() {
         startGlobalAugments();
 
@@ -71,6 +73,7 @@ public class AugmentManager<C extends Augment> {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
+    @ApiStatus.Internal
     public static void startGlobalAugments() {
 
         // Start the global augments

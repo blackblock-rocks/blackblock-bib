@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.command.CommandCreator;
 import rocks.blackblock.bib.config.Config;
 import rocks.blackblock.bib.interop.BibInterop;
@@ -34,6 +35,11 @@ public class BibMod implements ModInitializer {
 		BibInterop.initializeInterops();
 		Config.initializeAllConfigs();
 		CommandRegistrationCallback.EVENT.register(CommandCreator::registerAll);
+
+		// Initialize the augments when everything has registered
+		BibServer.withReadyServer(minecraftServer -> {
+			AugmentManager.initialize();
+		});
 	}
 
 	/**
