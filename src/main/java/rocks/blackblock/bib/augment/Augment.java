@@ -121,7 +121,9 @@ public interface Augment {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    RegistryWrapper.WrapperLookup getRegistryManager();
+    default RegistryWrapper.WrapperLookup getRegistryManager() {
+        return BibMod.getDynamicRegistry();
+    }
 
     /**
      * A global augment: only one instance of this augment exists.
@@ -355,18 +357,6 @@ public interface Augment {
          * @since    0.1.0
          */
         default void onTick() {}
-
-        /**
-         * Get the registry manager from the World instance
-         *
-         * @author   Jelle De Loecker <jelle@elevenways.be>
-         * @since    0.1.0
-         */
-        @Override
-        default RegistryWrapper.WrapperLookup getRegistryManager() {
-            // @TODO: get correct one, we have to be able to find the World somehow?
-            return BibMod.getDynamicRegistry();
-        }
     }
 
     /**
@@ -461,7 +451,7 @@ public interface Augment {
          */
         @Override
         default RegistryWrapper.WrapperLookup getRegistryManager() {
-            return this.getPlayer().getRegistryManager();
+            return BibMod.getDynamicRegistry(this.getPlayer());
         }
     }
 
