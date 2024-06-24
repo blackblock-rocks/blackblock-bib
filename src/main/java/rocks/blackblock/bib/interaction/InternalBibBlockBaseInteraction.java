@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibBlock;
 import rocks.blackblock.bib.util.BibLog;
 
+import java.util.OptionalInt;
+
 /**
  * Wrapper class for handling interactions
  *
@@ -161,7 +163,12 @@ public abstract class InternalBibBlockBaseInteraction {
             return false;
         }
 
-        this.player.openHandledScreen(screen_factory);
+        OptionalInt result = this.player.openHandledScreen(screen_factory);
+
+        // Do nothing further if the screen failed to open
+        if (result.isEmpty()) {
+            return false;
+        }
 
         // See if we have to increment any statistic
         Identifier stat_id = null;
