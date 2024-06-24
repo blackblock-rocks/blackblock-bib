@@ -1,8 +1,8 @@
 package rocks.blackblock.bib.util;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.monitor.GlitchGuru;
@@ -176,5 +176,20 @@ public final class BibServer {
      */
     public static Path getMainDataDirectory() {
         return getMainWorldDirectory().resolve("data");
+    }
+
+    /**
+     * Get the server's dynamic registry
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static DynamicRegistryManager getDynamicRegistry() {
+
+        if (SERVER != null) {
+            return SERVER.getRegistryManager();
+        }
+
+        return DynamicRegistryManager.EMPTY;
     }
 }
