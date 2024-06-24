@@ -41,7 +41,6 @@ def constructVersion(baseVersion) {
 	return result
 }
 
-archivesBaseName = project.archives_base_name
 version = constructVersion(baseVersion)
 group = baseGroup
 
