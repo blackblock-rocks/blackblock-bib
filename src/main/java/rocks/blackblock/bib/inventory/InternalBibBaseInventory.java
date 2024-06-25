@@ -314,7 +314,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
         List<InventoryChangedListener> listeners = this.getListeners();
 
         if (listeners != null) {
-            for (InventoryChangedListener listener : listeners) {
+            for (InventoryChangedListener listener : List.copyOf(listeners)) {
                 listener.onInventoryChanged(this);
             }
         }
