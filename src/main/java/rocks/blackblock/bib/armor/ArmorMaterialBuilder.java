@@ -2,14 +2,15 @@ package rocks.blackblock.bib.armor;
 
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.material.MaterialBuilder;
-import rocks.blackblock.bib.mixin.ArmorMaterialsAccessor;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -125,14 +126,23 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
             this.setRepairItem(Items.DIAMOND);
         }
 
-        this.registry_entry = ArmorMaterialsAccessor.register(
-                this.id,
+        Identifier armor_id = BibMod.id(this.id);
+        List<ArmorMaterial.Layer> material_list = List.of(new ArmorMaterial.Layer(armor_id));
+
+        ArmorMaterial material = new ArmorMaterial(
                 this.defenses,
                 this.enchantability,
                 this.equip_sound,
+                () -> this.repair_ingredient,
+                material_list,
                 this.toughness,
-                this.knockback_resistance,
-                () -> this.repair_ingredient
+                this.knockback_resistance
+        );
+
+        this.registry_entry = Registry.registerReference(
+            Registries.ARMOR_MATERIAL,
+                armor_id,
+                material
         );
 
         return this.registry_entry;
