@@ -5,8 +5,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -35,7 +33,7 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
 
-    protected Function<CommandSource, BvMap> context_resolver = null;
+    protected Function<CommandContext<ServerCommandSource>, BvMap> context_resolver = null;
 
     /**
      * Create a new tweak registry
@@ -51,7 +49,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      *
      * @since    0.1.0
      */
-    public TweaksConfiguration setContextResolver(Function<CommandSource, BvMap> resolver) {
+    public TweaksConfiguration setContextResolver(Function<CommandContext<ServerCommandSource>, BvMap> resolver) {
         this.context_resolver = resolver;
         return this;
     }
@@ -62,13 +60,14 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * @since    0.1.0
      */
     @Nullable
-    public BvMap getDataContext(CommandSource source) {
+    @Override
+    public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
-        if (source == null || this.context_resolver == null) {
+        if (command_context == null || this.context_resolver == null) {
             return null;
         }
 
-        return this.context_resolver.apply(source);
+        return this.context_resolver.apply(command_context);
     }
 
     /**
@@ -111,7 +110,8 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          * @since    0.1.0
          */
         @Nullable
-        public BvMap getDataContext(CommandSource source) {
+        @Override
+        public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
             return null;
         }
 
@@ -120,7 +120,8 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          *
          * @since    0.1.0
          */
-        public TweaksConfiguration setContextResolver(Function<CommandSource, BvMap> resolver) {
+        @Override
+        public TweaksConfiguration setContextResolver(Function<CommandContext<ServerCommandSource>, BvMap> resolver) {
             return this;
         }
     }
@@ -154,7 +155,8 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          * @since    0.1.0
          */
         @Nullable
-        public BvMap getDataContext(CommandSource source) {
+        @Override
+        public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
             return this.augment_key.get().getDataContext();
         }
 
@@ -198,6 +200,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          * @since    0.1.0
          */
         @Nullable
+        @Override
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
             ServerPlayerEntity player = null;
@@ -269,6 +272,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          * @since    0.1.0
          */
         @Nullable
+        @Override
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
             World world;
@@ -344,6 +348,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          * @since    0.1.0
          */
         @Nullable
+        @Override
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
             World world;

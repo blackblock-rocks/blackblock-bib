@@ -10,6 +10,7 @@ import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.bv.value.BvElement;
 import rocks.blackblock.bib.bv.value.BvMap;
 import rocks.blackblock.bib.command.CommandLeaf;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> {
+public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> implements BibLog.Argable {
 
     // The name of the parameter
     protected final String name;
@@ -399,11 +400,36 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> {
 
         TweaksConfiguration config = root_map.getTweaksConfiguration();
 
-        if (config == null) {
+        if (config == null || config == this) {
             return null;
         }
 
         return config.getDataContext(command_context);
+    }
+
+    /**
+     * Return a Arg instance
+     *
+     * @since    0.1.0
+     */
+    public BibLog.Arg toBBLogArg() {
+
+        BibLog.Arg result = BibLog.createArg(this);
+
+        result.add("name", this.name);
+        result.add("default_value", this.default_value);
+
+        return result;
+    }
+
+    /**
+     * Return a string representation
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toString() {
+        return this.toBBLogArg().toString();
     }
 
     /**

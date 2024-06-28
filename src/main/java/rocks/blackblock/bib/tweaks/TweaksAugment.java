@@ -27,7 +27,7 @@ public abstract class TweaksAugment implements Augment {
     protected final TweaksConfiguration tweaks_configuration;
 
     // The actual context
-    protected BvMap data_context = null;
+    protected BvMap data_context = new BvMap();
 
     /**
      * Initialize the instance
