@@ -10,6 +10,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.Augment;
 import rocks.blackblock.bib.bv.value.BvMap;
+import rocks.blackblock.bib.util.BibLog;
 
 /**
  * This Augment class is how a TweaksConfiguration can be registered.

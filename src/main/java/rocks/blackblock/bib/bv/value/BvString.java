@@ -9,8 +9,6 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * A BV String
  *
@@ -20,8 +18,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class BvString extends AbstractBvType<String, BvString> {
 
-    private static final String TYPE = "string";
-    private static final Supplier<BvString> SUPPLIER = BvElement.registerType(TYPE, BvString::new);
+    public static final String TYPE = "string";
 
     /**
      * Create an instance of the given value

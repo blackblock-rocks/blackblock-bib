@@ -7,6 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,10 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
 
     // The type registry
     Map<String, Supplier<BvElement>> TYPE_REGISTRY = new HashMap<>();
+    Supplier<BvBoolean> BOOLEAN_SUPPLIER = registerType(BvBoolean.TYPE, BvBoolean::new);
+    Supplier<BvInteger> INTEGER_SUPPLIER = registerType(BvInteger.TYPE, BvInteger::new);
+    Supplier<BvMap> MAP_SUPPLIER = registerType(BvMap.TYPE, BvMap::new);
+    Supplier<BvString> STRING_SUPPLIER = BvElement.registerType(BvString.TYPE, BvString::new);
 
     /**
      * Get the actual underlying Java value

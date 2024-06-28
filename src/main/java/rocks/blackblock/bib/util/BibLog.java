@@ -436,8 +436,18 @@ public class BibLog {
 
             String entry;
 
+            if (arg instanceof Argable argable) {
+                Arg temp = argable.toBBLogArg();
+
+                if (temp != null) {
+                    arg = temp;
+                }
+            }
+
             if (arg == null) {
                 entry = "null";
+            } else if (arg instanceof Arg) {
+                entry = arg.toString();
             } else {
                 try {
                     entry = arg.toString();
@@ -479,6 +489,7 @@ public class BibLog {
                             entry = "Player{" + player.getName().getString() + ",l=" + world + ",x=" + pos.getX() + ",y=" + pos.getY() + ",z=" + pos.getZ() + "}";
                         } else {
                             Arg sarg = createArg(arg);
+                            sarg.add("$string", entry);
                             entry = sarg.toIndentedString(0);
                         }
 
@@ -600,6 +611,17 @@ public class BibLog {
                         this.add(key, property.value());
                     });
 
+                } else if (value instanceof Map mmap) {
+
+                    name = mmap.getClass().getSimpleName();
+
+                    mmap.forEach((key, map_value) -> {
+
+                        if (key instanceof String str) {
+                            this.add(str, map_value);
+                        }
+                    });
+
                 } else {
                     name = value.getClass().getSimpleName();
 
@@ -648,7 +670,7 @@ public class BibLog {
 
             int i = 0;
 
-            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
 
                 if (i > 0) {
                     builder.append(",");

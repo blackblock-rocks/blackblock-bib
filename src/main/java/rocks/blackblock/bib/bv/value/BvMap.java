@@ -7,6 +7,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,10 +23,10 @@ import java.util.function.Supplier;
 public class BvMap
     implements
         Map<String, BvElement>,
+        BibLog.Argable,
         BvElement<BvMap, BvMap> {
 
-    private static final String TYPE = "map";
-    private static final Supplier<BvMap> SUPPLIER = BvElement.registerType(TYPE, BvMap::new);
+    public static final String TYPE = "map";
 
     protected Map<String, BvElement> values = new HashMap<>();
 
@@ -97,6 +98,7 @@ public class BvMap
         if (nbt_value instanceof NbtCompound compound) {
 
             for (String key : compound.getKeys()) {
+
                 NbtElement element_nbt = compound.get(key);
 
                 BvElement element = BvElement.parseFromNbt(element_nbt);
@@ -179,6 +181,38 @@ public class BvMap
         result.append(Text.literal("}"));
 
         return result;
+    }
+
+    /**
+     * Return a Arg instance
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public BibLog.Arg toBBLogArg() {
+
+        BibLog.Arg result = BibLog.createArg(this);
+        int size = 0;
+
+        if (this.values != null) {
+            size = this.values.size();
+        }
+
+        result.add("type", this.getType());
+        result.add("values", this.values);
+        result.add("size", size);
+
+        return result;
+    }
+
+    /**
+     * Return a string representation
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toString() {
+        return this.toBBLogArg().toString();
     }
 
     /**

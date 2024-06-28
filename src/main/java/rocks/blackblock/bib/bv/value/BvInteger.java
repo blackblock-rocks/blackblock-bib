@@ -17,8 +17,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class BvInteger extends BvNumber<Integer, BvInteger> {
 
-    private static final String TYPE = "integer";
-    private static final Supplier<BvInteger> SUPPLIER = BvElement.registerType(TYPE, BvInteger::new);
+    public static final String TYPE = "integer";
 
     /**
      * Create an instance of the given value

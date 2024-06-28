@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibJson;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public abstract class
 AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
-    implements BvElement<ContainedType, OwnType> {
+    implements BvElement<ContainedType, OwnType>, BibLog.Argable {
 
     // The contained value
     protected ContainedType contained_value = null;
@@ -97,5 +98,36 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
         }
 
         return BibJson.jsonify(nbt_value);
+    }
+
+    /**
+     * Return a Arg instance
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public BibLog.Arg toBBLogArg() {
+
+        BibLog.Arg result = BibLog.createArg(this);
+
+        result.add("type", this.getType());
+
+        ContainedType val = this.getContainedValue();
+
+        if (val != this) {
+            result.add("value", val);
+        }
+
+        return result;
+    }
+
+    /**
+     * Return a string representation
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toString() {
+        return this.toBBLogArg().toString();
     }
 }

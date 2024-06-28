@@ -11,8 +11,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * A BV Boolean
  *
@@ -22,8 +20,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
 
-    private static final String TYPE = "boolean";
-    private static final Supplier<BvBoolean> SUPPLIER = BvElement.registerType(TYPE, BvBoolean::new);
+    public static final String TYPE = "boolean";
 
     /**
      * Create an instance of the given value
