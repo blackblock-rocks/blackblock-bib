@@ -4,14 +4,13 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.AugmentManager;
-import rocks.blackblock.bib.command.CommandCreator;
+import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.config.Config;
 import rocks.blackblock.bib.interop.BibInterop;
 import rocks.blackblock.bib.platform.FabricPlatform;
@@ -23,18 +22,18 @@ public class BibMod implements ModInitializer {
 
 	public static final String MOD_ID = "blackblock";
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LogManager.getLogger("BibMod");
 
 	public static final Platform PLATFORM = new FabricPlatform();
 
+	public static final TweaksConfiguration.Global GLOBAL_TWEAKS = new TweaksConfiguration.Global(id("global"));
+
 	@Override
 	public void onInitialize() {
+
 		BibInterop.initializeInterops();
 		Config.initializeAllConfigs();
-		CommandRegistrationCallback.EVENT.register(CommandCreator::registerAll);
+		CommandRegistrationCallback.EVENT.register(BibServer::setCommandCanBeRegistered);
 
 		// Initialize the augments when everything has registered
 		BibServer.withReadyServer(minecraftServer -> {

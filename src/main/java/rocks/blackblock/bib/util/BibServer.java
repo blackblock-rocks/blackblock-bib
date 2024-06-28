@@ -1,10 +1,15 @@
 package rocks.blackblock.bib.util;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.command.CommandCreator;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.nio.file.Path;
@@ -27,11 +32,17 @@ public final class BibServer {
     // Is the server fully ready?
     private static boolean SERVER_IS_READY = false;
 
+    // Have the commands been registered?
+    private static boolean COMMANDS_REGISTERED = false;
+
     // A list of things to do when the `MinecraftServer` object is available
     private static final List<Consumer<MinecraftServer>> SERVER_STARTING_HANDLERS = new ArrayList<>();
 
     // A list of things to do when the server has started
     private static final List<Consumer<MinecraftServer>> SERVER_STARTED_HANDLERS = new ArrayList<>();
+
+    // A list of runnables to execute right before commands are registered
+    private static final List<Runnable> BEFORE_COMMAND_REGISTRATION_RUNNABLES = new ArrayList<>();
 
     /**
      * Don't let anyone instantiate this class
@@ -105,6 +116,28 @@ public final class BibServer {
     }
 
     /**
+     * The commands are ready to be registered
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @ApiStatus.Internal()
+    public static void setCommandCanBeRegistered(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
+
+        if (COMMANDS_REGISTERED) {
+            throw new RuntimeException("The commands have already been registered");
+        }
+
+        for (Runnable r : BEFORE_COMMAND_REGISTRATION_RUNNABLES) {
+            r.run();
+        }
+
+        BEFORE_COMMAND_REGISTRATION_RUNNABLES.clear();
+
+        CommandCreator.registerAll(dispatcher, registryAccess, environment);
+    }
+
+    /**
      * Perform the consumer once we have a server.
      * The server might not be ready yet.
      *
@@ -131,6 +164,21 @@ public final class BibServer {
         } else {
             SERVER_STARTED_HANDLERS.add(consumer);
         }
+    }
+
+    /**
+     * Perform the consumer right before commands are registered
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void beforeRegisteringCommands(Runnable runnable) {
+
+        if (COMMANDS_REGISTERED) {
+            throw new RuntimeException("The commands have already been registered");
+        }
+
+        BEFORE_COMMAND_REGISTRATION_RUNNABLES.add(runnable);
     }
 
     /**
