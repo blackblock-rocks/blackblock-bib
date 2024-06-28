@@ -6,6 +6,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.tweaks.RootTweakMap;
 import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.bv.value.BvElement;
 import rocks.blackblock.bib.bv.value.BvMap;
@@ -262,13 +263,21 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
             return false;
         }
 
+        boolean success = false;
+
         if (this.parent_parameter == null) {
-            return this.setInRelativeMap(root_map, value);
+            success = this.setInRelativeMap(root_map, value);
+        } else {
+            BvMap parent_map = this.getOrCreateContainerInRoot(root_map);
+            success = this.setInRelativeMap(parent_map, value);
         }
 
-        BvMap parent_map = this.getOrCreateContainerInRoot(root_map);
+        // The RootTweakMap needs to know it has changed, so it can be saved automatically
+        if (success && root_map instanceof RootTweakMap root_tweak_map) {
+            root_tweak_map.fireOnChangeListener();
+        }
 
-        return this.setInRelativeMap(parent_map, value);
+        return success;
     }
 
     /**

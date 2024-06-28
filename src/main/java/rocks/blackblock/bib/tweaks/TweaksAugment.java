@@ -28,7 +28,7 @@ public abstract class TweaksAugment implements Augment {
     protected final TweaksConfiguration tweaks_configuration;
 
     // The actual context
-    protected BvMap data_context = new BvMap();
+    protected RootTweakMap data_context = new RootTweakMap();
 
     /**
      * Initialize the instance
@@ -37,6 +37,7 @@ public abstract class TweaksAugment implements Augment {
      */
     public TweaksAugment(@NotNull TweaksConfiguration tweaks_configuration) {
         this.tweaks_configuration = tweaks_configuration;
+        this.data_context.setOnChangeListener(this::markDirty);
     }
 
     /**
