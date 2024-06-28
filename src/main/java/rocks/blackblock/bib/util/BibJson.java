@@ -402,6 +402,10 @@ public final class BibJson {
             return JsonNull.INSTANCE;
         }
 
+        if (obj instanceof NbtElement nbt_element) {
+            return jsonify(nbt_element);
+        }
+
         if (obj instanceof JsonElement element) {
             return element;
         }
@@ -691,28 +695,8 @@ public final class BibJson {
             return new JsonPrimitive(str.asString());
         }
 
-        if (nbt instanceof NbtByte byte_val) {
-            return new JsonPrimitive(byte_val.byteValue());
-        }
-
-        if (nbt instanceof NbtShort short_val) {
-            return new JsonPrimitive(short_val.shortValue());
-        }
-
-        if (nbt instanceof NbtInt nbt_val) {
-            return new JsonPrimitive(nbt_val.intValue());
-        }
-
-        if (nbt instanceof NbtLong nbt_val) {
-            return new JsonPrimitive(nbt_val.longValue());
-        }
-
-        if (nbt instanceof NbtFloat nbt_val) {
-            return new JsonPrimitive(nbt_val.floatValue());
-        }
-
-        if (nbt instanceof NbtDouble nbt_val) {
-            return new JsonPrimitive(nbt_val.doubleValue());
+        if (nbt instanceof AbstractNbtNumber nbt_nr) {
+            return new JsonPrimitive(nbt_nr.numberValue());
         }
 
         if (nbt instanceof NbtByteArray nbt_val) {
