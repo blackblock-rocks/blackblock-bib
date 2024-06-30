@@ -27,6 +27,9 @@ public class BibMod implements ModInitializer {
 	public static final Platform PLATFORM = new FabricPlatform();
 
 	public static final TweaksConfiguration.Global GLOBAL_TWEAKS = new TweaksConfiguration.Global(id("global"));
+	public static final TweaksConfiguration.PerPlayer PLAYER_TWEAKS = new TweaksConfiguration.PerPlayer(id("player-tweaks"));
+	public static final TweaksConfiguration.PerChunk CHUNK_TWEAKS = new TweaksConfiguration.PerChunk(id("chunk-tweaks"));
+	public static final TweaksConfiguration.PerWorld WORLD_TWEAKS = new TweaksConfiguration.PerWorld(id("world-tweaks"));
 
 	@Override
 	public void onInitialize() {

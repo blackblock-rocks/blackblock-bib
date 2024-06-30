@@ -52,7 +52,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
      *
      * @since    0.1.0
      */
-    public <T extends BvElement<?, ?>> TweakParameter<T> add(TweakParameter<T> param) {
+    public <T extends BvElement<?, ?>, P extends TweakParameter<T>> P add(P param) {
         this.contained_parameters.put(param.getName(), param);
 
         if (this.root_parameter == null) {

@@ -1,7 +1,6 @@
 package rocks.blackblock.bib.tweaks;
 
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -204,15 +203,19 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
             ServerPlayerEntity player = null;
+            boolean tried_arg = false;
 
             try {
                 player = EntityArgumentType.getPlayer(command_context, "player");
+                tried_arg = true;
+            } catch (IllegalArgumentException e_arg) {
+                // There is no "player" arg, and that's ok!
             } catch (Exception e) {
                 GlitchGuru.registerThrowable(e);
                 return null;
             }
 
-            if (player == null) {
+            if (player == null && !tried_arg) {
                 ServerCommandSource source = command_context.getSource();
 
                 if (source != null) {
@@ -275,16 +278,20 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         @Override
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
-            World world;
+            World world = null;
+            boolean tried_arg = false;
 
             try {
                 world = DimensionArgumentType.getDimensionArgument(command_context, "world");
+                tried_arg = true;
+            } catch (IllegalArgumentException e_arg) {
+                // There is no "world" arg, and that's ok!
             } catch (Exception e) {
                 GlitchGuru.registerThrowable(e);
                 return null;
             }
 
-            if (world == null) {
+            if (world == null && !tried_arg) {
                 ServerCommandSource source = command_context.getSource();
 
                 if (source != null) {
@@ -351,18 +358,22 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         @Override
         public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
 
-            World world;
+            World world = null;
             Chunk chunk = null;
-            BlockPos chunk_pos;
+            BlockPos chunk_pos = null;
+            boolean tried_arg = false;
 
             try {
                 world = DimensionArgumentType.getDimensionArgument(command_context, "world");
+                tried_arg = true;
+            } catch (IllegalArgumentException e_arg) {
+                // There is no "world" arg, and that's ok!
             } catch (Exception e) {
                 GlitchGuru.registerThrowable(e);
                 return null;
             }
 
-            if (world == null) {
+            if (world == null && !tried_arg) {
                 ServerCommandSource source = command_context.getSource();
 
                 if (source != null) {
@@ -378,14 +389,19 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                 return null;
             }
 
+            tried_arg = false;
+
             try {
                 chunk_pos = BlockPosArgumentType.getBlockPos(command_context, "chunk_pos");
+                tried_arg = true;
+            } catch (IllegalArgumentException e_arg) {
+                // There is no "chunk_pos" arg, and that's ok!
             } catch (Exception e) {
                 GlitchGuru.registerThrowable(e);
                 return null;
             }
 
-            if (chunk_pos == null) {
+            if (chunk_pos == null && !tried_arg) {
                 ServerCommandSource source = command_context.getSource();
 
                 if (source != null) {
