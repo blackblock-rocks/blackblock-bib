@@ -1,6 +1,7 @@
 package rocks.blackblock.bib.bv.value;
 
 import com.google.gson.JsonElement;
+import com.mojang.brigadier.Message;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
@@ -94,6 +95,24 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
      */
     @Nullable
     Text toPrettyText();
+
+    /**
+     * Convert to a string for use in commands
+     *
+     * @since    0.1.0
+     */
+    @NotNull
+    String toCommandString();
+
+    /**
+     * Convert to a tooltip for use in commands
+     *
+     * @since    0.1.0
+     */
+    @Nullable
+    default Message toCommandTooltip() {
+        return this.toPrettyText();
+    }
 
     /**
      * Register a BvElement type

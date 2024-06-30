@@ -149,6 +149,16 @@ public class BvMap
     }
 
     /**
+     * Convert to a string for use in commands
+     *
+     * @since    0.1.0
+     */
+    @NotNull
+    public String toCommandString() {
+        return "map";
+    }
+
+    /**
      * Convert to pretty text
      *
      * @since    0.1.0

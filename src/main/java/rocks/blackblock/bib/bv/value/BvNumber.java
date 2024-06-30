@@ -2,6 +2,7 @@ package rocks.blackblock.bib.bv.value;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,6 +15,23 @@ import org.jetbrains.annotations.Nullable;
 public abstract class
 BvNumber<ContainedType extends Number, OwnType extends BvNumber<?, ?>>
     extends AbstractBvType<ContainedType, OwnType> {
+
+    /**
+     * Convert to a string for use in commands
+     *
+     * @since    0.1.0
+     */
+    @NotNull
+    public String toCommandString() {
+
+        Number value = this.getContainedValue();
+
+        if (value == null) {
+            return "null";
+        }  else {
+            return value.toString();
+        }
+    }
 
     /**
      * Convert to pretty text

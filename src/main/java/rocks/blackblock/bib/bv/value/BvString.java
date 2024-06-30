@@ -36,6 +36,7 @@ public class BvString extends AbstractBvType<String, BvString> {
      *
      * @since    0.1.0
      */
+    @Override
     public String getType() {
         return TYPE;
     }
@@ -91,6 +92,23 @@ public class BvString extends AbstractBvType<String, BvString> {
         }
 
         this.setContainedValue(json_prim.getAsString());
+    }
+
+    /**
+     * Convert to a string for use in commands
+     *
+     * @since    0.1.0
+     */
+    @NotNull
+    public String toCommandString() {
+
+        String value = this.getContainedValue();
+
+        if (value == null || value.isBlank()) {
+            return "-";
+        }  else {
+            return value;
+        }
     }
 
     /**

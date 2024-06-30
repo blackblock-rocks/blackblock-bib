@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -137,6 +138,25 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
         }
 
         this.setContainedValue(json_prim.getAsBoolean());
+    }
+
+    /**
+     * Convert to a string for use in commands
+     *
+     * @since    0.1.0
+     */
+    @NotNull
+    public String toCommandString() {
+
+        Boolean value = this.getContainedValue();
+
+        if (value == null) {
+            return "null";
+        } else if (value) {
+            return "true";
+        } else {
+            return "false";
+        }
     }
 
     /**

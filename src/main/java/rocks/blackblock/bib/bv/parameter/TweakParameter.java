@@ -61,6 +61,25 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     public abstract Class<? extends BvElement> getContainedTypeClass();
 
     /**
+     * Cast the given value
+     *
+     * @since    0.1.0
+     */
+    @Nullable
+    public ContainedBvType castToContainedType(BvElement input) {
+
+        if (input == null) {
+            return null;
+        }
+
+        if (input.getClass() == this.getContainedTypeClass()) {
+            return (ContainedBvType) input;
+        }
+
+        return null;
+    }
+
+    /**
      * Set the default value
      *
      * @since    0.1.0
@@ -167,15 +186,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
 
         BvElement<?, ?> result = map.get(this.getName());
 
-        if (result == null) {
-            return null;
-        }
-
-        if (result.getClass() == this.getContainedTypeClass()) {
-            return (ContainedBvType) result;
-        }
-
-        return null;
+        return this.castFromDataContext(result);
     }
 
     /**
@@ -235,6 +246,26 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     }
 
     /**
+     * Cast the value before setting it in the data context map
+     *
+     * @since    0.1.0
+     */
+    @Nullable
+    public BvElement castForDataContextSet(ContainedBvType value) {
+        return value;
+    }
+
+    /**
+     * Cast the value from the data context map
+     *
+     * @since    0.1.0
+     */
+    @Nullable
+    public ContainedBvType castFromDataContext(BvElement value) {
+        return this.castToContainedType(value);
+    }
+
+    /**
      * Set the value in the given map
      *
      * @since    0.1.0
@@ -245,7 +276,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
             return false;
         }
 
-        map.put(this.getName(), value);
+        map.put(this.getName(), this.castForDataContextSet(value));
 
         this.triggerChangeEvent(map, value);
 
