@@ -194,10 +194,10 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
      * @since    0.1.0
      */
     @Override
-    public void triggerChangeEvent(BvMap container, BvMap value) {
+    public void triggerChangeEvent(BvMap container, BvMap value, BvMap root) {
 
         // Trigger a change for ourselves
-        super.triggerChangeEvent(container, value);
+        super.triggerChangeEvent(container, value, root);
 
         // Trigger a change for all child parameters
         for (TweakParameter child_param : this.contained_parameters.values()) {
@@ -207,7 +207,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
                 child_value = child_param.getDefaultValue();
             }
 
-            child_param.triggerChangeEvent(value, child_value);
+            child_param.triggerChangeEvent(value, child_value, root);
         }
     }
 }

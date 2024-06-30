@@ -10,7 +10,6 @@ import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.Augment;
 import rocks.blackblock.bib.bv.value.BvMap;
-import rocks.blackblock.bib.util.BibLog;
 
 /**
  * This Augment class is how a TweaksConfiguration can be registered.
@@ -18,7 +17,7 @@ import rocks.blackblock.bib.util.BibLog;
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
  */
-public abstract class TweaksAugment implements Augment {
+public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
 
     // Does this instance need saving?
     protected boolean is_dirty = false;
@@ -28,16 +27,29 @@ public abstract class TweaksAugment implements Augment {
     protected final TweaksConfiguration tweaks_configuration;
 
     // The actual context
-    protected RootTweakMap data_context = new RootTweakMap();
+    protected T data_context;
 
     /**
      * Initialize the instance
      *
      * @since    0.1.0
      */
-    public TweaksAugment(@NotNull TweaksConfiguration tweaks_configuration) {
+    public TweaksAugment(@NotNull TweaksConfiguration tweaks_configuration, @NotNull T data_context) {
         this.tweaks_configuration = tweaks_configuration;
-        this.data_context.setOnChangeListener(this::markDirty);
+        this.setDataContext(data_context);
+    }
+
+    /**
+     * Set the data context
+     *
+     * @since    0.1.0
+     */
+    protected void setDataContext(T root_map) {
+        this.data_context = root_map;
+
+        if (root_map != null) {
+            this.data_context.setOnChangeListener(this::markDirty);
+        }
     }
 
     /**
@@ -75,7 +87,8 @@ public abstract class TweaksAugment implements Augment {
      * @since    0.1.0
      */
     protected void triggerChange() {
-        this.tweaks_configuration.triggerChangeEvent(null, this.getDataContext());
+        BvMap root = this.getDataContext();
+        this.tweaks_configuration.triggerChangeEvent(null, root, root);
     }
 
     /**
@@ -119,7 +132,7 @@ public abstract class TweaksAugment implements Augment {
      *
      * @since    0.1.0
      */
-    public static class Global extends TweaksAugment implements Augment.Global {
+    public static class Global extends TweaksAugment<RootTweakMap> implements Augment.Global {
 
         /**
          * Initialize the instance
@@ -127,7 +140,7 @@ public abstract class TweaksAugment implements Augment {
          * @since 0.1.0
          */
         public Global(@NotNull TweaksConfiguration tweaks_configuration) {
-            super(tweaks_configuration);
+            super(tweaks_configuration, new RootTweakMap());
         }
     }
 
@@ -136,7 +149,7 @@ public abstract class TweaksAugment implements Augment {
      *
      * @since    0.1.0
      */
-    public static class PerWorld extends TweaksAugment implements Augment.PerWorld {
+    public static class PerWorld extends TweaksAugment<RootTweakMap.ForWorld> implements Augment.PerWorld {
 
         private final World world;
 
@@ -146,7 +159,7 @@ public abstract class TweaksAugment implements Augment {
          * @since 0.1.0
          */
         public PerWorld(@NotNull TweaksConfiguration tweaks_configuration, World world) {
-            super(tweaks_configuration);
+            super(tweaks_configuration, new RootTweakMap.ForWorld(world));
             this.world = world;
         }
 
@@ -161,7 +174,7 @@ public abstract class TweaksAugment implements Augment {
      *
      * @since    0.1.0
      */
-    public static class PerChunk extends TweaksAugment implements Augment.PerChunk {
+    public static class PerChunk extends TweaksAugment<RootTweakMap.ForChunk> implements Augment.PerChunk {
 
         private Chunk chunk;
         private final ServerWorld world;
@@ -172,7 +185,7 @@ public abstract class TweaksAugment implements Augment {
          * @since 0.1.0
          */
         public PerChunk(@NotNull TweaksConfiguration tweaks_configuration, ServerWorld world, Chunk chunk) {
-            super(tweaks_configuration);
+            super(tweaks_configuration, new RootTweakMap.ForChunk(world, chunk));
             this.world = world;
             this.setChunk(chunk);
         }
@@ -193,7 +206,7 @@ public abstract class TweaksAugment implements Augment {
      *
      * @since    0.1.0
      */
-    public static class PerPlayer extends TweaksAugment implements Augment.PerPlayer {
+    public static class PerPlayer extends TweaksAugment<RootTweakMap.ForPlayer> implements Augment.PerPlayer {
 
         private ServerPlayerEntity player;
 
@@ -203,7 +216,7 @@ public abstract class TweaksAugment implements Augment {
          * @since 0.1.0
          */
         public PerPlayer(@NotNull TweaksConfiguration tweaks_configuration, ServerPlayerEntity player) {
-            super(tweaks_configuration);
+            super(tweaks_configuration, new RootTweakMap.ForPlayer(player));
             this.player = player;
         }
 

@@ -270,7 +270,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
      *
      * @since    0.1.0
      */
-    public boolean setInRelativeMap(BvMap map, ContainedBvType value) {
+    public boolean setInRelativeMap(BvMap map, ContainedBvType value, BvMap root) {
 
         if (map == null) {
             return false;
@@ -278,7 +278,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
 
         map.put(this.getName(), this.castForDataContextSet(value));
 
-        this.triggerChangeEvent(map, value);
+        this.triggerChangeEvent(map, value, root);
 
         return true;
     }
@@ -297,10 +297,10 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
         boolean success = false;
 
         if (this.parent_parameter == null) {
-            success = this.setInRelativeMap(root_map, value);
+            success = this.setInRelativeMap(root_map, value, root_map);
         } else {
             BvMap parent_map = this.getOrCreateContainerInRoot(root_map);
-            success = this.setInRelativeMap(parent_map, value);
+            success = this.setInRelativeMap(parent_map, value, root_map);
         }
 
         // The RootTweakMap needs to know it has changed, so it can be saved automatically
@@ -316,16 +316,15 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
      *
      * @since    0.1.0
      */
-    public void triggerChangeEvent(BvMap container, ContainedBvType value) {
+    public void triggerChangeEvent(BvMap container, ContainedBvType value, BvMap root) {
 
         if (!this.on_change_listeners.isEmpty()) {
-            ChangeContext<ContainedBvType> context = new ChangeContext<>(this, value);
+            ChangeContext<ContainedBvType> context = new ChangeContext<>(this, value, root);
 
             for (var listener : this.on_change_listeners) {
                 listener.accept(context);
             }
         }
-
     }
 
     /**
@@ -481,10 +480,12 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
 
         private TweakParameter<ContainedBvType> parameter;
         private ContainedBvType value;
+        private BvMap root;
 
-        public ChangeContext(TweakParameter<ContainedBvType> parameter, ContainedBvType value) {
+        public ChangeContext(TweakParameter<ContainedBvType> parameter, ContainedBvType value, BvMap root) {
             this.parameter = parameter;
             this.value = value;
+            this.root = root;
         }
 
         public TweakParameter<ContainedBvType> getTweakParameter() {
@@ -493,6 +494,10 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
 
         public ContainedBvType getValue() {
             return this.value;
+        }
+
+        public BvMap getRootMap() {
+            return this.root;
         }
     }
 }
