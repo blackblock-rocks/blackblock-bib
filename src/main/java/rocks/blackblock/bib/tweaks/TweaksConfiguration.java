@@ -166,7 +166,13 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
          */
         @Nullable
         public <T extends BvElement<?, ?>> T get(TweakParameter<T> param) {
-            return param.getFromRootMap(this.augment_key.get().getDataContext());
+            var result = param.getFromRootMap(this.augment_key.get().getDataContext());
+
+            if (result == null) {
+                return param.getDefaultValue();
+            }
+
+            return result;
         }
     }
 
@@ -242,7 +248,13 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                 return null;
             }
 
-            return param.getFromRootMap(this.augment_key.get(player).getDataContext());
+            var result = param.getFromRootMap(this.augment_key.get(player).getDataContext());
+
+            if (result == null) {
+                return param.getDefaultValue();
+            }
+
+            return result;
         }
     }
 
@@ -322,7 +334,13 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                 return null;
             }
 
-            return param.getFromRootMap(this.augment_key.get(world).getDataContext());
+            var result = param.getFromRootMap(this.augment_key.get(world).getDataContext());
+
+            if (result == null) {
+                return param.getDefaultValue();
+            }
+
+            return result;
         }
     }
 
@@ -436,7 +454,13 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                 return null;
             }
 
-            return param.getFromRootMap(this.augment_key.get(chunk).getDataContext());
+            var result = param.getFromRootMap(this.augment_key.get(chunk).getDataContext());
+
+            if (result == null) {
+                return param.getDefaultValue();
+            }
+
+            return result;
         }
     }
 }

@@ -202,6 +202,11 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
         // Trigger a change for all child parameters
         for (TweakParameter child_param : this.contained_parameters.values()) {
             BvElement child_value = child_param.getFromRelativeMap(value);
+
+            if (child_value == null) {
+                child_value = child_param.getDefaultValue();
+            }
+
             child_param.triggerChangeEvent(value, child_value);
         }
     }
