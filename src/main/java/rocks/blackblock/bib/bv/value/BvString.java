@@ -1,5 +1,6 @@
 package rocks.blackblock.bib.bv.value;
 
+import carpet.script.value.StringValue;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.nbt.NbtElement;
@@ -8,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.bv.operator.BvOperator;
 
 /**
  * A BV String
@@ -18,7 +20,30 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public class BvString extends AbstractBvType<String, BvString> {
 
+    public static BvOperator<BvString> EQUALS                = new BvOperator<>(BvString.class, "equals",   BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+    public static BvOperator<BvString> GREATER_THAN          = new BvOperator<>(BvString.class, "gt",       BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+    public static BvOperator<BvString> LESS_THAN             = new BvOperator<>(BvString.class, "lt",       BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+    public static BvOperator<BvString> GREATER_THAN_OR_EQUAL = new BvOperator<>(BvString.class, "gte",      BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+    public static BvOperator<BvString> LESS_THAN_OR_EQUAL    = new BvOperator<>(BvString.class, "lte",      BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+    public static BvOperator<BvString> CONTAINS              = new BvOperator<>(BvString.class, "contains", BvOperator.Type.LOGICAL, BvOperator.Arity.BINARY);
+
     public static final String TYPE = "string";
+
+    /**
+     * Construct a BvBoolean with a pre-defined value
+     *
+     * @since    0.1.0
+     */
+    public BvString(String value) {
+        this.setContainedValue(value);
+    }
+
+    /**
+     * Construct a BvString with no value
+     *
+     * @since    0.1.0
+     */
+    public BvString() {}
 
     /**
      * Create an instance of the given value
@@ -26,9 +51,7 @@ public class BvString extends AbstractBvType<String, BvString> {
      * @since    0.1.0
      */
     public static BvString of(String value) {
-        var result = new BvString();
-        result.setContainedValue(value);
-        return result;
+        return new BvString(value);
     }
 
     /**
@@ -72,6 +95,23 @@ public class BvString extends AbstractBvType<String, BvString> {
         }
 
         return NbtString.of(contained_value);
+    }
+
+    /**
+     * Convert to a JSON value
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public JsonElement toJson() {
+
+        String value = this.getContainedValue();
+
+        if (value == null) {
+            return null;
+        }
+
+        return new JsonPrimitive(value);
     }
 
     /**
@@ -127,5 +167,62 @@ public class BvString extends AbstractBvType<String, BvString> {
         }
 
         return Text.literal('"' + value + '"').formatted(Formatting.AQUA);
+    }
+
+    /**
+     * Get the string to use in placeholders
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toPlaceholderString() {
+        return this.contained_value;
+    }
+
+    /**
+     * Execute an operator that does not have an executor
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public Boolean executeCustomBinaryOperator(BvOperator operator, BvElement right) {
+
+        String other_string = null;
+
+        if (right instanceof BvString string_value) {
+            other_string = string_value.getContainedValue();
+        }
+
+        String safe_string = other_string;
+
+        if (safe_string == null) {
+            safe_string = "";
+        }
+
+        if (operator == EQUALS) {
+            return this.contained_value.equals(other_string);
+        }
+
+        if (operator == GREATER_THAN) {
+            return this.contained_value.compareTo(safe_string) > 0;
+        }
+
+        if (operator == LESS_THAN) {
+            return this.contained_value.compareTo(safe_string) < 0;
+        }
+
+        if (operator == GREATER_THAN_OR_EQUAL) {
+            return this.contained_value.compareTo(safe_string) >= 0;
+        }
+
+        if (operator == LESS_THAN_OR_EQUAL) {
+            return this.contained_value.compareTo(safe_string) <= 0;
+        }
+
+        if (operator == CONTAINS) {
+            return this.contained_value.contains(safe_string);
+        }
+
+        return null;
     }
 }

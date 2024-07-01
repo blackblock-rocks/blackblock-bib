@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.AugmentManager;
+import rocks.blackblock.bib.bv.operator.BvOperators;
 import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.config.Config;
 import rocks.blackblock.bib.interop.BibInterop;
@@ -34,6 +35,7 @@ public class BibMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		BvOperators.register(null);
 		BibInterop.initializeInterops();
 		Config.initializeAllConfigs();
 		CommandRegistrationCallback.EVENT.register(BibServer::setCommandCanBeRegistered);

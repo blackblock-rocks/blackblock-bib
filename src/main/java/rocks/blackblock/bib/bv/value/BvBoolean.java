@@ -24,14 +24,28 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     public static final String TYPE = "boolean";
 
     /**
+     * Construct a BvBoolean with a pre-defined value
+     *
+     * @since    0.1.0
+     */
+    public BvBoolean(boolean value) {
+        this.setContainedValue(value);
+    }
+
+    /**
+     * Construct a BvBoolean with no value
+     *
+     * @since    0.1.0
+     */
+    public BvBoolean() {}
+
+    /**
      * Create an instance of the given value
      *
      * @since    0.1.0
      */
     public static BvBoolean of(Boolean value) {
-        var result = new BvBoolean();
-        result.setContainedValue(value);
-        return result;
+        return new BvBoolean(value);
     }
 
     /**
@@ -39,6 +53,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
      *
      * @since    0.1.0
      */
+    @Override
     public String getType() {
         return TYPE;
     }
@@ -185,5 +200,15 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
         }
 
         return result;
+    }
+
+    /**
+     * Get the string to use in placeholders
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toPlaceholderString() {
+        return this.contained_value ? "true" : "false";
     }
 }

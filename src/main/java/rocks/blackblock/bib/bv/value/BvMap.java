@@ -1,6 +1,8 @@
 package rocks.blackblock.bib.bv.value;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.MutableText;
@@ -51,7 +53,7 @@ public class BvMap
     }
 
     /**
-     * It shouldn't be possible to set the contained value
+     * Set the values
      *
      * @since    0.1.0
      */
@@ -138,14 +140,56 @@ public class BvMap
         return result;
     }
 
+    /**
+     * Serialize this value to JSON
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public @Nullable JsonElement toJson() {
+
+        JsonObject result = new JsonObject();
+
+        Map<String, BvElement> values = this.getContainedValue();
+
+        if (values != null && !values.isEmpty()) {
+            values.forEach((key, element) -> {
+
+                JsonObject element_json = BvElement.serializeToJson(element);
+
+                if (element_json == null) {
+                    return;
+                }
+
+                result.add(key, element_json);
+            });
+        }
+
+        return null;
+    }
+
+    /**
+     * Load the value from JSON
+     *
+     * @since    0.1.0
+     */
     @Override
     public void loadFromJson(JsonElement json) {
 
-    }
+        this.values.clear();
 
-    @Override
-    public @Nullable JsonElement toJson() {
-        return null;
+        if (json instanceof JsonObject compound) {
+
+            for (String key : compound.keySet()) {
+
+                JsonElement element_json = compound.get(key);
+                BvElement element = BvElement.parseFromJson(element_json);
+
+                if (element != null) {
+                    this.values.put(key, element);
+                }
+            }
+        }
     }
 
     /**
@@ -223,6 +267,16 @@ public class BvMap
     @Override
     public String toString() {
         return this.toBBLogArg().toString();
+    }
+
+    /**
+     * Get the string to use in placeholders
+     *
+     * @since    0.1.0
+     */
+    @Override
+    public String toPlaceholderString() {
+        return this.toString();
     }
 
     /**

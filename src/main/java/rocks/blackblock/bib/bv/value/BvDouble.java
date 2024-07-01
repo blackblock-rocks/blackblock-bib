@@ -2,44 +2,45 @@ package rocks.blackblock.bib.bv.value;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.nbt.AbstractNbtNumber;
+import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A BV Integer
+ * A BV Double
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
  */
 @SuppressWarnings("unused")
-public class BvInteger extends BvNumber<Integer, BvInteger> {
+public class BvDouble extends BvNumber<Double, BvDouble> {
 
-    public static final String TYPE = "integer";
+    public static final String TYPE = "double";
 
     /**
-     * Construct an integer with a pre-defined value
+     * Construct a double with a pre-defined value
      *
      * @since    0.1.0
      */
-    public BvInteger(Integer value) {
+    public BvDouble(Double value) {
         this.setContainedValue(value);
     }
 
     /**
-     * Construct a BvInteger with no value
+     * Construct a BvDouble with no value
      *
      * @since    0.1.0
      */
-    public BvInteger() {}
+    public BvDouble() {}
 
     /**
      * Create an instance of the given value
      *
      * @since    0.1.0
      */
-    public static BvInteger of(Integer value) {
-        return new BvInteger(value);
+    public static BvDouble of(Double value) {
+        return new BvDouble(value);
     }
 
     /**
@@ -64,8 +65,8 @@ public class BvInteger extends BvNumber<Integer, BvInteger> {
             return;
         }
 
-        if (nbt_value instanceof NbtInt nbt_int) {
-            this.setContainedValue(nbt_int.intValue());
+        if (nbt_value instanceof AbstractNbtNumber nbt_nr) {
+            this.setContainedValue(nbt_nr.doubleValue());
         }
     }
 
@@ -77,13 +78,13 @@ public class BvInteger extends BvNumber<Integer, BvInteger> {
     @Override
     public @Nullable NbtElement toNbt() {
 
-        Integer contained_value = this.getContainedValue();
+        Double contained_value = this.getContainedValue();
 
         if (contained_value == null) {
             return null;
         }
 
-        return NbtInt.of(this.contained_value);
+        return NbtDouble.of(this.contained_value);
     }
 
     /**
@@ -103,7 +104,7 @@ public class BvInteger extends BvNumber<Integer, BvInteger> {
             throw new RuntimeException("Expected a JsonPrimitive, but got " + json.getClass().getSimpleName());
         }
 
-        this.setContainedValue(json_prim.getAsInt());
+        this.setContainedValue(json_prim.getAsDouble());
     }
 
     /**
@@ -112,12 +113,12 @@ public class BvInteger extends BvNumber<Integer, BvInteger> {
      * @since    0.1.0
      */
     @Override
-    protected Integer castToOurContainedNumber(Number nr) {
+    protected Double castToOurContainedNumber(Number nr) {
 
         if (nr == null) {
             return null;
         }
 
-        return (Integer) nr;
+        return (Double) nr;
     }
 }
