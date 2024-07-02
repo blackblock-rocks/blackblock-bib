@@ -684,6 +684,8 @@ public class BibLog {
             builder.append("{");
 
             int i = 0;
+            int indent_count = 0;
+            boolean print_newlines = this.properties.size() > 1;
 
             for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
 
@@ -691,14 +693,18 @@ public class BibLog {
                     builder.append(",");
                 }
 
-                builder.append("\n");
-                builder.append("  ".repeat(level + 1));
+                if (print_newlines) {
+                    builder.append("\n");
+                    indent_count = level + 1;
+                }
+
+                builder.append("  ".repeat(indent_count));
 
                 builder.append(WhiteText.format(entry.getKey()));
                 builder.append("=");
 
                 if (entry.getValue() instanceof Arg arg) {
-                    builder.append(arg.toIndentedString(level + 1));
+                    builder.append(arg.toIndentedString(indent_count));
                 } else {
                     builder.append(entry.getValue());
                 }
@@ -706,7 +712,7 @@ public class BibLog {
                 i++;
             }
 
-            if (i > 0) {
+            if (print_newlines) {
                 builder.append("\n");
                 builder.append("  ".repeat(level));
             }
