@@ -396,12 +396,8 @@ public class BibLog {
      * @param    message  The actual message
      */
     public static void attention(Object message) {
-        log("");
-        log(BoldYellowOnRed.format("»»»»»»»»»» Attention ««««««««««"));
         Object[] as_args = {message};
-        outputLevel(Level.WARN, concatenateArguments(as_args));
-        log(BoldYellowOnRed.format("==============================="));
-        log("");
+        attention(as_args);
     }
 
     /**
@@ -413,11 +409,13 @@ public class BibLog {
      * @param    message  The actual message
      */
     public static void attention(Object... message) {
-        log("");
-        log(BoldYellowOnRed.format("»»»»»»»»»» Attention ««««««««««"));
-        outputLevel(Level.WARN, concatenateArguments(message));
-        log(BoldYellowOnRed.format("==============================="));
-        log("");
+
+        String output = "\n"
+                + BoldYellowOnRed.format("»»»»»»»»»»»»»»»»»»»»»»»»»»»» Attention ««««««««««««««««««««««««««««") + "\n"
+                + concatenateArguments(message) + "\n"
+                + BoldYellowOnRed.format("===================================================================") + "\n";
+
+        outputLevel(Level.WARN, output);
     }
 
     /**
