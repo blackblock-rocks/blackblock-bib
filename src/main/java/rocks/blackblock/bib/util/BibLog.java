@@ -398,7 +398,24 @@ public class BibLog {
     public static void attention(Object message) {
         log("");
         log(BoldYellowOnRed.format("»»»»»»»»»» Attention ««««««««««"));
-        log(Level.WARN, message);
+        Object[] as_args = {message};
+        outputLevel(Level.WARN, concatenateArguments(as_args));
+        log(BoldYellowOnRed.format("==============================="));
+        log("");
+    }
+
+    /**
+     * Output to the Blackblock logger by grabbing some attention
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     *
+     * @param    message  The actual message
+     */
+    public static void attention(Object... message) {
+        log("");
+        log(BoldYellowOnRed.format("»»»»»»»»»» Attention ««««««««««"));
+        outputLevel(Level.WARN, concatenateArguments(message));
         log(BoldYellowOnRed.format("==============================="));
         log("");
     }
