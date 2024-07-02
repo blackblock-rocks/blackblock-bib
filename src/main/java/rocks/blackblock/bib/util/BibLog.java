@@ -41,6 +41,7 @@ public class BibLog {
     private static AnsiFormat BlueText = new AnsiFormat(BRIGHT_BLUE_TEXT());
     private static AnsiFormat MagentaText = new AnsiFormat(BRIGHT_MAGENTA_TEXT());
     private static AnsiFormat WhiteText = new AnsiFormat(WHITE_TEXT());
+    private static AnsiFormat BrightWhiteText = new AnsiFormat(BRIGHT_WHITE_TEXT());
 
     private static Attribute BLACK_BACK = BACK_COLOR(0, 0, 0);
     private static AnsiFormat BoldYellowOnRed = new AnsiFormat(YELLOW_TEXT(), RED_BACK(), BOLD());
@@ -504,7 +505,7 @@ public class BibLog {
                             entry = "Player{" + player.getName().getString() + ",l=" + world + ",x=" + pos.getX() + ",y=" + pos.getY() + ",z=" + pos.getZ() + "}";
                         } else {
                             Arg sarg = createArg(arg);
-                            sarg.add("$string", entry);
+                            sarg.setFallbackContent(entry);
                             entry = sarg.toIndentedString(0);
                         }
 
@@ -546,7 +547,15 @@ public class BibLog {
         public final Object value;
         public final Map<String, Object> properties = new HashMap<>();
         private String class_name = null;
-        private String content = null;
+
+        // When this is set, only this string will be used in `toString`
+        private String full_override = null;
+
+        // When this is set, this will be printed after the class name
+        private String body_content = null;
+
+        // When this is set, this will be printed when no properties are added
+        private String fallback_body_content = null;
 
         public Arg(Object value) {
             this.value = value;
@@ -595,7 +604,7 @@ public class BibLog {
                     this.add("x", pos.x).add("z", pos.z);
                 } else if (value instanceof Identifier id) {
                     name = "Identifier";
-                    this.add("namespace", id.getNamespace()).add("path", id.getPath());
+                    this.setContent(id.getNamespace() + ":" + BrightWhiteText.format(id.getPath()));
                 } else if (value instanceof UUID uuid) {
                     name = "UUID";
                     this.add("uuid", uuid.toString());
@@ -641,7 +650,7 @@ public class BibLog {
                     name = value.getClass().getSimpleName();
 
                     if (name.isEmpty() || name.startsWith("class_")) {
-                        this.content = value + "";
+                        this.full_override = value + "";
                     }
                 }
 
@@ -649,6 +658,34 @@ public class BibLog {
             }
         }
 
+        /**
+         * Set fallback content when no properties are available
+         *
+         * @since    0.2.0
+         */
+        public Arg setFallbackContent(String message) {
+            this.fallback_body_content = message;
+            return this;
+        }
+
+        /**
+         * Force the main content to display
+         *
+         * @since    0.2.0
+         */
+        public Arg setContent(String message) {
+            this.body_content = message;
+            return this;
+        }
+
+        /**
+         * Add a property to output
+         *
+         * @since    0.1.0
+         *
+         * @param    key   The property key to display
+         * @param    value The actual value to display
+         */
         public Arg add(String key, Object value) {
 
             if (value instanceof String || value instanceof Number || value instanceof Boolean || value == null) {
@@ -661,6 +698,15 @@ public class BibLog {
             return this;
         }
 
+        /**
+         * Return this Arg instance to a serialized string
+         * for debug purposes.
+         * Also add an indentation of the given level at the beginning.
+         *
+         * @since    0.1.0
+         *
+         * @param    level   The current indentation level
+         */
         public String toIndentedStringWithStart(int level) {
 
             StringBuilder builder = new StringBuilder();
@@ -670,46 +716,123 @@ public class BibLog {
             return builder.append(this.toIndentedString(level)).toString();
         }
 
+        /**
+         * Return this Arg instance to a serialized string
+         * for debug purposes.
+         *
+         * @since    0.1.0
+         *
+         * @param    level   The current indentation level
+         */
         public String toIndentedString(int level) {
+
+            // If there is a full_override string, return that
+            if (this.full_override != null) {
+                return MagentaText.format(this.full_override);
+            }
 
             StringBuilder builder = new StringBuilder();
 
-            if (this.content != null) {
-                builder.append(MagentaText.format(this.content));
-                return builder.toString();
+            builder.append(MagentaText.format(class_name));
+
+            String body_content = this.body_content;
+
+            if (body_content == null && this.fallback_body_content != null && this.properties.isEmpty()) {
+                body_content = this.fallback_body_content;
             }
 
-            builder.append(MagentaText.format(class_name));
+            // If we have an explicit body_content string, use that
+            if (body_content != null) {
+                char first_char = body_content.charAt(0);
+
+                if (first_char == '{' || first_char == '[') {
+                    builder.append(body_content);
+                    return builder.toString();
+                }
+
+                builder.append('{');
+                builder.append(body_content);
+                builder.append('}');
+
+                return builder.toString();
+            }
 
             builder.append("{");
 
             int i = 0;
             int indent_count = 0;
-            boolean print_newlines = this.properties.size() > 1;
+            int property_count = this.properties.size();
+            boolean print_newlines = property_count > 1;
+            int full_char_length = 0;
+
+            Map<String, String> converted = new HashMap<>(property_count);
 
             for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
+                String key = entry.getKey();
+                full_char_length += key.length();
 
-                if (i > 0) {
-                    builder.append(",");
-                }
+                Object value = entry.getValue();
+                String value_string;
 
-                if (print_newlines) {
-                    builder.append("\n");
-                    indent_count = level + 1;
-                }
-
-                builder.append("  ".repeat(indent_count));
-
-                builder.append(WhiteText.format(entry.getKey()));
-                builder.append("=");
-
-                if (entry.getValue() instanceof Arg arg) {
-                    builder.append(arg.toIndentedString(indent_count));
+                if (value instanceof Arg arg) {
+                    // Indent with no level
+                    value_string = arg.toIndentedString(0);
                 } else {
-                    builder.append(entry.getValue());
+                    value_string = "" + value;
                 }
 
-                i++;
+                full_char_length += value_string.length();
+                converted.put(key, value_string);
+
+                if (full_char_length > 60) {
+                    break;
+                }
+            }
+
+            if (full_char_length <= 60) {
+                print_newlines = false;
+
+                for (Map.Entry<String, String> entry : converted.entrySet()) {
+
+                    if (i > 0) {
+                        builder.append(",");
+                    }
+
+                    builder.append("  ".repeat(indent_count));
+
+                    builder.append(WhiteText.format(entry.getKey()));
+                    builder.append("=");
+                    builder.append(entry.getValue());
+
+                    i++;
+                }
+
+            } else {
+                // Iterate again, this time stringifying with the correct indent size
+                for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
+
+                    if (i > 0) {
+                        builder.append(",");
+                    }
+
+                    if (print_newlines) {
+                        builder.append("\n");
+                        indent_count = level + 1;
+                    }
+
+                    builder.append("  ".repeat(indent_count));
+
+                    builder.append(WhiteText.format(entry.getKey()));
+                    builder.append("=");
+
+                    if (entry.getValue() instanceof Arg arg) {
+                        builder.append(arg.toIndentedString(indent_count));
+                    } else {
+                        builder.append(entry.getValue());
+                    }
+
+                    i++;
+                }
             }
 
             if (print_newlines) {
