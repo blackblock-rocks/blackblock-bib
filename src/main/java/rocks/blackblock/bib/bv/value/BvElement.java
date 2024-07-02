@@ -50,6 +50,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     Supplier<BvMap> MAP_SUPPLIER = registerType(BvMap.TYPE, BvMap.class, BvMap::new);
     Supplier<BvString> STRING_SUPPLIER = BvElement.registerType(BvString.TYPE, BvString.class, BvString::new);
     Supplier<BvNull> NULL_SUPPLIER = BvElement.registerType(BvNull.TYPE, BvNull.class, () -> BvNull.NULL);
+    Supplier<BvNumber> NUMBER_SUPPLIER = BvElement.registerType("number", BvNumber.class, BvDouble::new);
 
     /**
      * Get the actual underlying Java value
