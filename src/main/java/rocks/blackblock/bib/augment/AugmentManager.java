@@ -134,8 +134,12 @@ public class AugmentManager<C extends Augment> {
                 player_augments_nbt = new NbtCompound();
             }
 
-            player_augments_nbt.put(key.getId().toString(), augment_nbt);
-            saves++;
+            try {
+                player_augments_nbt.put(key.getId().toString(), augment_nbt);
+                saves++;
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to serialize Player augment " + key.getId() + " for " + player);
+            }
         }
 
         if (saves > 0) {
@@ -181,8 +185,12 @@ public class AugmentManager<C extends Augment> {
                 continue;
             }
 
-            Augment.PerPlayer instance = key.get(player);
-            instance.readFromNbt(augment_nbt, player.getRegistryManager());
+            try {
+                Augment.PerPlayer instance = key.get(player);
+                instance.readFromNbt(augment_nbt, player.getRegistryManager());
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to deserialize Player augment " + key.getId() + " for " + player);
+            }
         }
     }
 
@@ -262,8 +270,12 @@ public class AugmentManager<C extends Augment> {
                 chunk_augments_nbt_ref.set(new NbtCompound());
             }
 
-            chunk_augments_nbt_ref.get().put(key.getId().toString(), augment_nbt);
-            saves.getAndIncrement();
+            try {
+                chunk_augments_nbt_ref.get().put(key.getId().toString(), augment_nbt);
+                saves.getAndIncrement();
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to serialize Chunk augment " + key.getId() + " in " + world + " at " + chunk.getPos());
+            }
         });
 
         if (saves.get() > 0) {
@@ -304,8 +316,12 @@ public class AugmentManager<C extends Augment> {
                 continue;
             }
 
-            Augment.PerChunk instance = key.get(world, chunk);
-            instance.readFromNbt(augment_nbt, world.getRegistryManager());
+            try {
+                Augment.PerChunk instance = key.get(world, chunk);
+                instance.readFromNbt(augment_nbt, world.getRegistryManager());
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to deserialize Chunk augment " + key.getId() + " in " + world + " at " + chunk.getPos());
+            }
         }
     }
 
