@@ -45,7 +45,7 @@ public class BvList<ListContentType extends BvElement>
      *
      * @since    0.2.0
      */
-    protected static <EntryType extends BvElement> BvList<EntryType> of(List<EntryType> source) {
+    public static <EntryType extends BvElement> BvList<EntryType> of(List<EntryType> source) {
 
         BvList<EntryType> result = new BvList<>();
 
