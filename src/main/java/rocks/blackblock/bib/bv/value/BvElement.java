@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * Represents a BV type
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings({
         // Ignore unused warnings: this is a library after all
@@ -55,42 +55,42 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get the actual underlying Java value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     ContainedType getContainedValue();
 
     /**
      * Set the actual underlying Java value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     void setContainedValue(ContainedType value);
 
     /**
      * Check two instances of the same type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     boolean equalsOtherValue(OwnType object);
 
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     String getType();
 
     /**
      * Load this value from NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     void loadFromNbt(NbtElement nbt_value);
 
     /**
      * Serialize this value to NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     NbtElement toNbt();
@@ -98,14 +98,14 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Load the value from JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     void loadFromJson(JsonElement json);
 
     /**
      * Serialize this value to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     JsonElement toJson();
@@ -113,7 +113,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Convert to pretty text
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     Text toPrettyText();
@@ -121,14 +121,14 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get a string value to use in a placeholder
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     String toPlaceholderString();
 
     /**
      * Convert to a string for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     default String toCommandString() {
@@ -146,7 +146,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Convert to a tooltip for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     default Message toCommandTooltip() {
@@ -156,7 +156,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Set the value, and return if it worked
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default boolean setValue(Object value) {
 
@@ -195,7 +195,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get the title of this value (for visual stuff)
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default String getDisplayTitle() {
         return this.toPlaceholderString();
@@ -205,7 +205,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
      * Get the item to use as an icon for this value,
      * in case it needs to be shown in an inventory
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default Item getItemIcon() {
         // @TODO: Make blackblock-core register BBSB.GUI_UNKOWN_TYPE for this!
@@ -215,7 +215,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Create an ItemStack representation of this value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default ItemStack createIconStack() {
 
@@ -235,7 +235,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get an operator by name
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default BvOperator<? extends BvElement> getOperator(String operator_name) {
         Class<? extends BvElement> constructor = this.getClass();
@@ -245,7 +245,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Execute a unary operator that does not have an executor
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default Boolean executeCustomUnaryOperator(BvOperator operator) {
         return null;
@@ -254,7 +254,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Execute a binary operator that does not have an executor
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default Boolean executeCustomBinaryOperator(BvOperator operator, BvElement right) {
         return null;
@@ -263,7 +263,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Execute a ternary operator that does not have an executor
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     default Boolean executeCustomTernaryOperator(BvOperator operator, BvElement mid, BvElement right) {
         return null;
@@ -272,7 +272,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Register a BvElement type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     static <T extends BvElement> Supplier<T> registerType(String type, Class<T> type_class, Supplier<T> supplier) {
         TYPE_REGISTRY.put(type, (Supplier<BvElement>) supplier);
@@ -284,7 +284,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get the class of the given type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @param    type    The type identifier of the value
      */
@@ -296,7 +296,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get a new BvElement instance by its type class
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     static <T extends BvElement> T createNewOfType(Class<T> type_class) {
@@ -313,7 +313,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get a new BvElement instance by its type name
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     static BvElement createNewOfType(String type) {
@@ -330,7 +330,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Parse the given JSON element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     static BvElement parseFromJson(JsonElement element) {
@@ -375,7 +375,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Serialize the given element to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     static JsonObject serializeToJson(BvElement element) {
@@ -400,7 +400,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Parse the given NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     static BvElement parseFromNbt(NbtElement nbt) {
@@ -434,7 +434,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Serialize the given element to NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     static NbtCompound serializeToNbt(BvElement element) {
 
@@ -458,7 +458,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     /**
      * Get a pretty text representation
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     static Text getPrettyText(@Nullable BvElement element) {

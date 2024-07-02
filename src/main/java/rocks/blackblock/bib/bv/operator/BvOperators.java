@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Registry of all the Bv operators
  *
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings({
         // Ignore unused warnings: this is a library after all
@@ -36,7 +36,7 @@ public final class BvOperators {
     /**
      * Register operators
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static void register(Runnable runnable) {
 
@@ -56,7 +56,7 @@ public final class BvOperators {
     /**
      * Register all the basic Bv operators
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     protected static void registerDefaultOperators() {
 
@@ -177,7 +177,7 @@ public final class BvOperators {
     /**
      * Register all the numerical Bv operators
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     private static void registerNumericalOperators() {
 
@@ -314,7 +314,7 @@ public final class BvOperators {
     /**
      * Get all the operators for the given class
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @param    constructor   The BvElement class to register the operator for
      */
@@ -325,7 +325,7 @@ public final class BvOperators {
     /**
      * Get an operator by name
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @param    constructor      The BvElement class to get the operator from
      * @param    operator_name    The name of the operator
@@ -356,7 +356,7 @@ public final class BvOperators {
     /**
      * Get unsafe map of operators
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @param    constructor   The BvElement class to register the operator for
      */
@@ -369,7 +369,7 @@ public final class BvOperators {
      * Get all the operators for the given class
      * that match the filters
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @param    constructor   The BvElement class to register the operator for
      * @param    type          The operator type filter

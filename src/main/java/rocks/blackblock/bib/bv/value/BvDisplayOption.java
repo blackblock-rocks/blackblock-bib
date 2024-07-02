@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
  * A BV Value that is mostly used for a display option
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class BvDisplayOption extends BvString {
@@ -19,7 +19,7 @@ public class BvDisplayOption extends BvString {
     /**
      * Create an instance of the given value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static BvDisplayOption of(String slug, Message tooltip) {
         var result = new BvDisplayOption();
@@ -31,7 +31,7 @@ public class BvDisplayOption extends BvString {
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String getType() {
@@ -41,7 +41,7 @@ public class BvDisplayOption extends BvString {
     /**
      * Convert to a tooltip for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     @Nullable

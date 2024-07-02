@@ -16,7 +16,7 @@ import java.util.Map;
  * A map parameter
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class MapParameter<V extends AbstractBvType<?, ?>>
@@ -31,7 +31,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Initialize the parameter
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     public MapParameter(String name) {
         super(name);
@@ -40,7 +40,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Return the class of the contained type
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     @Override
     public Class<BvMap> getContainedTypeClass() {
@@ -50,7 +50,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Add a new expected entry
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public <T extends BvElement<?, ?>, P extends TweakParameter<T>> P add(P param) {
         this.contained_parameters.put(param.getName(), param);
@@ -67,7 +67,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Get the root parameter map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public MapParameter<?> getRootParameter() {
@@ -82,7 +82,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Get the root TweaksConfiguration
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public TweaksConfiguration getTweaksConfiguration() {
@@ -99,7 +99,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Create a new empty map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvMap createEmptyMap() {
         return new BvMap();
@@ -108,7 +108,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Ensure a map exist in the given root map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvMap ensureMapExistsInRoot(BvMap root_map) {
 
@@ -145,7 +145,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Get all the child parameters
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public Map<String, TweakParameter<?>> getContainedParameters() {
         return Map.copyOf(this.contained_parameters);
@@ -154,7 +154,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Add an iterator
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     @Override
@@ -165,7 +165,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Add this parameter to the given command leaf
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public CommandLeaf addToCommandLeaf(CommandLeaf parent_leaf) {
@@ -182,7 +182,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Configure the "set" part of the commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public CommandLeaf configureSetLeaf(CommandLeaf set_leaf) {
         return null;
@@ -191,7 +191,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
     /**
      * Trigger a change event for the current value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void triggerChangeEvent(BvMap container, BvMap value, BvMap root) {

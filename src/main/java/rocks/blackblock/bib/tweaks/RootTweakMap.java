@@ -10,7 +10,7 @@ import rocks.blackblock.bib.bv.value.BvMap;
  * A map to use as the root for Tweak settings
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class RootTweakMap extends BvMap {
@@ -20,7 +20,7 @@ public class RootTweakMap extends BvMap {
     /**
      * Set the on-change listener
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public void setOnChangeListener(Runnable listener) {
         this.on_change_listener = listener;
@@ -29,7 +29,7 @@ public class RootTweakMap extends BvMap {
     /**
      * Fire the change listener
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public void fireOnChangeListener() {
         if (this.on_change_listener != null) {
@@ -40,7 +40,7 @@ public class RootTweakMap extends BvMap {
     /**
      * Root tweak map with player info
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class ForPlayer extends RootTweakMap {
 
@@ -49,7 +49,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Initialize the class instance
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public ForPlayer(ServerPlayerEntity player) {
             this.player = player;
@@ -58,7 +58,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Get the player
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public ServerPlayerEntity getPlayer() {
             return this.player;
@@ -68,7 +68,7 @@ public class RootTweakMap extends BvMap {
     /**
      * Root tweak map with world info
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class ForWorld extends RootTweakMap {
 
@@ -77,7 +77,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Initialize the class instance
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public ForWorld(World world) {
             this.world = world;
@@ -86,7 +86,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Get the world
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public World getWorld() {
             return this.world;
@@ -96,7 +96,7 @@ public class RootTweakMap extends BvMap {
     /**
      * Root tweak map with chunk info
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class ForChunk extends RootTweakMap.ForWorld {
 
@@ -105,7 +105,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Initialize the class instance
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public ForChunk(ServerWorld world, Chunk chunk) {
             super(world);
@@ -115,7 +115,7 @@ public class RootTweakMap extends BvMap {
         /**
          * Get the world
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         public Chunk getChunk() {
             return this.chunk;

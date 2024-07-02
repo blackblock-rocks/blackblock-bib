@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * Main Parameter class
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> implements BibLog.Argable {
@@ -47,7 +47,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Initialize the parameter
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweakParameter(String name) {
         this.name = name;
@@ -56,14 +56,14 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Return the class of the contained type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public abstract Class<? extends BvElement> getContainedTypeClass();
 
     /**
      * Cast the given value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public ContainedBvType castToContainedType(BvElement input) {
@@ -82,7 +82,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the default value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweakParameter<ContainedBvType> setDefaultValue(ContainedBvType value) {
         this.default_value = value;
@@ -92,7 +92,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Get the default value (unsafe, uncloned)
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public ContainedBvType getDefaultValue() {
         return this.default_value;
@@ -101,7 +101,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Get the name of this parameter
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public String getName() {
         return this.name;
@@ -110,7 +110,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the parent parameter map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public void setParent(MapParameter<?> parent) {
         this.parent_parameter = parent;
@@ -119,7 +119,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Get the parent parameter map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public MapParameter<?> getParent() {
@@ -129,7 +129,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Get the root parameter map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public MapParameter<?> getRootParameter() {
@@ -139,7 +139,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the root parameter map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public void setRootParameter(MapParameter<?> root) {
@@ -149,7 +149,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the title to use
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweakParameter<ContainedBvType> setTitle(String title) {
         this.title = title;
@@ -159,7 +159,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Get the title to use
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public String getTitle() {
 
@@ -175,7 +175,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
      * If it is not directly in the given map, null will be returned.
      * No default value will be returned.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public ContainedBvType getFromRelativeMap(BvMap map) {
@@ -194,7 +194,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
      * If this parameter is a child of another parameter,
      * that parent will be fetched first.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public ContainedBvType getFromRootMap(BvMap map) {
@@ -219,7 +219,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Ensure our parent map exists
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public BvMap getOrCreateContainerInRoot(BvMap root_map) {
@@ -248,7 +248,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Cast the value before setting it in the data context map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public BvElement castForDataContextSet(ContainedBvType value) {
@@ -258,7 +258,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Cast the value from the data context map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public ContainedBvType castFromDataContext(BvElement value) {
@@ -268,7 +268,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the value in the given map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public boolean setInRelativeMap(BvMap map, ContainedBvType value, BvMap root) {
 
@@ -286,7 +286,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Set the value in the root map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public boolean setInRootMap(BvMap root_map, ContainedBvType value) {
 
@@ -314,7 +314,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Trigger a change event for the current value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public void triggerChangeEvent(BvMap container, ContainedBvType value, BvMap root) {
 
@@ -330,7 +330,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Add a listener
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweakParameter<ContainedBvType> addChangeListener(Consumer<ChangeContext<ContainedBvType>> on_change_listener) {
         this.on_change_listeners.add(on_change_listener);
@@ -340,7 +340,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Add this parameter to the given command leaf
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public CommandLeaf addToCommandLeaf(CommandLeaf parent_leaf) {
 
@@ -366,7 +366,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Display our current value to the chat
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     private int performGetValueCommand(CommandContext<ServerCommandSource> command_context) {
         // Get the command source
@@ -415,14 +415,14 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Configure the "set" part of the commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public abstract CommandLeaf configureSetLeaf(CommandLeaf set_leaf);
 
     /**
      * Get the root Map of the given CommandSource
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public BvMap getDataContext(CommandContext<ServerCommandSource> command_context) {
@@ -449,7 +449,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Return a Arg instance
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BibLog.Arg toBBLogArg() {
 
@@ -464,7 +464,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Return a string representation
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {
@@ -474,7 +474,7 @@ public abstract class TweakParameter<ContainedBvType extends BvElement<?, ?>> im
     /**
      * Class to pass when a value changes
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class ChangeContext<ContainedBvType extends BvElement<?, ?>> {
 

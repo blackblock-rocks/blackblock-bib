@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * A map of BV values
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class BvMap
@@ -35,7 +35,7 @@ public class BvMap
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String getType() {
@@ -45,7 +45,7 @@ public class BvMap
     /**
      * BvMaps contain themselves
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BvMap getContainedValue() {
@@ -55,7 +55,7 @@ public class BvMap
     /**
      * Set the values
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void setContainedValue(BvMap value) {
@@ -71,7 +71,7 @@ public class BvMap
     /**
      * See if both maps are equal
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public boolean equalsOtherValue(BvMap other) {
@@ -90,7 +90,7 @@ public class BvMap
     /**
      * Load from the given NBT value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
@@ -115,7 +115,7 @@ public class BvMap
     /**
      * Turn this into an NBT element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable NbtElement toNbt() {
@@ -143,7 +143,7 @@ public class BvMap
     /**
      * Serialize this value to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable JsonElement toJson() {
@@ -171,7 +171,7 @@ public class BvMap
     /**
      * Load the value from JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromJson(JsonElement json) {
@@ -195,7 +195,7 @@ public class BvMap
     /**
      * Convert to a string for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     public String toCommandString() {
@@ -205,7 +205,7 @@ public class BvMap
     /**
      * Convert to pretty text
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     @Override
@@ -240,7 +240,7 @@ public class BvMap
     /**
      * Return a Arg instance
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BibLog.Arg toBBLogArg() {
@@ -262,7 +262,7 @@ public class BvMap
     /**
      * Return a string representation
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {
@@ -272,7 +272,7 @@ public class BvMap
     /**
      * Get the string to use in placeholders
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toPlaceholderString() {
@@ -282,7 +282,7 @@ public class BvMap
     /**
      * Forward all Map methods to the inner map
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public int size() {

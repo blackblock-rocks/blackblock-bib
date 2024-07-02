@@ -10,7 +10,7 @@ import rocks.blackblock.bib.command.CommandLeaf;
  * A string parameter
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class StringParameter extends TweakParameter<BvString> {
@@ -18,7 +18,7 @@ public class StringParameter extends TweakParameter<BvString> {
     /**
      * Initialize the parameter
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     public StringParameter(String name) {
         super(name);
@@ -27,7 +27,7 @@ public class StringParameter extends TweakParameter<BvString> {
     /**
      * Return the class of the contained type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public Class<BvString> getContainedTypeClass() {
@@ -37,7 +37,7 @@ public class StringParameter extends TweakParameter<BvString> {
     /**
      * Configure the "set" part of the commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public CommandLeaf configureSetLeaf(CommandLeaf set_leaf) {
 

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * A value representing null
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 public class BvNull extends AbstractBvType<BvNull, BvNull> {
 
@@ -22,7 +22,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String getType() {
@@ -33,7 +33,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
      * Load from JSON
      * (Which does nothing, because this value is null)
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromJson(JsonElement json) {
@@ -43,7 +43,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Convert this to a Json element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public JsonElement toJson() {
@@ -53,7 +53,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Convert to pretty text
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     @Override
@@ -64,7 +64,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Load from the given NBT value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
@@ -74,7 +74,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Turn this into an NBT element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable NbtString toNbt() {
@@ -84,7 +84,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Get the contained value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BvNull getContainedValue() {
@@ -95,7 +95,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
      * Set the actual value
      * (Which does nothing, because this value is null)
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void setContainedValue(BvNull value) {}
@@ -103,7 +103,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Get a string value to use in a placeholder
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toPlaceholderString() {
@@ -113,7 +113,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
     /**
      * Return a string representation of this object.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {
@@ -124,7 +124,7 @@ public class BvNull extends AbstractBvType<BvNull, BvNull> {
      * Check if this matches the other FlowValue
      * (Which is always true for Null values)
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public boolean equalsOtherValue(BvNull object) {

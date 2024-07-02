@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * A BV Boolean
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
@@ -26,7 +26,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Construct a BvBoolean with a pre-defined value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvBoolean(boolean value) {
         this.setContainedValue(value);
@@ -35,14 +35,14 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Construct a BvBoolean with no value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvBoolean() {}
 
     /**
      * Create an instance of the given value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static BvBoolean of(Boolean value) {
         return new BvBoolean(value);
@@ -51,7 +51,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String getType() {
@@ -61,7 +61,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Load from the given NBT value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
@@ -95,7 +95,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Turn this into an NBT element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable NbtInt toNbt() {
@@ -116,7 +116,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Serialize this value to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     @Nullable
@@ -138,7 +138,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Load from the given JSON value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromJson(JsonElement json) {
@@ -158,7 +158,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Convert to a string for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     public String toCommandString() {
@@ -177,7 +177,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Convert to pretty text
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     @Override
@@ -205,7 +205,7 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
     /**
      * Get the string to use in placeholders
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toPlaceholderString() {

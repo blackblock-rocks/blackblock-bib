@@ -12,7 +12,7 @@ import java.util.Objects;
  * Represents a BV type
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public abstract class
@@ -25,7 +25,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Get the actual underlying Java value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public ContainedType getContainedValue() {
@@ -35,7 +35,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Get the actual underlying Java value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void setContainedValue(ContainedType value) {
@@ -45,7 +45,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Do simple equals check
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public boolean equalsOtherValue(OwnType other_instance) {
@@ -60,7 +60,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
      * Set a default `equals()` implementation:
      * this will cover most cases
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public boolean equals(Object object) {
 
@@ -85,7 +85,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Serialize this value to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     @Nullable
@@ -103,7 +103,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Return a Arg instance
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BibLog.Arg toBBLogArg() {
@@ -124,7 +124,7 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     /**
      * Return a string representation
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {

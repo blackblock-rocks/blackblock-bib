@@ -17,7 +17,7 @@ import java.util.Map;
  * An enum parameter
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public abstract class EnumParameter<V extends BvElement<?, ?>>
@@ -27,7 +27,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Initialize the parameter
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     protected EnumParameter(String name) {
         super(name);
@@ -36,7 +36,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Create an enum parameter with integer keys
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     public static <V extends BvElement<?, ?>> EnumParameter<V> withIntegerKeys(String name, Map<Integer, V> values) {
         return new EnumParameter.IntegerKeys<>(name, values);
@@ -45,7 +45,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Create an enum parameter with string keys
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     public static <V extends BvElement<?, ?>> EnumParameter<V> withStringKeys(String name, Map<String, V> values) {
         return new EnumParameter.StringKeys<>(name, values);
@@ -54,14 +54,14 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Return the map with the values
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     abstract protected Map<?, V> getAllValues();
 
     /**
      * Return the class of the contained type
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     @Override
     public Class<V> getContainedTypeClass() {
@@ -71,7 +71,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Cast the given value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public V castToContainedType(BvElement input) {
@@ -90,7 +90,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Find the value entered via a command string
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     public V findValueFromCommandString(String command_string_identifier) {
@@ -112,7 +112,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * Configure the "set" part of the commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public CommandLeaf configureSetLeaf(CommandLeaf set_leaf) {
 
@@ -161,7 +161,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * The enum class that stores values with integer keys
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class IntegerKeys<V extends BvElement<?, ?>> extends EnumParameter<V> {
 
@@ -171,7 +171,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Initialize the parameter
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         protected IntegerKeys(String name, Map<Integer, V> values) {
             super(name);
@@ -193,7 +193,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Return the map with the values
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         protected Map<?, V> getAllValues() {
             return this.int_to_val;
@@ -202,7 +202,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Cast the value before setting it in the data context map
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Override
         @Nullable
@@ -214,7 +214,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Cast the value from the data context map
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public V castFromDataContext(BvElement value) {
@@ -232,7 +232,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
     /**
      * The enum class that stores values with string keys
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class StringKeys<V extends BvElement<?, ?>> extends EnumParameter<V> {
 
@@ -242,7 +242,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Initialize the parameter
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         protected StringKeys(String name, Map<String, V> values) {
             super(name);
@@ -265,7 +265,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Return the map with the values
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         protected Map<?, V> getAllValues() {
             return this.string_to_val;
@@ -274,7 +274,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Cast the value before setting it in the data context map
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Override
         @Nullable
@@ -286,7 +286,7 @@ public abstract class EnumParameter<V extends BvElement<?, ?>>
         /**
          * Cast the value from the data context map
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public V castFromDataContext(BvElement value) {

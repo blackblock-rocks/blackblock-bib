@@ -23,7 +23,7 @@ import java.util.*;
  * A list of BV values
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class BvList<ListContentType extends BvElement>
@@ -43,7 +43,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Get a list of the given type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     protected static <EntryType extends BvElement> BvList<EntryType> of(List<EntryType> source) {
 
@@ -57,7 +57,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Get the identifier of this type
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public String getType() {
         return TYPE;
@@ -66,7 +66,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * BvLists contain themselves
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BvList<ListContentType> getContainedValue() {
@@ -76,7 +76,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Set the values
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void setContainedValue(BvList<ListContentType> value) {
@@ -91,7 +91,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * See if both lists are equal
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public boolean equalsOtherValue(BvList<ListContentType> other) {
@@ -109,7 +109,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Load from the given NBT value
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
@@ -138,7 +138,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Turn this into an NBT element
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable NbtElement toNbt() {
@@ -160,7 +160,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Serialize this value to JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable JsonElement toJson() {
@@ -194,7 +194,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Load the value from JSON
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void loadFromJson(JsonElement json) {
@@ -223,7 +223,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Convert to a string for use in commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @NotNull
     public String toCommandString() {
@@ -233,7 +233,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Convert to pretty text
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public @Nullable Text toPrettyText() {
@@ -259,7 +259,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Return a Arg instance
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public BibLog.Arg toBBLogArg() {
@@ -282,7 +282,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Return a string representation
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {
@@ -292,7 +292,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Get the string to use in placeholders
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toPlaceholderString() {
@@ -302,7 +302,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Forward all List methods to the inner list
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public int size() {
@@ -428,7 +428,7 @@ public class BvList<ListContentType extends BvElement>
     /**
      * Register all the BvList operators
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @ApiStatus.Internal
     public static void registerOperators() {

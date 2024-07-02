@@ -10,7 +10,7 @@ import rocks.blackblock.bib.command.CommandLeaf;
  * A boolean parameter
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class BooleanParameter extends TweakParameter<BvBoolean> {
@@ -18,7 +18,7 @@ public class BooleanParameter extends TweakParameter<BvBoolean> {
     /**
      * Initialize the parameter
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     public BooleanParameter(String name) {
         super(name);
@@ -27,7 +27,7 @@ public class BooleanParameter extends TweakParameter<BvBoolean> {
     /**
      * Return the class of the contained type
      *
-     * @since 0.1.0
+     * @since 0.2.0
      */
     @Override
     public Class<BvBoolean> getContainedTypeClass() {
@@ -37,7 +37,7 @@ public class BooleanParameter extends TweakParameter<BvBoolean> {
     /**
      * Configure the "set" part of the commands
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public CommandLeaf configureSetLeaf(CommandLeaf set_leaf) {
 

@@ -11,7 +11,7 @@ import java.util.Map;
  * Operators for working with Bv elements
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings({
         // Ignore unused warnings: this is a library after all
@@ -37,7 +37,7 @@ public class BvOperator<U extends BvElement> {
      * Instantiate the operator without an executor
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvOperator(Class<U> target_class, String name, Type type, Arity arity) {
         this.name = name;
@@ -52,7 +52,7 @@ public class BvOperator<U extends BvElement> {
      * Instantiate the operator as a unary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvOperator(Class<U> target_class, String name, Type type, UnaryOperatorExecutor<U> executor) {
         this(target_class, name, type, Arity.UNARY);
@@ -63,7 +63,7 @@ public class BvOperator<U extends BvElement> {
      * Instantiate the operator as a binary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvOperator(Class<U> target_class, String name, Type type, BinaryOperatorExecutor<U> executor) {
         this(target_class, name, type, Arity.BINARY);
@@ -74,7 +74,7 @@ public class BvOperator<U extends BvElement> {
      * Instantiate the operator as a ternary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvOperator(Class<U> target_class, String name, Type type, TernaryOperatorExecutor<U> executor) {
         this(target_class, name, type, Arity.BINARY);
@@ -85,7 +85,7 @@ public class BvOperator<U extends BvElement> {
      * Actually execute this unary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @return   True or false if it was operator on, or null if it didn't apply.
      */
@@ -111,7 +111,7 @@ public class BvOperator<U extends BvElement> {
      * Actually execute this binary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @return   True or false if it was operator on, or null if it didn't apply.
      */
@@ -137,7 +137,7 @@ public class BvOperator<U extends BvElement> {
      * Actually execute this ternary operator
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @return   True or false if it was operator on, or null if it didn't apply.
      */
@@ -163,7 +163,7 @@ public class BvOperator<U extends BvElement> {
      * Return a string representation of this object.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public String toString() {
@@ -175,7 +175,7 @@ public class BvOperator<U extends BvElement> {
      * takes in only 1 value
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @FunctionalInterface
     public interface UnaryOperatorExecutor<U> {
@@ -187,7 +187,7 @@ public class BvOperator<U extends BvElement> {
      * takes in 2 values
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @FunctionalInterface
     public interface BinaryOperatorExecutor<U> {
@@ -199,7 +199,7 @@ public class BvOperator<U extends BvElement> {
      * takes in 3 values
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @FunctionalInterface
     public interface TernaryOperatorExecutor<U> {
@@ -209,7 +209,7 @@ public class BvOperator<U extends BvElement> {
     /**
      * The Operator types
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public enum Type {
         ASSIGNMENT,
@@ -219,7 +219,7 @@ public class BvOperator<U extends BvElement> {
     /**
      * The possible arity types
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public enum Arity {
         UNARY,

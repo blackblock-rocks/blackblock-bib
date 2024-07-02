@@ -27,7 +27,7 @@ import java.util.function.Function;
  * Tweak configuration registry
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 @SuppressWarnings("unused")
 public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
@@ -37,7 +37,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
     /**
      * Create a new tweak registry
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweaksConfiguration(String name) {
         super(name);
@@ -46,7 +46,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
     /**
      * Set the context resolver
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweaksConfiguration setContextResolver(Function<CommandContext<ServerCommandSource>, BvMap> resolver) {
         this.context_resolver = resolver;
@@ -56,7 +56,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
     /**
      * Get the root Map of the given CommandSource
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Nullable
     @Override
@@ -74,7 +74,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * Because this is the root map parameter,
      * the children will be injected into the given leaf directly.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public CommandLeaf addToCommandLeaf(CommandLeaf parent_leaf) {
@@ -89,7 +89,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
     /**
      * Augmented versions of tweak configurations
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public abstract static class Augmented extends TweaksConfiguration {
 
@@ -97,7 +97,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Create a new tweak registry
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public Augmented(String name) {
             super(name);
@@ -106,7 +106,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Child classes should override this again
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         @Override
@@ -117,7 +117,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * There is no need for context resolvers
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Override
         public TweaksConfiguration setContextResolver(Function<CommandContext<ServerCommandSource>, BvMap> resolver) {
@@ -129,7 +129,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * Global tweaks configuration.
      * Automatically registers as an augment.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class Global extends TweaksConfiguration.Augmented {
 
@@ -138,7 +138,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Create a new tweak registry
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public Global(Identifier id) {
             super(id.toString());
@@ -151,7 +151,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the context
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         @Override
@@ -162,7 +162,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the value
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public <T extends BvElement<?, ?>> T get(TweakParameter<T> param) {
@@ -180,7 +180,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * PerPlayer tweaks configuration.
      * Automatically registers as an augment.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerPlayer extends TweaksConfiguration.Augmented {
 
@@ -189,7 +189,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Create a new tweak registry
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerPlayer(Identifier id) {
             super(id.toString());
@@ -202,7 +202,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the context
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         @Override
@@ -239,7 +239,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the value of the given player
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public <T extends BvElement<?, ?>> T get(TweakParameter<T> param, ServerPlayerEntity player) {
@@ -262,7 +262,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * PerWorld tweaks configuration.
      * Automatically registers as an augment.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerWorld extends TweaksConfiguration.Augmented {
 
@@ -271,7 +271,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Create a new tweak registry
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerWorld(Identifier id) {
             super(id.toString());
@@ -284,7 +284,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the context
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         @Override
@@ -325,7 +325,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the value of the given world
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public <T extends BvElement<?, ?>> T get(TweakParameter<T> param, World world) {
@@ -348,7 +348,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
      * PerChunk tweaks configuration.
      * Automatically registers as an augment.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerChunk extends TweaksConfiguration.Augmented {
 
@@ -357,7 +357,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Create a new tweak registry
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerChunk(Identifier id) {
             super(id.toString());
@@ -370,7 +370,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the context
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         @Override
@@ -445,7 +445,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
         /**
          * Get the value of the given chunk
          *
-         * @since    0.1.0
+         * @since    0.2.0
          */
         @Nullable
         public <T extends BvElement<?, ?>> T get(TweakParameter<T> param, Chunk chunk) {

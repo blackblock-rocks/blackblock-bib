@@ -15,7 +15,7 @@ import rocks.blackblock.bib.bv.value.BvMap;
  * This Augment class is how a TweaksConfiguration can be registered.
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
- * @since    0.1.0
+ * @since    0.2.0
  */
 public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
 
@@ -32,7 +32,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Initialize the instance
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public TweaksAugment(@NotNull TweaksConfiguration tweaks_configuration, @NotNull T data_context) {
         this.tweaks_configuration = tweaks_configuration;
@@ -42,7 +42,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Set the data context
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     protected void setDataContext(T root_map) {
         this.data_context = root_map;
@@ -55,7 +55,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Set the dirtiness
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void setDirty(boolean dirty) {
@@ -65,7 +65,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Is this augment in need of saving?
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public boolean isDirty() {
@@ -75,7 +75,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Get the correct context for the command
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public BvMap getDataContext() {
         return this.data_context;
@@ -84,7 +84,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Trigger a change event for all values
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     protected void triggerChange() {
         BvMap root = this.getDataContext();
@@ -94,7 +94,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Read the tweaks from NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public void readFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -111,7 +111,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * Write the tweaks to NBT
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     @Override
     public NbtCompound writeToNbt(@NotNull NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -130,14 +130,14 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * The Global TweaksAugment
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class Global extends TweaksAugment<RootTweakMap> implements Augment.Global {
 
         /**
          * Initialize the instance
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public Global(@NotNull TweaksConfiguration tweaks_configuration) {
             super(tweaks_configuration, new RootTweakMap());
@@ -147,7 +147,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * The PerWorld TweaksAugment
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerWorld extends TweaksAugment<RootTweakMap.ForWorld> implements Augment.PerWorld {
 
@@ -156,7 +156,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
         /**
          * Initialize the instance
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerWorld(@NotNull TweaksConfiguration tweaks_configuration, World world) {
             super(tweaks_configuration, new RootTweakMap.ForWorld(world));
@@ -172,7 +172,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * The PerChunk TweaksAugment
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerChunk extends TweaksAugment<RootTweakMap.ForChunk> implements Augment.PerChunk {
 
@@ -182,7 +182,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
         /**
          * Initialize the instance
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerChunk(@NotNull TweaksConfiguration tweaks_configuration, ServerWorld world, Chunk chunk) {
             super(tweaks_configuration, new RootTweakMap.ForChunk(world, chunk));
@@ -204,7 +204,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
     /**
      * The PerPlayer TweaksAugment
      *
-     * @since    0.1.0
+     * @since    0.2.0
      */
     public static class PerPlayer extends TweaksAugment<RootTweakMap.ForPlayer> implements Augment.PerPlayer {
 
@@ -213,7 +213,7 @@ public abstract class TweaksAugment<T extends RootTweakMap> implements Augment {
         /**
          * Initialize the instance
          *
-         * @since 0.1.0
+         * @since 0.2.0
          */
         public PerPlayer(@NotNull TweaksConfiguration tweaks_configuration, ServerPlayerEntity player) {
             super(tweaks_configuration, new RootTweakMap.ForPlayer(player));
