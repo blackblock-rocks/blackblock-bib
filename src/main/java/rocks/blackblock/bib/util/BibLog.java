@@ -10,8 +10,13 @@ import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.PacketType;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -675,6 +680,69 @@ public class BibLog {
                 } else if (value instanceof UUID uuid) {
                     name = "UUID";
                     this.add("uuid", uuid.toString());
+                } else if (value instanceof Packet packet) {
+
+                    if (BibYarn.INSTANCE != null) {
+                        name = BibYarn.INSTANCE.deobfuscateStackTrace(value.getClass().getSimpleName());
+                    } else {
+                        name = "Packet";
+                    }
+
+                    this.add("packet_id", packet.getPacketId());
+
+                    if (packet instanceof EntityTrackerUpdateS2CPacket et) {
+                        this.add("entity_id", et.id());
+                        this.add("tracked_values", et.trackedValues());
+                    }
+
+                } else if (value instanceof PacketType<?> packet_type) {
+                    name = "PacketType";
+
+                    this.add("side", packet_type.side());
+                    this.add("id", packet_type.id());
+                } else if (value instanceof List list) {
+
+                    name = list.getClass().getSimpleName();
+
+                    int size = list.size();
+                    this.add("size", size);
+
+                    for (int i = 0; i < size; i++) {
+                        if (i > 10) {
+                            break;
+                        }
+
+                        this.add("" + i, list.get(i));
+                    }
+
+                } else if (value instanceof NetworkSide side) {
+                    name = "NetworkSide";
+                    this.setContent(side.name());
+                } else if (value instanceof DataTracker.SerializedEntry<?> serialized) {
+
+                    if (BibYarn.INSTANCE != null) {
+                        name = BibYarn.INSTANCE.deobfuscateStackTrace(value.getClass().getSimpleName());
+                    } else {
+                        name = "DataTracker.SerializedEntry";
+                    }
+
+                    Object serialized_value = serialized.value();
+                    String value_string = "" + serialized_value;
+
+                    if (serialized_value instanceof Integer nr) {
+                        value_string = nr + " (int)";
+                    } else if (serialized_value instanceof Byte nr) {
+                        value_string = nr + " (byte)";
+                    } else if (serialized_value instanceof Float nr) {
+                        value_string = nr + " (float)";
+                    } else if (serialized_value instanceof Number nr) {
+                        value_string = nr + " (" + nr.getClass().getSimpleName() + ")";
+                    } else if (serialized_value != null) {
+                        value_string = value_string + " (" + value.getClass().getSimpleName() + ")";
+                    }
+
+                    this.add("id", serialized.id());
+                    this.add("value", value_string);
                 } else if (value instanceof Entity entity) {
 
                     if (entity instanceof PlayerEntity) {
@@ -840,10 +908,36 @@ public class BibLog {
          * @param    level   The current indentation level
          */
         public String toIndentedString(int level) {
+            return this.toIndentedString(level, new WeakHashMap<>());
+        }
+
+        /**
+         * Return this Arg instance to a serialized string
+         * for debug purposes.
+         *
+         * @since    0.1.0
+         *
+         * @param    level   The current indentation level
+         */
+        public String toIndentedString(int level, WeakHashMap<Object, Boolean> seen) {
 
             // If there is a full_override string, return that
             if (this.full_override != null) {
                 return MagentaText.format(this.full_override);
+            }
+
+            if (seen.containsKey(this)) {
+                return "[circular]";
+            }
+
+            seen.put(this, true);
+
+            if (this.value != null) {
+                if (seen.containsKey(this.value)) {
+                    return "[circular]";
+                }
+
+                seen.put(this.value, true);
             }
 
             StringBuilder builder = new StringBuilder();
