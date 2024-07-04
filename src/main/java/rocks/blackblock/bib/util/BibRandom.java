@@ -94,4 +94,29 @@ public final class BibRandom {
         return getRandomEntry(map.entrySet().stream().toList());
     }
 
+    /**
+     * Get the next double
+     *
+     * @since   0.2.0
+     */
+    public static double nextDouble(Number origin, Number bound) {
+
+        double start = 0;
+        double end = 10;
+
+        if (origin != null) {
+            start = origin.doubleValue();
+        }
+
+        if (bound != null) {
+            end = bound.doubleValue();
+        }
+
+        if (start == end) {
+            start -= 5;
+        }
+
+        return RANDOM.nextDouble(start, end);
+    }
+
 }
