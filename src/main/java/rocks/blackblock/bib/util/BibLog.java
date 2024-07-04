@@ -1,9 +1,11 @@
 package rocks.blackblock.bib.util;
 
 
+import carpet.script.language.Sys;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
+import com.sun.nio.sctp.NotificationHandler;
 import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.Entity;
@@ -20,7 +22,9 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.WrapperProtoChunk;
 import org.apache.logging.log4j.Level;
+import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.BibMod;
+import rocks.blackblock.bib.debug.BibYarn;
 
 import java.util.*;
 
@@ -202,6 +206,7 @@ public class BibLog {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
+    @NotNull
     public static String getEnv(String name) {
         String result = System.getenv(name);
 
@@ -538,6 +543,68 @@ public class BibLog {
     }
 
     /**
+     * Deobfuscate a string (if mappings are loaded)
+     *
+     * @since    0.2.0
+     */
+    public static String deobfuscateString(String input) {
+
+        if (BibYarn.INSTANCE != null) {
+            return BibYarn.INSTANCE.deobfuscateStackTrace(input);
+        }
+
+        return input;
+    }
+
+    /**
+     * Print a (deobfuscated) stack trace
+     *
+     * @since    0.2.0
+     */
+    public static void printStackTrace() {
+        Exception dummy = new Exception("Stack trace");
+        String result = stringifyStackTrace(dummy);
+        BibLog.log(result);
+    }
+
+    /**
+     * Create a (deobfuscated) stack trace string
+     *
+     * @since    0.2.0
+     */
+    public static String createStackTrace() {
+        Exception dummy = new Exception("Stack trace");
+        return stringifyStackTrace(dummy);
+    }
+
+    /**
+     * Create a (deobfuscated) stack trace string
+     *
+     * @since    0.2.0
+     */
+    private static String stringifyStackTrace(Throwable throwable) {
+
+        StringBuilder builder = new StringBuilder(20);
+        StackTraceElement[] trace = throwable.getStackTrace();
+        int length = trace.length;
+
+        builder.append(throwable).append("\n");
+
+        for (int i = 0; i < length; ++i) {
+            StackTraceElement traceElement = trace[i];
+            builder.append("\tat ").append(traceElement).append("\n");
+        }
+
+        String result = builder.toString();
+
+        if (BibYarn.INSTANCE != null) {
+            result = BibYarn.INSTANCE.deobfuscateStackTrace(result);
+        }
+
+        return result;
+    }
+
+    /**
      * Argument log helper
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -649,6 +716,21 @@ public class BibLog {
                 } else {
                     name = value.getClass().getSimpleName();
 
+                    if (BibYarn.INSTANCE != null) {
+
+                        if (name.startsWith("class_")) {
+                            String deobfuscated = BibYarn.INSTANCE.deobfuscateSimpleClassName(name);
+
+                            if (deobfuscated != null) {
+                                name = deobfuscated;
+                            }
+                        }
+
+                        if (name.contains("class_")) {
+                            name = BibYarn.INSTANCE.deobfuscateStackTrace(name);
+                        }
+                    }
+
                     if (name.isEmpty() || name.startsWith("class_")) {
                         this.full_override = value + "";
                     }
@@ -664,7 +746,7 @@ public class BibLog {
          * @since    0.2.0
          */
         public Arg setFallbackContent(String message) {
-            this.fallback_body_content = message;
+            this.fallback_body_content = this.cleanupContent(message);
             return this;
         }
 
@@ -674,8 +756,41 @@ public class BibLog {
          * @since    0.2.0
          */
         public Arg setContent(String message) {
-            this.body_content = message;
+            this.body_content = this.cleanupContent(message);
             return this;
+        }
+
+        /**
+         * Clean up the body content
+         *
+         * @since    0.2.0
+         */
+        private String cleanupContent(String message) {
+
+            if (BibYarn.INSTANCE != null) {
+                message = BibYarn.INSTANCE.deobfuscateStackTrace(message);
+            }
+
+            char first_char = message.charAt(0);
+
+            if (first_char == '{' || first_char == '[') {
+                message = message.substring(1, message.length() - 1);
+            }
+
+            if (this.class_name != null && !this.class_name.isEmpty()) {
+                if (message.startsWith(this.class_name)) {
+                    message = message.substring(this.class_name.length());
+                    return this.cleanupContent(message);
+                }
+
+                String full_path = "net.minecraft." + this.class_name;
+                if (message.startsWith(full_path)) {
+                    message = message.substring(full_path.length());
+                    return this.cleanupContent(message);
+                }
+            }
+
+            return message;
         }
 
         /**
@@ -743,13 +858,6 @@ public class BibLog {
 
             // If we have an explicit body_content string, use that
             if (body_content != null) {
-                char first_char = body_content.charAt(0);
-
-                if (first_char == '{' || first_char == '[') {
-                    builder.append(body_content);
-                    return builder.toString();
-                }
-
                 builder.append('{');
                 builder.append(body_content);
                 builder.append('}');

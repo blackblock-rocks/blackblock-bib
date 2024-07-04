@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"rocks.blackblock.bib.BibMod"
+		],
+		"preLaunch": [
+			"rocks.blackblock.bib.debug.DeobfuscatorSetup"
 		]
 	},
 	"mixins": [
