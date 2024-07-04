@@ -273,7 +273,10 @@ public class BvList<ListContentType extends BvElement>
         }
 
         result.add("type", this.getType());
-        result.add("contents", contents);
+
+        // @TODO: Fix BibLog.Arg so it won't cause an infinite loop for recursive objects
+        //result.add("contents", contents);
+
         result.add("size", size);
 
         return result;
