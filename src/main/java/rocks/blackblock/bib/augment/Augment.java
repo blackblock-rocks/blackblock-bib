@@ -8,6 +8,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -20,6 +22,7 @@ import rocks.blackblock.bib.util.BibLog;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -28,6 +31,16 @@ import java.util.UUID;
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
  */
+@SuppressWarnings({
+        // Ignore unused warnings: this is a library after all
+        "unused",
+
+        // Ignore warnings of using raw types
+        "rawtypes",
+
+        // Ignore unchecked typecast warnings
+        "unchecked"
+})
 public interface Augment {
 
     // All the registered augments
@@ -663,6 +676,138 @@ public interface Augment {
         default void markDirty() {
             this.setDirty(true);
         }
+    }
 
+    /**
+     * An augment per block.
+     * Useful when it should always be loaded, which a BlockEntity can't do.
+     *
+     * @since    0.2.0
+     */
+    interface PerBlock extends Augment {
+
+        // All the registered per-block-pos augments
+        Map<AugmentKey.PerBlock<?>, Class<?>> REGISTRY = new HashMap<>();
+
+        // All the augments that tick
+        Map<AugmentKey.PerBlock<?>, Class<?>> TICKS_WITH_WORLD = new HashMap<>();
+
+        /**
+         * Register a PerBlock augment
+         *
+         * @since    0.2.0
+         */
+        static <C extends PerBlock> AugmentKey.PerBlock<C> register(Identifier id, Class<C> augment_class, boolean tick_with_world, PerBlock.Instantiator<C> instantiator) {
+            AugmentKey.PerBlock<C> key = new AugmentKey.PerBlock<>(id, augment_class, tick_with_world, instantiator);
+            ALL_AUGMENTS.put(key, augment_class);
+            REGISTRY.put(key, augment_class);
+
+            if (tick_with_world) {
+                TICKS_WITH_WORLD.put(key, augment_class);
+            }
+
+            return key;
+        }
+
+        /**
+         * The functional interface used to create new instances
+         *
+         * @since    0.2.0
+         */
+        @FunctionalInterface
+        interface Instantiator<C extends PerBlock> {
+            C create(World world, BlockPos origin);
+        }
+
+        /**
+         * Return the origin position of this augment.
+         *
+         * @since    0.2.0
+         */
+        @NotNull
+        BlockPos getOrigin();
+
+        /**
+         * Fetch the world associated with this augment.
+         *
+         * @since    0.2.0
+         */
+        @NotNull
+        World getWorld();
+
+        /**
+         * Should this augment be kept?
+         * When this returns false, it will be removed.
+         *
+         * @since    0.2.0
+         */
+        boolean shouldPersist();
+
+        /**
+         * Do something on each tick
+         *
+         * @since    0.2.0
+         */
+        default void onTick() {}
+    }
+
+    /**
+     * An augment for blocks affecting multiple chunks in irregular shapes.
+     * An Augment of this type will always be loaded when the world is loaded.
+     *
+     * @since    0.2.0
+     */
+    interface PerChunkZone extends PerBlock {
+
+        // All the registered chunk zone augments
+        Map<AugmentKey.PerChunkZone<?>, Class<?>> REGISTRY = new HashMap<>();
+
+        // All the augments that tick
+        Map<AugmentKey.PerChunkZone<?>, Class<?>> TICKS_WITH_WORLD = new HashMap<>();
+
+        /**
+         * Register a chunk zone augment
+         *
+         * @since    0.2.0
+         */
+        static <C extends PerChunkZone> AugmentKey.PerChunkZone<C> register(Identifier id, Class<C> augment_class, boolean tick_with_world, Instantiator<C> instantiator) {
+            AugmentKey.PerChunkZone<C> key = new AugmentKey.PerChunkZone<>(id, augment_class, tick_with_world, instantiator);
+            ALL_AUGMENTS.put(key, augment_class);
+            REGISTRY.put(key, augment_class);
+
+            if (tick_with_world) {
+                TICKS_WITH_WORLD.put(key, augment_class);
+            }
+
+            return key;
+        }
+
+        /**
+         * Return the chunks affected by this augment.
+         *
+         * @since    0.2.0
+         */
+        @NotNull
+        Set<ChunkPos> getAffectedChunks();
+
+        /**
+         * Check if this augment affects a given chunk
+         *
+         * @since    0.2.0
+         */
+        default boolean affects(ChunkPos pos) {
+            var set = this.getAffectedChunks();
+
+            BibLog.log("Is", pos, "inside", set, "?", set.contains(pos));
+
+            return set.contains(pos);
+        }
+
+        /**
+         * Check if this augment affects a given position.
+         *
+         * @since    0.2.0
+         */
+        boolean affects(BlockPos pos);
     }
 }

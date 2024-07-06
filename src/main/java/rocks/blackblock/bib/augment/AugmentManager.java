@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.WorldChunk;
@@ -20,9 +21,13 @@ import rocks.blackblock.bib.util.BibLog;
 import rocks.blackblock.bib.util.BibServer;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class that handles the saving of augments
@@ -30,8 +35,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
  */
+@ApiStatus.Internal
 public class AugmentManager<C extends Augment> {
 
+    private static final Pattern PER_CHUNK_ZONE_FILE_PATTERN = Pattern.compile("(-?\\d+)x(-?\\d+)\\.nbt");
     public static boolean INITIALIZED = false;
     protected final AugmentKey<C> augment_key;
 
@@ -68,7 +75,7 @@ public class AugmentManager<C extends Augment> {
     }
 
     /**
-     * Start all the augments
+     * Start all the global augments
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
@@ -195,12 +202,77 @@ public class AugmentManager<C extends Augment> {
     }
 
     /**
+     * Create all the augments for the given world
+     *
+     * @since    0.2.0
+     */
+    public static void createWorldAugments(ServerWorld world) {
+
+        Augment.PerWorld.REGISTRY.forEach((key, aClass) -> {
+            try {
+                key.get(world);
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to create world augment instances of " + key.getId());
+            }
+        });
+
+        Augment.PerBlock.REGISTRY.forEach((key, aClass) -> {
+            initializePerBlockAugment(world, key, aClass);
+        });
+
+        Augment.PerChunkZone.REGISTRY.forEach((key, aClass) -> {
+            initializePerBlockAugment(world, key, aClass);
+        });
+    }
+
+    /**
+     * Create all the augments for the given world
+     *
+     * @since    0.2.0
+     */
+    private static void initializePerBlockAugment(ServerWorld world, AugmentKey.PerBlock<?> key, Class<?> clazz) {
+
+        BibLog.attention("Creating PerBlock augments!!");
+
+        // Get the path to where this world's PerChunkZone info is stored
+        Path world_path = key.getAugmentInstancePath(world);
+
+        if (!Files.exists(world_path)) {
+            try {
+                Files.createDirectories(world_path);
+            } catch (IOException e) {
+                BibServer.registerThrowable(e, "Failed to create PerChunkZone augment instance of " + key.getId());
+            }
+        }
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(world_path)) {
+            for (Path entry : stream) {
+
+                // Only process files that match the pattern
+                Matcher matcher = PER_CHUNK_ZONE_FILE_PATTERN.matcher(entry.getFileName().toString());
+
+                if (matcher.matches()) {
+                    // Parse integers from the filename
+                    int x = Integer.parseInt(matcher.group(1));
+                    int z = Integer.parseInt(matcher.group(2));
+
+                    ChunkPos chunk_pos = new ChunkPos(x, z);
+
+                    key.loadFile(world, chunk_pos, entry);
+                }
+            }
+        } catch (Throwable e) {
+            BibServer.registerThrowable(e, "Failed to create PerChunkZone augment instance of " + key.getId());
+        }
+    }
+
+    /**
      * Handle a world tick
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static void tickWorldAugmentss(ServerWorld world) {
+    public static void tickWorldAugments(ServerWorld world) {
 
         // Tick the augments first
         Augment.PerWorld.REGISTRY.forEach((key, aClass) -> {
@@ -213,6 +285,27 @@ public class AugmentManager<C extends Augment> {
 
         // Now tick the Ticks.WithChunk instances
         AugmentedTicker.WithChunk.tickWorld(world);
+
+        // And the PerBlock & PerChunkZone augments
+        Augment.PerBlock.TICKS_WITH_WORLD.forEach((key, aClass) -> {
+            try {
+                key.forEach((world1, chunk_pos, value) -> {
+                    value.onTick();
+                });
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to tick PerBlock augment instances of " + key.getId());
+            }
+        });
+
+        Augment.PerChunkZone.TICKS_WITH_WORLD.forEach((key, aClass) -> {
+            try {
+                key.forEach((world1, chunk_pos, value) -> {
+                    value.onTick();
+                });
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to tick PerChunkZone augment instances of " + key.getId());
+            }
+        });
     }
 
     /**
@@ -415,8 +508,18 @@ public class AugmentManager<C extends Augment> {
             return false;
         }
 
+        return this.saveToFile(file, data);
+    }
+
+    /**
+     * Save the given NBT data entry to a file
+     *
+     * @since    0.2.0
+     */
+    public boolean saveToFile(@NotNull File file, @NotNull NbtCompound data_to_wrap) {
+
         NbtCompound nbt_compound = new NbtCompound();
-        nbt_compound.put("data", data);
+        nbt_compound.put("data", data_to_wrap);
         NbtHelper.putDataVersion(nbt_compound);
 
         try {

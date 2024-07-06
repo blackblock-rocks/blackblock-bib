@@ -5,25 +5,23 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.collection.WeakValueHashMap;
-import rocks.blackblock.bib.util.BibItem;
-import rocks.blackblock.bib.util.BibLog;
-import rocks.blackblock.bib.util.BibServer;
+import rocks.blackblock.bib.collection.WorldChunkMap;
+import rocks.blackblock.bib.util.*;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * A key for augments
@@ -975,6 +973,335 @@ public abstract class AugmentKey<$C extends Augment> {
             result = this.instantiator.create(this, (T) stack.getItem(), stack, container);
 
             this.cache.put(stack, result);
+
+            return result;
+        }
+    }
+
+    /**
+     * A key for per-block augments
+     *
+     * @since    0.2.0
+     */
+    public static class PerBlock<C extends Augment.PerBlock> extends AugmentKey<C> {
+
+        // Instances per world & chunk
+        protected final WorldChunkMap<List<C>> cache = new WorldChunkMap<>(new WeakHashMap<>(10));
+
+        // The instantiator
+        protected final Augment.PerBlock.Instantiator<C> instantiator;
+
+        // Should this augment be ticked?
+        private final boolean tick_with_world;
+
+        /**
+         * Initialize the augment key
+         *
+         * @since    0.2.0
+         */
+        public PerBlock(Identifier id, Class<C> augment_class, boolean tick_with_world, Augment.PerBlock.Instantiator<C> instantiator) {
+            super(id, augment_class);
+            this.instantiator = instantiator;
+            this.tick_with_world = tick_with_world;
+        }
+
+        /**
+         * Get the main name of the file:
+         * Always returns null PerChunkZone.
+         *
+         * @since    0.2.0
+         */
+        @Override
+        protected String getMainFileName(C instance) {
+            return null;
+        }
+
+        /**
+         * Return the directory path where to save this augment instance data:
+         * Always returns null PerChunkZone.
+         *
+         * @since    0.2.0
+         */
+        @Override
+        protected Path getAugmentInstancePath(C instance) {
+            return null;
+        }
+
+        /**
+         * Get the main name of the file of the given chunk
+         *
+         * @since    0.2.0
+         */
+        protected String getMainFileName(ChunkPos chunk_pos) {
+            String result = String.format("%04d", chunk_pos.x) + "x" + String.format("%04d", chunk_pos.z) + ".nbt";
+            return result;
+        }
+
+        /**
+         * Return the directory path where to save this augment of the given world
+         *
+         * @since    0.2.0
+         */
+        protected Path getAugmentInstancePath(World world) {
+            Identifier id = world.getRegistryKey().getValue();
+            return this.getAugmentHomePath().resolve(id.toUnderscoreSeparatedString());
+        }
+
+        /**
+         * Save all the instances of this augment to file if needed.
+         *
+         * @since    0.2.0
+         */
+        @Override
+        public boolean saveAll() {
+
+            this.cache.forEach(this::writeFileIfDirty);
+
+            return true;
+        }
+
+        /**
+         * Write all the origins to the given chunk file
+         * if any of the instances are dirty
+         *
+         * @since    0.2.0
+         */
+        public boolean writeFileIfDirty(World world, ChunkPos chunk_pos, List<C> instances) {
+
+            boolean is_dirty = false;
+            for (C instance : instances) {
+                if (instance.isDirty()) {
+                    is_dirty = true;
+                }
+            }
+
+            if (!is_dirty) {
+                return false;
+            }
+
+            Path world_dir = this.getAugmentInstancePath(world);
+            String chunk_filename = this.getMainFileName(chunk_pos);
+            Path chunk_path = world_dir.resolve(chunk_filename);
+
+            return this.writeFile(world, chunk_pos, chunk_path, instances);
+        }
+
+        /**
+         * Write all the origins to the given chunk file
+         *
+         * @since    0.2.0
+         */
+        public boolean writeFile(World world, ChunkPos chunk_pos, Path path, List<C> instances) {
+
+            NbtList list = new NbtList();
+
+            for (C instance : instances) {
+                NbtCompound data = instance.writeToNbt(new NbtCompound(), instance.getRegistryManager());
+
+                if (data == null) {
+                    continue;
+                }
+
+                var origin = BibPos.serializeBlockPos(instance.getOrigin());
+                data.put("origin", origin);
+
+                list.add(data);
+            }
+
+            if (list.isEmpty()) {
+                return false;
+            }
+
+            NbtCompound compound = new NbtCompound();
+            compound.put("origins", list);
+
+            return this.manager.saveToFile(path.toFile(), compound);
+        }
+
+        /**
+         * Load all the origins of the given chunk file
+         *
+         * @since    0.2.0
+         */
+        public boolean loadFile(ServerWorld world, ChunkPos chunk_pos, Path path) {
+
+            NbtCompound nbt = this.manager.parseNbt(path.toFile());
+
+            if (nbt == null) {
+                return false;
+            }
+
+            NbtList origin_list = nbt.getList("origins", NbtElement.COMPOUND_TYPE);
+
+            for (NbtElement element : origin_list) {
+                NbtCompound data = (NbtCompound) element;
+
+                NbtElement origin = data.get("origin");
+
+                if (origin == null) {
+                    continue;
+                }
+
+                BlockPos origin_pos = BibPos.parseBlockPos(origin);
+
+                if (origin_pos == null) {
+                    continue;
+                }
+
+                C instance = this.get(world, origin_pos);
+
+                instance.readFromNbt(data, world.getRegistryManager());
+            }
+
+            return true;
+        }
+
+        /**
+         * Iterate over all the instances in the given world
+         *
+         * @since    0.2.0
+         */
+        public void forEach(WorldChunkMap.TripleIterator<C> iterator) {
+            this.cache.forEach((world, chunk_pos, list) -> {
+                list.forEach(c -> {
+                    iterator.iterate(world, chunk_pos, c);
+                });
+            });
+        }
+
+        /**
+         * Get or create the instance of this augment for the given world and origin.
+         *
+         * @since    0.2.0
+         */
+        public C get(World world, BlockPos origin) {
+
+            ChunkPos chunk_pos = new ChunkPos(origin);
+            List<C> zones = this.cache.get(world, chunk_pos);
+
+            if (zones != null) {
+                for (C zone : zones) {
+                    if (zone.getOrigin().equals(origin)) {
+                        return zone;
+                    }
+                }
+            } else {
+                zones = new ArrayList<>();
+                this.cache.put(world, chunk_pos, zones);
+            }
+
+            // Create a new instance
+            C result = this.instantiator.create(world, origin);
+            zones.add(result);
+
+            return result;
+        }
+
+    }
+
+    /**
+     * A key for chunk zone augments
+     *
+     * @since    0.2.0
+     */
+    public static class PerChunkZone<C extends Augment.PerChunkZone> extends PerBlock<C> {
+
+        /**
+         * Initialize the augment key
+         *
+         * @since    0.2.0
+         */
+        public PerChunkZone(Identifier id, Class<C> augment_class, boolean tick_with_world, Augment.PerChunkZone.Instantiator<C> instantiator) {
+            super(id, augment_class, tick_with_world, instantiator);
+        }
+
+        /**
+         * Is the given chunk affected by any of this augment?
+         * (Will not check any BlockPos)
+         *
+         * @since    0.2.0
+         */
+        public boolean affectsChunk(World world, ChunkPos chunkPos) {
+
+            List<C> instances = this.cache.get(world, chunkPos);
+
+            if (instances != null) {
+                for (C instance : instances) {
+                    if (instance.affects(chunkPos)) {
+                        return true;
+                    }
+                }
+                return true;
+            }
+
+            var chunk_values = this.cache.valuesPerWorld(world);
+
+            if (chunk_values == null) {
+                return false;
+            }
+
+            for (var list : chunk_values) {
+                for (var value : list) {
+                    if (value.affects(chunkPos)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * Is the given block position affected by any of this augment?
+         *
+         * @since    0.2.0
+         */
+        public boolean affectsBlock(World world, BlockPos blockPos) {
+
+            ChunkPos chunk_pos = new ChunkPos(blockPos);
+
+            if (!this.affectsChunk(world, chunk_pos)) {
+                return false;
+            }
+
+            var chunk_values = this.cache.valuesPerWorld(world);
+
+            if (chunk_values == null) {
+                return false;
+            }
+
+            for (var list : chunk_values) {
+                for (var value : list) {
+                    if (value.affects(blockPos)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * Get all chunk zones affecting a specific chunk.
+         *
+         * @since    0.2.0
+         */
+        public List<C> getInstancesAffectingChunk(World world, ChunkPos chunkPos) {
+
+            var chunk_values = this.cache.valuesPerWorld(world);
+
+            if (chunk_values == null || chunk_values.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            List<C> result = new ArrayList<>();
+            for (List<C> instances : chunk_values) {
+                for (C instance : instances) {
+                    if (instance.affects(chunkPos)) {
+                        result.add(instance);
+                    }
+                }
+            }
 
             return result;
         }

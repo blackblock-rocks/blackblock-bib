@@ -5,6 +5,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.runnable.TickRunnable;
 import rocks.blackblock.bib.util.BibServer;
 
@@ -30,5 +32,14 @@ public class MinecraftServerMixin {
     @Inject(method="tickWorlds", at=@At("TAIL"))
     private void checkQueuedRunnables(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
         TickRunnable.checkQueuedRunnables();
+    }
+
+    @Inject(method="save", at=@At("RETURN"))
+    private void onSave(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+        try {
+            AugmentManager.saveAll();
+        } catch (Throwable e) {
+            BibServer.registerThrowable(e, "Failed to save Blackblock augments");
+        }
     }
 }
