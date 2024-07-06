@@ -95,6 +95,49 @@ public final class BibRandom {
     }
 
     /**
+     * Get the next integer
+     *
+     * @since   0.2.0
+     */
+    public static int nextInt() {
+        return RANDOM.nextInt();
+    }
+
+    /**
+     * Get the next integer
+     *
+     * @since   0.2.0
+     */
+    public static int nextInt(Number origin, Number bound) {
+
+        int start = 0;
+        int end = 10;
+
+        if (origin != null) {
+            start = origin.intValue();
+        }
+
+        if (bound != null) {
+            end = bound.intValue();
+        }
+
+        if (start == end) {
+            start -= 5;
+        }
+
+        return RANDOM.nextInt(start, end);
+    }
+
+    /**
+     * Get the next double
+     *
+     * @since   0.2.0
+     */
+    public static double nextDouble() {
+        return RANDOM.nextDouble();
+    }
+
+    /**
      * Get the next double
      *
      * @since   0.2.0
@@ -118,5 +161,4 @@ public final class BibRandom {
 
         return RANDOM.nextDouble(start, end);
     }
-
 }
