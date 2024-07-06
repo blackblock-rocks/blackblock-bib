@@ -161,4 +161,50 @@ public final class BibPos {
         return NbtHelper.fromBlockPos(pos);
     }
 
+    /**
+     * Serialize a ChunkPos to an NBT element
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    public static NbtIntArray serializeChunkPos(ChunkPos pos) {
+
+        if (pos == null) {
+            return null;
+        }
+
+        return new NbtIntArray(new int[]{pos.x, pos.z});
+    }
+
+    /**
+     * Parse a ChunkPos from an NBT element
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    public static ChunkPos parseChunkPos(NbtElement element) {
+
+        if (element == null) {
+            return null;
+        }
+
+        if (element instanceof NbtIntArray nbt_int_array) {
+            var int_arr = nbt_int_array.getIntArray();
+
+            if (int_arr.length == 2) {
+                return new ChunkPos(int_arr[0], int_arr[1]);
+            }
+
+            // It's probably a BlockPos?
+            return new ChunkPos(int_arr[0], int_arr[2]);
+        }
+
+        if (element instanceof NbtCompound compound) {
+            if (compound.contains("X") && compound.contains("Z")) {
+                return new ChunkPos(compound.getInt("X"), compound.getInt("Z"));
+            }
+        }
+
+        return null;
+    }
 }
