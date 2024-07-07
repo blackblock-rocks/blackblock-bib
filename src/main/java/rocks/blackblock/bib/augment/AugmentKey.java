@@ -1096,6 +1096,12 @@ public abstract class AugmentKey<$C extends Augment> {
             NbtList list = new NbtList();
 
             for (C instance : instances.values()) {
+
+                // @TODO: Add a different removal method elsewhere
+                if (!instance.shouldPersist()) {
+                    continue;
+                }
+
                 NbtCompound data = instance.writeToNbt(new NbtCompound(), instance.getRegistryManager());
 
                 if (data == null) {
