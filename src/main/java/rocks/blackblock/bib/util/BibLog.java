@@ -349,6 +349,17 @@ public class BibLog {
     }
 
     /**
+     * Log a TODO message
+     *
+     * @since    0.2.0
+     *
+     * @param    args  Multiple arguments
+     */
+    public static void todo(Object... args) {
+        outputLevel(Level.WARN, concatenateArguments(args));
+    }
+
+    /**
      * Output to the Blackblock logger using the warning level
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>

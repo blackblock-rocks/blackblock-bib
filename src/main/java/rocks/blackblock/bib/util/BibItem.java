@@ -680,6 +680,7 @@ public final class BibItem {
         }
 
         // @TODO: copy component data
+        BibLog.todo("Copy component data when assigning stack data?");
     }
 
     /**
