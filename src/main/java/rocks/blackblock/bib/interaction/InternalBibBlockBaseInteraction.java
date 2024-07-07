@@ -170,16 +170,10 @@ public abstract class InternalBibBlockBaseInteraction {
             return false;
         }
 
-        // See if we have to increment any statistic
-        Identifier stat_id = null;
-        if (be_entity instanceof BibBlock.HasInteractionStatistic has_interaction_statistic) {
-            stat_id = has_interaction_statistic.getInteractionStatisticIdentifier();
-        } else if (screen_factory != be_entity && screen_factory instanceof BibBlock.HasInteractionStatistic has_interaction_statistic) {
-            stat_id = has_interaction_statistic.getInteractionStatisticIdentifier();
-        }
-
-        if (stat_id != null) {
-            this.player.incrementStat(stat_id);
+        // See if we have to increment any statistic and do so.
+        if (this.getBlockState().getBlock() instanceof BibBlock.HasInteractionStatistic has_interaction_statistic) {
+            Identifier stat_id = has_interaction_statistic.getInteractionStatisticIdentifier();
+            if (stat_id != null) this.player.incrementStat(stat_id);
         }
 
         return true;
