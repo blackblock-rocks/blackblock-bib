@@ -65,11 +65,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      */
     default ItemStack getItemStack() {
 
-        BibLog.log("Getting Itemstack for", this);
-
         BlockItem item = this.getDroppedItem();
-
-        BibLog.log("  »» Item is", item);
 
         if (item == null) {
             return null;
@@ -78,15 +74,10 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
         ItemStack stack = new ItemStack(item);
 
         if (this instanceof BlockEntity block_entity) {
-            BibLog.log("  »» BlockEntity!");
             stack.applyComponentsFrom(block_entity.createComponentMap());
         } else {
-            BibLog.log("  »» Uhoh");
-            // Uhoh
+            BibLog.log("  »» Uhoh, failed to create ItemStack for", this);
         }
-
-
-        BibLog.log("  »» Result:", stack);
 
         /*
         if (!this.isEmpty()) {

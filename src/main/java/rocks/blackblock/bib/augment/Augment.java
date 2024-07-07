@@ -684,30 +684,7 @@ public interface Augment {
      *
      * @since    0.2.0
      */
-    interface PerBlock extends Augment {
-
-        // All the registered per-block-pos augments
-        Map<AugmentKey.PerBlock<?>, Class<?>> REGISTRY = new HashMap<>();
-
-        // All the augments that tick
-        Map<AugmentKey.PerBlock<?>, Class<?>> TICKS_WITH_WORLD = new HashMap<>();
-
-        /**
-         * Register a PerBlock augment
-         *
-         * @since    0.2.0
-         */
-        static <C extends PerBlock> AugmentKey.PerBlock<C> register(Identifier id, Class<C> augment_class, boolean tick_with_world, PerBlock.Instantiator<C> instantiator) {
-            AugmentKey.PerBlock<C> key = new AugmentKey.PerBlock<>(id, augment_class, tick_with_world, instantiator);
-            ALL_AUGMENTS.put(key, augment_class);
-            REGISTRY.put(key, augment_class);
-
-            if (tick_with_world) {
-                TICKS_WITH_WORLD.put(key, augment_class);
-            }
-
-            return key;
-        }
+    interface InternalPerBlock extends Augment {
 
         /**
          * The functional interface used to create new instances
@@ -715,7 +692,7 @@ public interface Augment {
          * @since    0.2.0
          */
         @FunctionalInterface
-        interface Instantiator<C extends PerBlock> {
+        interface Instantiator<C extends InternalPerBlock> {
             C create(World world, BlockPos origin);
         }
 
@@ -752,12 +729,67 @@ public interface Augment {
     }
 
     /**
+     * An augment per block.
+     * Useful when it should always be loaded, which a BlockEntity can't do.
+     *
+     * @since    0.2.0
+     */
+    interface PerBlock extends InternalPerBlock {
+
+        // All the registered per-block-pos augments
+        Map<AugmentKey.PerBlock<?>, Class<?>> REGISTRY = new HashMap<>();
+
+        // All the augments that tick
+        Map<AugmentKey.PerBlock<?>, Class<?>> TICKS_WITH_WORLD = new HashMap<>();
+
+        /**
+         * Register a PerBlock augment
+         *
+         * @since    0.2.0
+         */
+        static <C extends PerBlock> AugmentKey.PerBlock<C> register(Identifier id, Class<C> augment_class, boolean tick_with_world, PerBlock.Instantiator<C> instantiator) {
+            AugmentKey.PerBlock<C> key = new AugmentKey.PerBlock<>(id, augment_class, tick_with_world, instantiator);
+            ALL_AUGMENTS.put(key, augment_class);
+            REGISTRY.put(key, augment_class);
+
+            if (tick_with_world) {
+                TICKS_WITH_WORLD.put(key, augment_class);
+            }
+
+            return key;
+        }
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @Override
+        default void markDirty() {
+            this.setDirty(true);
+
+            var key = this.getAugmentKey();
+
+            key.onDirtyInstance(this);
+        }
+
+        /**
+         * Get the augment key this belongs to
+         *
+         * @since    0.2.0
+         */
+        @NotNull
+        <C extends PerBlock> AugmentKey.PerBlock<C> getAugmentKey();
+    }
+
+    /**
      * An augment for blocks affecting multiple chunks in irregular shapes.
      * An Augment of this type will always be loaded when the world is loaded.
      *
      * @since    0.2.0
      */
-    interface PerChunkZone extends PerBlock {
+    interface PerChunkZone extends InternalPerBlock {
 
         // All the registered chunk zone augments
         Map<AugmentKey.PerChunkZone<?>, Class<?>> REGISTRY = new HashMap<>();
@@ -781,6 +813,29 @@ public interface Augment {
 
             return key;
         }
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.1.0
+         */
+        @Override
+        default void markDirty() {
+            this.setDirty(true);
+
+            var key = this.getAugmentKey();
+
+            key.onDirtyInstance(this);
+        }
+
+        /**
+         * Get the augment key this belongs to
+         *
+         * @since    0.2.0
+         */
+        @NotNull
+        <C extends PerChunkZone> AugmentKey.PerChunkZone<C> getAugmentKey();
 
         /**
          * Return the chunks affected by this augment.

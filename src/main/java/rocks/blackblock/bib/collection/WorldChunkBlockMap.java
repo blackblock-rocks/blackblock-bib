@@ -347,11 +347,11 @@ public class WorldChunkBlockMap<V> implements Iterable<V>  {
      *
      * @since    0.2.0
      */
-    public void forEach(QuadrupleIterator<V> iterator) {
+    public void forEach(WorldChunkBlockValueRunner<V> iterator) {
         this.worldMap.forEach((world, vChunkMap) -> {
             vChunkMap.forEach((chunkPos, blockMap) -> {
                 blockMap.forEach((blockPos, v) -> {
-                    iterator.iterate(world, chunkPos, blockPos, v);
+                    iterator.run(world, chunkPos, blockPos, v);
                 });
             });
         });
@@ -398,7 +398,7 @@ public class WorldChunkBlockMap<V> implements Iterable<V>  {
      *
      * @since    0.2.0
      */
-    public void forEach(World world, QuadrupleIterator<V> iterator) {
+    public void forEach(World world, WorldChunkBlockValueRunner<V> iterator) {
 
         var chunks = this.worldMap.get(world);
 
@@ -408,14 +408,14 @@ public class WorldChunkBlockMap<V> implements Iterable<V>  {
 
         chunks.forEach((chunkPos, blockMap) -> {
             blockMap.forEach((blockPos, v) -> {
-                iterator.iterate(world, chunkPos, blockPos, v);
+                iterator.run(world, chunkPos, blockPos, v);
             });
         });
     }
 
     @FunctionalInterface
-    public interface QuadrupleIterator<V> {
-        void iterate(World world, ChunkPos chunk_pos, BlockPos block_pos, V value);
+    public interface WorldChunkBlockValueRunner<V> {
+        void run(World world, ChunkPos chunk_pos, BlockPos block_pos, V value);
     }
 
     /**

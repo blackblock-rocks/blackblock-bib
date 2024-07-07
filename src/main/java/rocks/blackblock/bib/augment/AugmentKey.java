@@ -983,7 +983,7 @@ public abstract class AugmentKey<$C extends Augment> {
      *
      * @since    0.2.0
      */
-    public static class PerBlock<C extends Augment.PerBlock> extends AugmentKey<C> {
+    public static class PerBlock<C extends Augment.InternalPerBlock> extends AugmentKey<C> {
 
         // Instances per world & chunk
         protected final WorldChunkBlockMap<C> cache = new WorldChunkBlockMap<>(new WeakHashMap<>(10));
@@ -1058,6 +1058,15 @@ public abstract class AugmentKey<$C extends Augment> {
             this.cache.forEachChunk(this::writeFileIfDirty);
 
             return true;
+        }
+
+        /**
+         * Received a dirty instance
+         *
+         * @since    0.2.0
+         */
+        public void onDirtyInstance(Augment.PerBlock instance) {
+
         }
 
         /**
@@ -1167,7 +1176,7 @@ public abstract class AugmentKey<$C extends Augment> {
          *
          * @since    0.2.0
          */
-        public void forEach(WorldChunkBlockMap.QuadrupleIterator<C> iterator) {
+        public void forEach(WorldChunkBlockMap.WorldChunkBlockValueRunner<C> iterator) {
             this.cache.forEach(iterator);
         }
 
@@ -1198,6 +1207,8 @@ public abstract class AugmentKey<$C extends Augment> {
      */
     public static class PerChunkZone<C extends Augment.PerChunkZone> extends PerBlock<C> {
 
+        private WeakHashMap<ChunkPos, Boolean> AFFECTS_CACHE = new WeakHashMap<>(128);
+
         /**
          * Initialize the augment key
          *
@@ -1208,12 +1219,41 @@ public abstract class AugmentKey<$C extends Augment> {
         }
 
         /**
+         * Received a dirty instance
+         *
+         * @since    0.2.0
+         */
+        public void onDirtyInstance(Augment.PerChunkZone instance) {
+            AFFECTS_CACHE.clear();
+        }
+
+        /**
          * Is the given chunk affected by any of this augment?
          * (Will not check any BlockPos)
          *
          * @since    0.2.0
          */
         public boolean affectsChunk(World world, ChunkPos chunkPos) {
+
+            Boolean result = AFFECTS_CACHE.get(chunkPos);
+
+            if (result != null) {
+                return result;
+            }
+
+            result = this.affectsChunkUncached(world, chunkPos);
+            AFFECTS_CACHE.put(chunkPos, result);
+
+            return result;
+        }
+
+        /**
+         * Is the given chunk affected by any of this augment?
+         * (Will not check any BlockPos)
+         *
+         * @since    0.2.0
+         */
+        private boolean affectsChunkUncached(World world, ChunkPos chunkPos) {
 
             Map<BlockPos, C> block_map = this.cache.get(world, chunkPos);
 
