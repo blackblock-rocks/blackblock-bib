@@ -9,6 +9,8 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Library class for working with NBT and other types of data
@@ -154,5 +156,24 @@ public final class BibData {
 
             target.put(key, source.get(key));
         }
+    }
+
+    /**
+     * Combine 2 sets into a new HashSet
+     *
+     * @since    0.2.0
+     */
+    @SafeVarargs
+    public static <T> Set<T> combineSets(Set<T> ...sets) {
+
+        var result = new HashSet<T>();
+
+        for (var set : sets) {
+            if (set != null) {
+                result.addAll(set);
+            }
+        }
+
+        return result;
     }
 }
