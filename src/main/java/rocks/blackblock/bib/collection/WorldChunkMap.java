@@ -1,6 +1,5 @@
 package rocks.blackblock.bib.collection;
 
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -27,8 +26,8 @@ import java.util.*;
 })
 public class WorldChunkMap<V> implements Iterable<V> {
 
-    private final Map<World, ChunkMap<V>> worldMap;
-    private Integer initialCapacity = null;
+    protected final Map<World, ChunkMap<V>> worldMap;
+    protected Integer initialCapacity = null;
 
     /**
      * Create a new WorldChunkMap with default settings

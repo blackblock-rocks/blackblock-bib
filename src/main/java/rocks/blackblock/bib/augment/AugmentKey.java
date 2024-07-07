@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.collection.WeakValueHashMap;
-import rocks.blackblock.bib.collection.WorldChunkMap;
+import rocks.blackblock.bib.collection.WorldChunkBlockMap;
 import rocks.blackblock.bib.util.*;
 
 import java.nio.file.Path;
@@ -986,7 +986,7 @@ public abstract class AugmentKey<$C extends Augment> {
     public static class PerBlock<C extends Augment.PerBlock> extends AugmentKey<C> {
 
         // Instances per world & chunk
-        protected final WorldChunkMap<List<C>> cache = new WorldChunkMap<>(new WeakHashMap<>(10));
+        protected final WorldChunkBlockMap<C> cache = new WorldChunkBlockMap<>(new WeakHashMap<>(10));
 
         // The instantiator
         protected final Augment.PerBlock.Instantiator<C> instantiator;
@@ -1055,7 +1055,7 @@ public abstract class AugmentKey<$C extends Augment> {
         @Override
         public boolean saveAll() {
 
-            this.cache.forEach(this::writeFileIfDirty);
+            this.cache.forEachChunk(this::writeFileIfDirty);
 
             return true;
         }
@@ -1066,10 +1066,10 @@ public abstract class AugmentKey<$C extends Augment> {
          *
          * @since    0.2.0
          */
-        public boolean writeFileIfDirty(World world, ChunkPos chunk_pos, List<C> instances) {
+        public boolean writeFileIfDirty(World world, ChunkPos chunk_pos, Map<BlockPos, C> instances) {
 
             boolean is_dirty = false;
-            for (C instance : instances) {
+            for (C instance : instances.values()) {
                 if (instance.isDirty()) {
                     is_dirty = true;
                 }
@@ -1091,11 +1091,11 @@ public abstract class AugmentKey<$C extends Augment> {
          *
          * @since    0.2.0
          */
-        public boolean writeFile(World world, ChunkPos chunk_pos, Path path, List<C> instances) {
+        public boolean writeFile(World world, ChunkPos chunk_pos, Path path, Map<BlockPos, C> instances) {
 
             NbtList list = new NbtList();
 
-            for (C instance : instances) {
+            for (C instance : instances.values()) {
                 NbtCompound data = instance.writeToNbt(new NbtCompound(), instance.getRegistryManager());
 
                 if (data == null) {
@@ -1161,12 +1161,8 @@ public abstract class AugmentKey<$C extends Augment> {
          *
          * @since    0.2.0
          */
-        public void forEach(WorldChunkMap.TripleIterator<C> iterator) {
-            this.cache.forEach((world, chunk_pos, list) -> {
-                list.forEach(c -> {
-                    iterator.iterate(world, chunk_pos, c);
-                });
-            });
+        public void forEach(WorldChunkBlockMap.QuadrupleIterator<C> iterator) {
+            this.cache.forEach(iterator);
         }
 
         /**
@@ -1176,27 +1172,17 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         public C get(World world, BlockPos origin) {
 
-            ChunkPos chunk_pos = new ChunkPos(origin);
-            List<C> zones = this.cache.get(world, chunk_pos);
+            C instance = this.cache.get(world, origin);
 
-            if (zones != null) {
-                for (C zone : zones) {
-                    if (zone.getOrigin().equals(origin)) {
-                        return zone;
-                    }
-                }
-            } else {
-                zones = new ArrayList<>();
-                this.cache.put(world, chunk_pos, zones);
+            if (instance == null) {
+                // Create a new instance
+                instance = this.instantiator.create(world, origin);
+                this.cache.put(world, origin, instance);
+                BibLog.log(" -- CREATED:", instance, "at", origin);
             }
 
-            // Create a new instance
-            C result = this.instantiator.create(world, origin);
-            zones.add(result);
-
-            return result;
+            return instance;
         }
-
     }
 
     /**
@@ -1223,10 +1209,10 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         public boolean affectsChunk(World world, ChunkPos chunkPos) {
 
-            List<C> instances = this.cache.get(world, chunkPos);
+            Map<BlockPos, C> block_map = this.cache.get(world, chunkPos);
 
-            if (instances != null) {
-                for (C instance : instances) {
+            if (block_map != null) {
+                for (C instance : block_map.values()) {
                     if (instance.affects(chunkPos)) {
                         return true;
                     }
@@ -1234,17 +1220,15 @@ public abstract class AugmentKey<$C extends Augment> {
                 return true;
             }
 
-            var chunk_values = this.cache.valuesPerWorld(world);
+            var instances = this.cache.valuesPerWorld(world);
 
-            if (chunk_values == null) {
+            if (instances == null) {
                 return false;
             }
 
-            for (var list : chunk_values) {
-                for (var value : list) {
-                    if (value.affects(chunkPos)) {
-                        return true;
-                    }
+            for (var instance : instances) {
+                if (instance.affects(chunkPos)) {
+                    return true;
                 }
             }
 
@@ -1264,17 +1248,15 @@ public abstract class AugmentKey<$C extends Augment> {
                 return false;
             }
 
-            var chunk_values = this.cache.valuesPerWorld(world);
+            var instances = this.cache.valuesPerWorld(world);
 
-            if (chunk_values == null) {
+            if (instances == null) {
                 return false;
             }
 
-            for (var list : chunk_values) {
-                for (var value : list) {
-                    if (value.affects(blockPos)) {
-                        return true;
-                    }
+            for (var value : instances) {
+                if (value.affects(blockPos)) {
+                    return true;
                 }
             }
 
@@ -1294,12 +1276,11 @@ public abstract class AugmentKey<$C extends Augment> {
                 return Collections.emptyList();
             }
 
-            List<C> result = new ArrayList<>();
-            for (List<C> instances : chunk_values) {
-                for (C instance : instances) {
-                    if (instance.affects(chunkPos)) {
-                        result.add(instance);
-                    }
+            List<C> result = new ArrayList<>(chunk_values.size());
+
+            for (var instance : chunk_values) {
+                if (instance.affects(chunkPos)) {
+                    result.add(instance);
                 }
             }
 

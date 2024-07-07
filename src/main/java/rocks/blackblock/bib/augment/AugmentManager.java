@@ -289,7 +289,7 @@ public class AugmentManager<C extends Augment> {
         // And the PerBlock & PerChunkZone augments
         Augment.PerBlock.TICKS_WITH_WORLD.forEach((key, aClass) -> {
             try {
-                key.forEach((world1, chunk_pos, value) -> {
+                key.forEach((world1, chunk_pos, block_pos, value) -> {
                     value.onTick();
                 });
             } catch (Throwable t) {
@@ -299,7 +299,7 @@ public class AugmentManager<C extends Augment> {
 
         Augment.PerChunkZone.TICKS_WITH_WORLD.forEach((key, aClass) -> {
             try {
-                key.forEach((world1, chunk_pos, value) -> {
+                key.forEach((world1, chunk_pos, block_pos, value) -> {
                     value.onTick();
                 });
             } catch (Throwable t) {
