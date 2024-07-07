@@ -4,8 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.ComponentChanges;
-import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.*;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
@@ -329,13 +328,84 @@ public final class BibItem {
     }
 
     /**
-     * Can the 2 stacks be combined?
+     * Can the 2 stacks be combined according to Minecraft logic?
+     * This might return false for ItemStacks that appear exactly the same.
+     * For a more intuitive result, use {@link BibItem#areEqual}
+     *
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
     public static boolean canCombine(ItemStack left, ItemStack right) {
         return ItemStack.areItemsAndComponentsEqual(left, right);
+    }
+
+    /**
+     * Can the 2 given ItemStacks be considered "equal" intuitively?
+     * This will ignore empty CustomNBT data, for example.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static boolean areEqual(ItemStack left, ItemStack right) {
+
+        if (left == null || right == null) {
+            return false;
+        }
+
+        if (!left.isOf(right.getItem())) {
+            return false;
+        }
+
+        if (left.isEmpty() && right.isEmpty()) {
+            return true;
+        }
+
+        var left_components = left.getComponents();
+        var right_components = right.getComponents();
+
+        if (left_components == right_components) {
+            return true;
+        }
+
+        if (left_components.equals(right_components)) {
+            return true;
+        }
+
+        var all_types = BibData.combineSets(left_components.getTypes(), right_components.getTypes());
+        var result = true;
+
+        for (ComponentType<?> type : all_types) {
+            var left_value = left_components.get(type);
+            var right_value = right_components.get(type);
+
+            if (Objects.equals(left_value, right_value)) {
+                continue;
+            }
+
+            if (type == DataComponentTypes.CUSTOM_DATA) {
+                boolean has_left_data = true;
+                boolean has_right_data = true;
+
+                if (left_value == null || ((NbtComponent) left_value).isEmpty()) {
+                    has_left_data = false;
+                }
+
+                if (right_value == null || ((NbtComponent) right_value).isEmpty()) {
+                    has_right_data = false;
+                }
+
+                // Don't make the result false if both NbtComponents are null or empty
+                if (!has_left_data && !has_right_data) {
+                    continue;
+                }
+            }
+
+            result = false;
+            break;
+        }
+
+        return result;
     }
 
     /**
@@ -364,7 +434,7 @@ public final class BibItem {
             }
         }
 
-        return ItemStack.areEqual(leftStack, rightStack);
+        return areEqual(leftStack, rightStack);
     }
 
     /**
@@ -387,7 +457,7 @@ public final class BibItem {
             right.setDamage(0);
         }
 
-        return Objects.equals(left.getComponents(), right.getComponents());
+        return areEqual(left, right);
     }
 
     /**
