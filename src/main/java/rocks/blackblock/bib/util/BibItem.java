@@ -126,12 +126,30 @@ public final class BibItem {
     }
 
     /**
+     * Get the custom NBT data if it exists
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    @Nullable
+    public static NbtCompound getCustomNbt(ItemStack stack) {
+        NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
+
+        if (data == null) {
+            return null;
+        }
+
+        return data.getNbt();
+    }
+
+    /**
      * Get or create the custom NBT data
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static NbtCompound getCustomNbt(ItemStack stack) {
+    @NotNull
+    public static NbtCompound getOrCreateCustomNbt(ItemStack stack) {
         NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
 
         if (data == null) {
@@ -196,7 +214,7 @@ public final class BibItem {
     @NotNull
     public static NbtCompound getOrCreateCustomSubNbt(ItemStack stack, String key) {
 
-        NbtCompound nbt = getCustomNbt(stack);
+        NbtCompound nbt = getOrCreateCustomNbt(stack);
 
         if (!nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = new NbtCompound();
@@ -214,7 +232,7 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static void setCustomSubNbt(ItemStack stack, String key, NbtElement element) {
-        getCustomNbt(stack).put(key, element);
+        getOrCreateCustomNbt(stack).put(key, element);
     }
 
     /**
@@ -578,7 +596,7 @@ public final class BibItem {
      */
     public static void insertItems(ItemStack stack, List<ItemStack> stacks) {
 
-        NbtCompound nbt = BibItem.getCustomNbt(stack);
+        NbtCompound nbt = BibItem.getOrCreateCustomNbt(stack);
 
         if (nbt.contains("BlockEntityTag")) {
             nbt = nbt.getCompound("BlockEntityTag");
@@ -675,8 +693,10 @@ public final class BibItem {
      */
     public static void assignStackData(ItemStack target, ItemStack source) {
 
-        if (BibItem.hasCustomNbt(source)) {
-            BibItem.setCustomNbt(target, BibItem.getCustomNbt(source).copy());
+        var source_nbt = BibItem.getCustomNbt(source);
+
+        if (source_nbt != null) {
+            BibItem.setCustomNbt(target, source_nbt.copy());
         }
 
         // @TODO: copy component data
@@ -749,11 +769,7 @@ public final class BibItem {
             return original_stack;
         }
 
-        NbtCompound original_nbt = null;
-
-        if (BibItem.hasCustomNbt(original_stack)) {
-            original_nbt = BibItem.getCustomNbt(original_stack);
-        }
+        NbtCompound original_nbt = BibItem.getCustomNbt(original_stack);
 
         // See if it is already wrapped.
         // If it is, don't wrap it again!
@@ -773,7 +789,7 @@ public final class BibItem {
         });
 
         // Get the wrapped NBT we just created
-        NbtCompound wrapped_nbt = BibItem.getCustomNbt(wrapped_stack);
+        NbtCompound wrapped_nbt = BibItem.getOrCreateCustomNbt(wrapped_stack);
 
         // Copy over all the other custom NBT data
         BibData.assignDefaults(wrapped_nbt, original_nbt);

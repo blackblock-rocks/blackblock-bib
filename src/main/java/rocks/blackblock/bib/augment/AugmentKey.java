@@ -927,7 +927,7 @@ public abstract class AugmentKey<$C extends Augment> {
                 return null;
             }
 
-            NbtCompound root = BibItem.getCustomNbt(stack);
+            NbtCompound root = BibItem.getOrCreateCustomNbt(stack);
 
             NbtCompound container;
 

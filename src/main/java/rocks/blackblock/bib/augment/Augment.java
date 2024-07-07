@@ -797,9 +797,6 @@ public interface Augment {
          */
         default boolean affects(ChunkPos pos) {
             var set = this.getAffectedChunks();
-
-            BibLog.log("Is", pos, "inside", set, "?", set.contains(pos));
-
             return set.contains(pos);
         }
 
