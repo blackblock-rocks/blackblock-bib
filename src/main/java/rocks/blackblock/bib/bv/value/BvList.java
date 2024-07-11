@@ -40,6 +40,9 @@ public class BvList<ListContentType extends BvElement>
     // The (optional) content type
     private String content_type_name = null;
 
+    // All the tags this element might have
+    protected Set<BvElement> tags = null;
+
     /**
      * Get a list of the given type
      *
@@ -86,6 +89,41 @@ public class BvList<ListContentType extends BvElement>
         }
 
         this.contents = value.contents;
+    }
+
+    /**
+     * Get all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public Set<BvElement> getTags() {
+        return this.tags;
+    }
+
+    /**
+     * Add a tag to this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void addTag(BvElement tag) {
+
+        if (this.tags == null) {
+            this.tags = new HashSet<>();
+        }
+
+        this.tags.add(tag);
+    }
+
+    /**
+     * Remove all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void clearTags() {
+        this.tags = null;
     }
 
     /**

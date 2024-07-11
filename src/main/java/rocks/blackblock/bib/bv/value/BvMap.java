@@ -32,6 +32,9 @@ public class BvMap
 
     protected Map<String, BvElement> values = new HashMap<>();
 
+    // All the tags this element might have
+    protected Set<BvElement> tags = null;
+
     /**
      * Get the identifier of this type
      *
@@ -66,6 +69,41 @@ public class BvMap
         }
 
         this.values = value.values;
+    }
+
+    /**
+     * Get all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public Set<BvElement> getTags() {
+        return this.tags;
+    }
+
+    /**
+     * Add a tag to this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void addTag(BvElement tag) {
+
+        if (this.tags == null) {
+            this.tags = new HashSet<>();
+        }
+
+        this.tags.add(tag);
+    }
+
+    /**
+     * Remove all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void clearTags() {
+        this.tags = null;
     }
 
     /**

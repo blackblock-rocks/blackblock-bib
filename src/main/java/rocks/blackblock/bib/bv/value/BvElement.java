@@ -20,6 +20,7 @@ import rocks.blackblock.bib.util.BibLog;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -51,11 +52,13 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
     Supplier<BvString> STRING_SUPPLIER = BvElement.registerType(BvString.TYPE, BvString.class, BvString::new);
     Supplier<BvNull> NULL_SUPPLIER = BvElement.registerType(BvNull.TYPE, BvNull.class, () -> BvNull.NULL);
     Supplier<BvNumber> NUMBER_SUPPLIER = BvElement.registerType("number", BvNumber.class, BvDouble::new);
+    Supplier<BvLootTableSet> LOOT_TABLE_SET_SUPPLIER = BvElement.registerType(BvLootTableSet.TYPE, BvLootTableSet.class, BvLootTableSet::new);
+    Supplier<BvTag> TAG_SUPPLIER = BvElement.registerType(BvTag.TYPE, BvTag.class, BvTag::createUnsafeEmptyTag);
 
     /**
      * Get the actual underlying Java value
      *
-     * @since    0.2.0
+     * @since    0.2.0s
      */
     ContainedType getContainedValue();
 
@@ -124,6 +127,27 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
      * @since    0.2.0
      */
     String toPlaceholderString();
+
+    /**
+     * Get all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    Set<BvElement> getTags();
+
+    /**
+     * Add a tag to this element
+     *
+     * @since    0.2.0
+     */
+    void addTag(BvElement tag);
+
+    /**
+     * Remove all tags from this element
+     *
+     * @since    0.2.0
+     */
+    void clearTags();
 
     /**
      * Convert to a string for use in commands

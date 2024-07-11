@@ -6,7 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibJson;
 import rocks.blackblock.bib.util.BibLog;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a BV type
@@ -21,6 +23,9 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
 
     // The contained value
     protected ContainedType contained_value = null;
+
+    // All the tags this element might have
+    protected Set<BvElement> tags = null;
 
     /**
      * Get the actual underlying Java value
@@ -40,6 +45,41 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     @Override
     public void setContainedValue(ContainedType value) {
         this.contained_value = value;
+    }
+
+    /**
+     * Get all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public Set<BvElement> getTags() {
+        return this.tags;
+    }
+
+    /**
+     * Add a tag to this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void addTag(BvElement tag) {
+
+        if (this.tags == null) {
+            this.tags = new HashSet<>();
+        }
+
+        this.tags.add(tag);
+    }
+
+    /**
+     * Remove all the tags of this element
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public void clearTags() {
+        this.tags = null;
     }
 
     /**
