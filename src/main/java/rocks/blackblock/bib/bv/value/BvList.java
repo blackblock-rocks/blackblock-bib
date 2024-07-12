@@ -145,6 +145,33 @@ public class BvList<ListContentType extends BvElement>
     }
 
     /**
+     * Get all the values that are tagged with the given tags
+     *
+     * @since    0.2.0
+     */
+    public List<ListContentType> getTaggedValues(BvElement... tags) {
+        return this.getTaggedValues(Set.of(tags));
+    }
+
+    /**
+     * Get all the values that are tagged with the given tags
+     *
+     * @since    0.2.0
+     */
+    public List<ListContentType> getTaggedValues(Set<BvElement> tags) {
+
+        List<ListContentType> result = new ArrayList<>();
+
+        for (ListContentType entry : this.contents) {
+            if (entry.hasTags(tags)) {
+                result.add(entry);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Load from the given NBT value
      *
      * @since    0.2.0

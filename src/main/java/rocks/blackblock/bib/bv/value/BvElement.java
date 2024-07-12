@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.bv.operator.BvOperator;
@@ -135,6 +136,98 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     Set<BvElement> getTags();
 
     /**
+     * Check if this element has the given tag.
+     * Takes a second parameter to prevent infinite loops.
+     *
+     * @since    0.2.0
+     */
+    private static boolean internalCheckForTags(Collection<BvElement> wanted_tags, Collection<BvElement> our_tags, Set<BvElement> seen) {
+
+        boolean result = true;
+
+        // Look for each wanted tag
+        for (BvElement wanted_tag : wanted_tags) {
+
+            // If the tag is explicitly present, the result can stay true
+            if (our_tags.contains(wanted_tag)) {
+                continue;
+            }
+
+            boolean found_in_parent = false;
+
+            // We did not find the wanted tag,
+            // so we need to see if any of OUR tags' parent tags contain it
+            for (BvElement our_tag : our_tags) {
+
+                Set<BvElement> parent_tags = our_tag.getTags();
+
+                if (parent_tags == null) {
+                    continue;
+                }
+
+                if (parent_tags.contains(wanted_tag)) {
+                    found_in_parent = true;
+                    break;
+                }
+
+                // If we've already seen this tag, skip it
+                if (seen.contains(wanted_tag)) {
+                    break;
+                }
+
+                seen.add(wanted_tag);
+
+                // Check the parent tags of this tag
+                if (internalCheckForTags(wanted_tags, parent_tags, seen)) {
+                    found_in_parent = true;
+                    break;
+                }
+            }
+
+            if (!found_in_parent) {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Is this element tagged with the given tags?
+     * Will also check parent tags.
+     *
+     * @since    0.2.0
+     */
+    default boolean hasTags(Collection<BvElement> wanted_tags) {
+
+        if (wanted_tags == null || wanted_tags.isEmpty()) {
+            return true;
+        }
+
+        Set<BvElement> our_tags = this.getTags();
+
+        if (our_tags == null) {
+            return false;
+        }
+
+        if (our_tags.containsAll(wanted_tags)) {
+            return true;
+        }
+
+        return internalCheckForTags(wanted_tags, our_tags, new HashSet<>());
+    }
+
+    /**
+     * Is this element tagged with the given tag?
+     *
+     * @since    0.2.0
+     */
+    default boolean hasTag(BvElement tag) {
+        return this.hasTags(Set.of(tag));
+    }
+
+    /**
      * Add a tag to this element
      *
      * @since    0.2.0
@@ -230,6 +323,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      *
      * @since    0.2.0
      */
+    @Override
     default Item getItemIcon() {
         // @TODO: Make blackblock-core register BBSB.GUI_UNKOWN_TYPE for this!
         return null;
