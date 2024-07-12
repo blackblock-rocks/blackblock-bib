@@ -318,6 +318,26 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     }
 
     /**
+     * Get the title of this value as Text
+     *
+     * @since    0.2.0
+     */
+    default Text getDisplayTitleText() {
+        return Text.literal(this.getDisplayTitle());
+    }
+
+    /**
+     * Get optional description to use.
+     * This will be used as the item stack's lore
+     *
+     * @since 0.2.0
+     */
+    @Nullable
+    default List<Text> getDisplayDescription() {
+        return null;
+    }
+
+    /**
      * Get the item to use as an icon for this value,
      * in case it needs to be shown in an inventory
      *

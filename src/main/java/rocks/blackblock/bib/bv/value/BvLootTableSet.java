@@ -12,6 +12,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibLog;
 import rocks.blackblock.bib.util.BibServer;
+import rocks.blackblock.bib.util.BibText;
 
 import java.util.*;
 
@@ -28,6 +29,7 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
 
     private Set<RegistryKey<LootTable>> keys;
     private String title = null;
+    private String generated_title = null;
     private Item icon = null;
 
     /**
@@ -94,15 +96,31 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
             return this.title;
         }
 
+        if (this.generated_title != null) {
+            return this.generated_title;
+        }
+
         StringBuilder result = new StringBuilder();
 
         if (this.keys != null) {
+            var count = 0;
+
             for (var key : this.keys) {
-                result.append(key.getValue().getPath()).append(", ");
+                var path = key.getValue().getPath();
+                var last_name = BibText.getAfterLast(path, "/");
+                var title = BibText.titleize(last_name);
+
+                if (title != null && !title.isBlank()) {
+                    if (count > 0) result.append(", ");
+                    result.append(title);
+                    count++;
+                }
             }
         }
 
-        return result.toString();
+        this.generated_title = result.toString();
+
+        return this.generated_title;
     }
 
     /**
@@ -110,8 +128,9 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
      *
      * @since 0.2.0
      */
+    @Override
     @Nullable
-    public List<Text> getLore() {
+    public List<Text> getDisplayDescription() {
 
         if (this.keys == null) {
             return null;

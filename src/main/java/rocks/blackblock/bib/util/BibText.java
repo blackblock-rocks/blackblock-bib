@@ -11,6 +11,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
@@ -88,6 +89,58 @@ public final class BibText {
      */
     public static MutableText deserializeFromJson(@Nullable JsonElement json) {
         return Text.Serialization.fromJsonTree(json, BibMod.getDynamicRegistry());
+    }
+
+    /**
+     * Get everything after the last string
+     *
+     * @since    0.2.0
+     */
+    @Contract("null -> null; !null -> !null")
+    public static String getAfterLast(String input, String needle) {
+
+        if (input == null) {
+            return null;
+        }
+
+        if (needle == null || needle.isBlank()) {
+            return input;
+        }
+
+        int last_index = input.lastIndexOf(needle);
+
+        if (last_index == -1) {
+            return input;
+        }
+
+        return input.substring(last_index + 1);
+    }
+
+    /**
+     * Titleize a string
+     *
+     * @since    0.2.0
+     */
+    @Contract("null -> null; !null -> !null")
+    public static String titleize(String input) {
+
+        if (input == null) {
+            return null;
+        }
+
+        if (input.length() > 64) {
+            return input;
+        }
+
+        // Replace underscores with spaces
+        String spaced = input.replace('_', ' ');
+
+        // Insert spaces before each uppercase letter (except the first one)
+        spaced = spaced.replaceAll("([a-z])([A-Z])", "$1 $2");
+
+        String titleized = WordUtils.capitalizeFully(spaced);
+
+        return titleized;
     }
 
     /**

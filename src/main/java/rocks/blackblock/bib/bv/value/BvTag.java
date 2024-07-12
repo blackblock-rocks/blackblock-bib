@@ -2,6 +2,7 @@ package rocks.blackblock.bib.bv.value;
 
 import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.collection.WeakValueHashMap;
+import rocks.blackblock.bib.util.BibText;
 
 /**
  * A simple string that represents a tag,
@@ -16,6 +17,9 @@ public class BvTag extends BvString {
     private static final WeakValueHashMap<String, BvTag> INSTANCES = new WeakValueHashMap<>();
 
     public static final String TYPE = "tag";
+
+    private String title = null;
+    private String generated_title = null;
 
     /**
      * Get or create a tag
@@ -61,6 +65,42 @@ public class BvTag extends BvString {
     @Override
     public String getType() {
         return TYPE;
+    }
+
+    /**
+     * Set a combined title
+     *
+     * @since 0.2.0
+     */
+    public BvTag setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    /**
+     * Get the title of this value (for visual stuff)
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public String getDisplayTitle() {
+
+        if (this.title != null) {
+            return this.title;
+        }
+
+        if (this.generated_title != null) {
+            return this.generated_title;
+        }
+
+        StringBuilder result = new StringBuilder();
+        String name = this.getContainedValue();
+
+        if (name != null) {
+            this.generated_title = BibText.titleize(name);
+        }
+
+        return this.generated_title;
     }
 
     /**

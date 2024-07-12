@@ -23,11 +23,12 @@ public abstract class BibTags {
 
         if (add_tags != null) {
             for (BvTag add_tag : add_tags) {
-                tag_id.append("_").append(add_tag);
+                tag_id.append("_").append(add_tag.getContainedValue());
             }
         }
 
         BvTag tag = BvTag.get(tag_id.toString());
+        tag.setTitle(BibText.titleize(name));
 
         if (add_tags != null) {
             for (BvTag add_tag : add_tags) {
