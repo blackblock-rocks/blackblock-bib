@@ -15,12 +15,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.bv.operator.BvOperator;
 import rocks.blackblock.bib.bv.operator.BvOperators;
+import rocks.blackblock.bib.interfaces.HasItemIcon;
 import rocks.blackblock.bib.util.BibItem;
 import rocks.blackblock.bib.util.BibLog;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -39,7 +38,7 @@ import java.util.function.Supplier;
         // Ignore unchecked typecast warnings
         "unchecked"
 })
-public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> {
+public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> extends HasItemIcon {
 
     // The type registry
     Map<String, Supplier<BvElement>> TYPE_REGISTRY = new HashMap<>();

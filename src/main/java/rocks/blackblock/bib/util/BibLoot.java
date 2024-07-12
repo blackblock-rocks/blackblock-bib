@@ -10,6 +10,7 @@ import net.minecraft.registry.RegistryKey;
 import rocks.blackblock.bib.bv.value.BvList;
 import rocks.blackblock.bib.bv.value.BvLootTableSet;
 import rocks.blackblock.bib.bv.value.BvTag;
+import rocks.blackblock.bib.interfaces.HasItemIcon;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -188,12 +189,16 @@ public class BibLoot {
             }
 
             var group = entityType.getSpawnGroup();
+            var with_item_icon = (HasItemIcon) entityType;
+            BvLootTableSet loot_table_set;
 
             if (group == SpawnGroup.MONSTER) {
-                register(loot_table_key).addTags(BibTags.ENTITY, BibTags.MONSTER).setTitle(entityType.getName().getString());
+                loot_table_set = register(loot_table_key).addTags(BibTags.ENTITY, BibTags.MONSTER).setTitle(entityType.getName().getString());
             } else {
-                register(loot_table_key).addTags(BibTags.ENTITY).setTitle(entityType.getName().getString());
+                loot_table_set = register(loot_table_key).addTags(BibTags.ENTITY).setTitle(entityType.getName().getString());
             }
+
+            loot_table_set.setIcon(with_item_icon.getItemIcon());
         });
 
         flushBuffer("All Entities").addTags(BibTags.ENTITY).setIcon(Items.CHEST);

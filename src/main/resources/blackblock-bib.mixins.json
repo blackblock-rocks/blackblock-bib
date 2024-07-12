@@ -4,6 +4,7 @@
     "compatibilityLevel": "JAVA_21",
     "mixins": [
         "ChunkSerializerMixin",
+        "EntityTypeMixin",
         "LockableContainerBlockEntityAccessor",
         "MinecraftServerMixin",
         "ServerWorldMixin",
