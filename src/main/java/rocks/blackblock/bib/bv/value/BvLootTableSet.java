@@ -8,13 +8,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibLog;
 import rocks.blackblock.bib.util.BibServer;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A BV wrapped set of loot table
@@ -84,6 +83,50 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
     }
 
     /**
+     * Get the title of this value (for visual stuff)
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public String getDisplayTitle() {
+
+        if (this.title != null) {
+            return this.title;
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        if (this.keys != null) {
+            for (var key : this.keys) {
+                result.append(key.getValue().getPath()).append(", ");
+            }
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * Get the lore to use
+     *
+     * @since 0.2.0
+     */
+    @Nullable
+    public List<Text> getLore() {
+
+        if (this.keys == null) {
+            return null;
+        }
+
+        List<Text> result = new ArrayList<>(this.keys.size());
+
+        for (var key : this.keys) {
+            result.add(Text.literal(" - ").append(Text.literal(key.getValue().getPath()).formatted(Formatting.AQUA)));
+        }
+
+        return result;
+    }
+
+    /**
      * Set the icon to use
      *
      * @since 0.2.0
@@ -123,10 +166,10 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
 
         Set<LootTable> result = new HashSet<>();
 
-        var loot_table_registry = BibServer.getDynamicRegistry().get(RegistryKeys.LOOT_TABLE);
+        var registry = BibServer.getServer().getReloadableRegistries();
 
         for (RegistryKey<LootTable> key : this.keys) {
-            var table = loot_table_registry.get(key);
+            var table = registry.getLootTable(key);
 
             if (table == null) {
                 BibLog.log("Failed to find loot table", key);
@@ -189,5 +232,37 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
     @Override
     public String toPlaceholderString() {
         return this.keys + "";
+    }
+
+    /**
+     * Return a Arg instance
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public BibLog.Arg toBBLogArg() {
+
+        BibLog.Arg result = BibLog.createArg(this);
+
+        result.add("type", this.getType());
+
+        var value = this.keys;
+
+        if (value != null) {
+            result.add("size", value.size());
+            var values = value.toArray();
+
+            for (int i = 0; i < values.length; i++) {
+                result.add("table " + i, values[i]);
+
+                if (i > 5) {
+                    break;
+                }
+            }
+        } else {
+            result.add("size", 0);
+        }
+
+        return result;
     }
 }
