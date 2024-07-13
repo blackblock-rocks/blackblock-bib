@@ -352,7 +352,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      */
     @Override
     default Item getItemIcon() {
-        return DEFAULT_ICON_ITEM;
+        return AbstractBvType.DEFAULT_ICON_ITEM;
     }
 
     /**
@@ -361,7 +361,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      * @since    0.2.0
      */
     default Item getItemForValue() {
-        return VALUE_ITEM;
+        return AbstractBvType.VALUE_ITEM;
     }
 
     /**

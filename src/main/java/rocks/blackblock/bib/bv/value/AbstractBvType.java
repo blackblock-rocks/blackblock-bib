@@ -1,6 +1,8 @@
 package rocks.blackblock.bib.bv.value;
 
 import com.google.gson.JsonElement;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.util.BibJson;
@@ -20,6 +22,12 @@ import java.util.Set;
 public abstract class
 AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
     implements BvElement<ContainedType, OwnType>, BibLog.Argable {
+
+    // The default item to use to represent this element inside an GUI
+    public static Item DEFAULT_ICON_ITEM = Items.BARRIER;
+
+    // The item to use when representing the value in an ItemStack
+    public static Item VALUE_ITEM = Items.PAPER;
 
     // The contained value
     protected ContainedType contained_value = null;
