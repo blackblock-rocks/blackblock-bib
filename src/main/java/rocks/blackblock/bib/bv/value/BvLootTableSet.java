@@ -3,16 +3,16 @@ package rocks.blackblock.bib.bv.value;
 import com.google.gson.JsonElement;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootTable;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import rocks.blackblock.bib.util.BibLog;
-import rocks.blackblock.bib.util.BibServer;
-import rocks.blackblock.bib.util.BibText;
+import rocks.blackblock.bib.util.*;
 
 import java.util.*;
 
@@ -31,6 +31,27 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
     private String title = null;
     private String generated_title = null;
     private Item icon = null;
+    private String ref_id = null;
+
+    /**
+     * Revive from the given NBT element if possible
+     *
+     * @since 0.2.0
+     */
+    public static BvLootTableSet fromNbt(NbtElement nbt_value) {
+
+        if (!(nbt_value instanceof NbtCompound data)) {
+            return null;
+        }
+
+        if (!data.contains("ref_id", NbtElement.STRING_TYPE)) {
+            return null;
+        }
+
+        String ref_id = data.getString("ref_id");
+
+        return BibLoot.LOOT_TABLES_BY_ID.get(ref_id);
+    }
 
     /**
      * Create with a single registry key
@@ -57,6 +78,35 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
      */
     public BvLootTableSet(Set<RegistryKey<LootTable>> keys) {
         this.keys = keys;
+    }
+
+    /**
+     * Set the reference ID
+     *
+     * @since   0.5.0
+     */
+    public void setRefId(String id) {
+        this.ref_id = id;
+    }
+
+    /**
+     * Is the given ID part of this set?
+     *
+     * @since   0.5.0
+     */
+    public boolean contains(Identifier id) {
+
+        if (this.keys == null) {
+            return false;
+        }
+
+        for (RegistryKey<LootTable> key : this.keys) {
+            if (key.getValue().equals(id)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -210,6 +260,48 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
 
+        if (!(nbt_value instanceof NbtCompound data)) {
+            return;
+        }
+
+        if (data.contains("ref_id", NbtElement.STRING_TYPE)) {
+            this.ref_id = data.getString("ref_id");
+
+            if (BibLoot.LOOT_TABLES_BY_ID.containsKey(this.ref_id)) {
+                var other_instance = BibLoot.LOOT_TABLES_BY_ID.get(this.ref_id);
+
+                if (other_instance != null) {
+                    this.keys = other_instance.keys;
+                    this.title = other_instance.title;
+                    this.generated_title = other_instance.generated_title;
+                    this.icon = other_instance.icon;
+                }
+
+                return;
+            }
+        }
+
+        if (data.contains("keys", NbtElement.LIST_TYPE)) {
+            NbtList list = data.getList("keys", NbtElement.COMPOUND_TYPE);
+
+            this.keys = new HashSet<>(list.size());
+
+            for (NbtElement element : list) {
+                if (!(element instanceof NbtCompound compound)) {
+                    continue;
+                }
+
+                Identifier identifier = BibData.parseToIdentifier(compound);
+
+                if (identifier == null) {
+                    continue;
+                }
+
+                RegistryKey<LootTable> id_key = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier);
+
+                this.keys.add(id_key);
+            }
+        }
     }
 
     /**
@@ -219,7 +311,31 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
      */
     @Override
     public @Nullable NbtElement toNbt() {
-        return null;
+
+        NbtCompound data = new NbtCompound();
+
+        if (this.ref_id != null && !this.ref_id.isBlank()) {
+            data.putString("ref_id", this.ref_id);
+        }
+
+        if (this.keys != null) {
+            NbtList list = new NbtList();
+
+            for (RegistryKey<LootTable> key : this.keys) {
+                Identifier identifier = key.getValue();
+
+                if (identifier == null) {
+                    continue;
+                }
+
+                NbtCompound serialized = BibData.serialize(identifier);
+                list.add(serialized);
+            }
+
+            data.put("keys", list);
+        }
+
+        return data;
     }
 
     /**
