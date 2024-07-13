@@ -326,6 +326,12 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static void replaceLore(ItemStack stack, List<? extends Text> lines) {
+
+        if (lines == null || lines.isEmpty()) {
+            stack.remove(DataComponentTypes.LORE);
+            return;
+        }
+
         List<Text> simplified_lines = new ArrayList<>(lines);
         stack.set(DataComponentTypes.LORE, new LoreComponent(simplified_lines));
     }
