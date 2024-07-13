@@ -21,6 +21,7 @@ import rocks.blackblock.bib.util.BibItem;
 import rocks.blackblock.bib.util.BibLog;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -45,6 +46,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     Map<String, Supplier<BvElement>> TYPE_REGISTRY = new HashMap<>();
     Map<String, Class<? extends BvElement>> CLASS_REGISTRY = new HashMap<>();
     Map<Class<? extends BvElement>, Supplier<BvElement>> CLASS_TO_SUPPLIER = new HashMap<>();
+    Map<Class<? extends BvElement>, Function<NbtElement, BvElement>> CLASS_TO_REVIVER = new HashMap<>();
 
     // Suppliers of empty instances
     Supplier<BvBoolean> BOOLEAN_SUPPLIER = registerType(BvBoolean.TYPE, BvBoolean.class, BvBoolean::new);
@@ -55,12 +57,6 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     Supplier<BvNumber> NUMBER_SUPPLIER = BvElement.registerType("number", BvNumber.class, BvDouble::new);
     Supplier<BvLootTableSet> LOOT_TABLE_SET_SUPPLIER = BvElement.registerType(BvLootTableSet.TYPE, BvLootTableSet.class, BvLootTableSet::new);
     Supplier<BvTag> TAG_SUPPLIER = BvElement.registerType(BvTag.TYPE, BvTag.class, BvTag::createUnsafeEmptyTag);
-
-    // The default item to use to represent this element inside an GUI
-    Item DEFAULT_ICON_ITEM = Items.BARRIER;
-
-    // The item to use when representing the value in an ItemStack
-    Item VALUE_ITEM = Items.PAPER;
 
     /**
      * Get the actual underlying Java value
@@ -460,6 +456,19 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     }
 
     /**
+     * Register a BvElement type
+     *
+     * @since    0.2.0
+     */
+    static <T extends BvElement> Supplier<T> registerType(String type, Class<T> type_class, Supplier<T> supplier, Function<NbtElement, T> reviver) {
+        TYPE_REGISTRY.put(type, (Supplier<BvElement>) supplier);
+        CLASS_REGISTRY.put(type, type_class);
+        CLASS_TO_SUPPLIER.put(type_class, (Supplier<BvElement>) supplier);
+        CLASS_TO_REVIVER.put(type_class, (Function<NbtElement, BvElement>) reviver);
+        return supplier;
+    }
+
+    /**
      * Get the class of the given type
      *
      * @since    0.2.0
@@ -469,6 +478,29 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     @Nullable
     static Class<? extends BvElement> getValueClass(String type) {
         return CLASS_REGISTRY.get(type);
+    }
+
+    /**
+     * Revive an element using its custom registered static reviver
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    static <T extends BvElement> T reviveOfType(String $type, NbtElement nbt) {
+
+        Class<? extends BvElement> type_class = CLASS_REGISTRY.get($type);
+
+        if (type_class == null) {
+            return null;
+        }
+
+        Function<NbtElement, BvElement> reviver = CLASS_TO_REVIVER.get(type_class);
+
+        if (reviver == null) {
+            return null;
+        }
+
+        return (T) reviver.apply(nbt);
     }
 
     /**
@@ -551,6 +583,44 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     }
 
     /**
+     * Parse the given JSON data and expect the given type
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    static <T extends BvElement> T parseFromJson(JsonElement element, @NotNull Class<T> expected_type_class) {
+
+        BvElement result = parseFromJson(element);
+
+        if (!expected_type_class.isInstance(result)) {
+            return null;
+        }
+
+        return (T) result;
+    }
+
+    /**
+     * Parse the given JSON data and expect a list with the given type
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    static <T extends BvElement> BvList<T> parseListFromJson(JsonElement element, @NotNull Class<T> expected_type_class) {
+
+        BvElement parsed_element = parseFromJson(element);
+
+        if (!(parsed_element instanceof BvList list)) {
+            return null;
+        }
+
+        if (!list.containsType(expected_type_class)) {
+            return null;
+        }
+
+        return list;
+    }
+
+    /**
      * Serialize the given element to JSON
      *
      * @since    0.2.0
@@ -596,17 +666,63 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
         }
 
         String type = compound.getString("$type");
+        NbtElement data_nbt = compound.get("$data");
 
-        BvElement instance = BvElement.createNewOfType(type);
+        // Try to revive an instance first
+        BvElement instance = BvElement.reviveOfType(type, data_nbt);
+
+        if (instance != null) {
+            return instance;
+        }
+
+        // Try to create a new instance
+        instance = BvElement.createNewOfType(type);
 
         if (instance == null) {
             return null;
         }
 
-        NbtElement data_nbt = compound.get("$data");
         instance.loadFromNbt(data_nbt);
 
         return instance;
+    }
+
+    /**
+     * Parse the given NBT data and expect the given type
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    static <T extends BvElement> T parseFromNbt(NbtElement nbt, @NotNull Class<T> expected_type_class) {
+
+        BvElement result = parseFromNbt(nbt);
+
+        if (!expected_type_class.isInstance(result)) {
+            return null;
+        }
+
+        return (T) result;
+    }
+
+    /**
+     * Parse the given NBT data and expect a list with the given type
+     *
+     * @since    0.2.0
+     */
+    @Nullable
+    static <T extends BvElement> BvList<T> parseListFromNbt(NbtElement nbt, @NotNull Class<T> expected_type_class) {
+
+        BvElement parsed_element = parseFromNbt(nbt);
+
+        if (!(parsed_element instanceof BvList list)) {
+            return null;
+        }
+
+        if (!list.containsType(expected_type_class)) {
+            return null;
+        }
+
+        return list;
     }
 
     /**
