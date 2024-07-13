@@ -67,6 +67,30 @@ public class BvList<ListContentType extends BvElement>
     }
 
     /**
+     * Check the contained type
+     *
+     * @since    0.2.0
+     */
+    public boolean containsType(Class<? extends BvElement> expected_type_class) {
+
+        if (this.contents.isEmpty()) {
+            return false;
+        }
+
+        for (BvElement element : this.contents) {
+            if (element == null) {
+                continue;
+            }
+
+            if (expected_type_class.isInstance(element)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * BvLists contain themselves
      *
      * @since    0.2.0
@@ -215,7 +239,10 @@ public class BvList<ListContentType extends BvElement>
         if (values != null && !values.isEmpty()) {
             for (ListContentType entry : values) {
                 NbtCompound element_nbt = BvElement.serializeToNbt(entry);
-                result.add(element_nbt);
+
+                if (element_nbt != null) {
+                    result.add(element_nbt);
+                }
             }
         }
 
