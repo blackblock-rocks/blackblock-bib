@@ -4,6 +4,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.*;
+import net.minecraft.util.Identifier;
 
 import java.io.DataInput;
 import java.io.IOException;
@@ -175,5 +176,44 @@ public final class BibData {
         }
 
         return result;
+    }
+
+    /**
+     * Serialize an identifier to NBT
+     *
+     * @since    0.2.0
+     */
+    public static NbtCompound serialize(Identifier id) {
+
+        if (id == null) {
+            return null;
+        }
+
+        NbtCompound result = new NbtCompound();
+        result.putString("namespace", id.getNamespace());
+        result.putString("path", id.getPath());
+
+        return result;
+    }
+
+    /**
+     * Parse an identifier
+     *
+     * @since    0.2.0
+     */
+    public static Identifier parseToIdentifier(NbtElement element) {
+
+        if (!(element instanceof NbtCompound data)) {
+            return null;
+        }
+
+        if (!data.contains("namespace", NbtElement.STRING_TYPE) || !data.contains("path", NbtElement.STRING_TYPE)) {
+            return null;
+        }
+
+        String namespace = data.getString("namespace");
+        String path = data.getString("path");
+
+        return Identifier.of(namespace, path);
     }
 }
