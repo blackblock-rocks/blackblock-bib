@@ -46,6 +46,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     Map<String, Class<? extends BvElement>> CLASS_REGISTRY = new HashMap<>();
     Map<Class<? extends BvElement>, Supplier<BvElement>> CLASS_TO_SUPPLIER = new HashMap<>();
 
+    // Suppliers of empty instances
     Supplier<BvBoolean> BOOLEAN_SUPPLIER = registerType(BvBoolean.TYPE, BvBoolean.class, BvBoolean::new);
     Supplier<BvInteger> INTEGER_SUPPLIER = registerType(BvInteger.TYPE, BvInteger.class, BvInteger::new);
     Supplier<BvMap> MAP_SUPPLIER = registerType(BvMap.TYPE, BvMap.class, BvMap::new);
@@ -54,6 +55,12 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     Supplier<BvNumber> NUMBER_SUPPLIER = BvElement.registerType("number", BvNumber.class, BvDouble::new);
     Supplier<BvLootTableSet> LOOT_TABLE_SET_SUPPLIER = BvElement.registerType(BvLootTableSet.TYPE, BvLootTableSet.class, BvLootTableSet::new);
     Supplier<BvTag> TAG_SUPPLIER = BvElement.registerType(BvTag.TYPE, BvTag.class, BvTag::createUnsafeEmptyTag);
+
+    // The default item to use to represent this element inside an GUI
+    Item DEFAULT_ICON_ITEM = Items.BARRIER;
+
+    // The item to use when representing the value in an ItemStack
+    Item VALUE_ITEM = Items.PAPER;
 
     /**
      * Get the actual underlying Java value
@@ -345,12 +352,22 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      */
     @Override
     default Item getItemIcon() {
-        // @TODO: Make blackblock-core register BBSB.GUI_UNKOWN_TYPE for this!
-        return null;
+        return DEFAULT_ICON_ITEM;
     }
 
     /**
-     * Create an ItemStack representation of this value
+     * Get the item to use when serializing to an ItemStack
+     *
+     * @since    0.2.0
+     */
+    default Item getItemForValue() {
+        return VALUE_ITEM;
+    }
+
+    /**
+     * Create an ItemStack representation of this value for use as an icon
+     * Similar to {@link #createValueStack}, except that it uses the icon item
+     * and the actual value does not get serialized to the ItemStack's NBT data.
      *
      * @since    0.2.0
      */
@@ -358,13 +375,37 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
 
         Item item = this.getItemIcon();
 
-        if (item == null) {
+        if (item == null || item == Items.AIR) {
             item = Items.BARRIER;
         }
 
         ItemStack stack = new ItemStack(item);
-        String title = this.getDisplayTitle();
-        BibItem.setCustomName(stack, Text.literal(title).setStyle(Style.EMPTY.withItalic(false)));
+        BibItem.setCustomName(stack, this.getDisplayTitleText());
+        BibItem.replaceLore(stack, this.getDisplayDescription());
+
+        return stack;
+    }
+
+    /**
+     * Create an ItemStack representation of this value.
+     * This ItemStack can be used in the actual world.
+     *
+     * @since    0.2.0
+     */
+    default ItemStack createValueStack() {
+
+        Item item = this.getItemForValue();
+
+        if (item == null || item == Items.AIR) {
+            item = Items.PAPER;
+        }
+
+        ItemStack stack = new ItemStack(item);
+        BibItem.setCustomName(stack, this.getDisplayTitleText());
+        BibItem.replaceLore(stack, this.getDisplayDescription());
+
+        NbtCompound nbt = BvElement.serializeToNbt(this);
+        BibItem.setCustomNbt(stack, nbt);
 
         return stack;
     }
