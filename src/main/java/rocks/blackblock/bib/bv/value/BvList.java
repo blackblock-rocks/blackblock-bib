@@ -84,6 +84,8 @@ public class BvList<ListContentType extends BvElement>
 
             if (expected_type_class.isInstance(element)) {
                 return true;
+            } else if (BvElement.LOGGER.isEnabled()) {
+                BvElement.LOGGER.log("Element", element, "is not of type", expected_type_class);
             }
         }
 

@@ -8,10 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.bv.operator.BvOperator;
@@ -42,6 +40,8 @@ import java.util.function.Supplier;
 })
 public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> extends HasItemIcon {
 
+    BibLog.Categorised LOGGER = BibLog.getCategorised("bv");
+
     // The type registry
     Map<String, Supplier<BvElement>> TYPE_REGISTRY = new HashMap<>();
     Map<String, Class<? extends BvElement>> CLASS_REGISTRY = new HashMap<>();
@@ -51,11 +51,12 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
     // Suppliers of empty instances
     Supplier<BvBoolean> BOOLEAN_SUPPLIER = registerType(BvBoolean.TYPE, BvBoolean.class, BvBoolean::new);
     Supplier<BvInteger> INTEGER_SUPPLIER = registerType(BvInteger.TYPE, BvInteger.class, BvInteger::new);
+    Supplier<BvList> LIST_SUPPLIER = BvElement.registerType(BvList.TYPE, BvList.class, BvList::new);
     Supplier<BvMap> MAP_SUPPLIER = registerType(BvMap.TYPE, BvMap.class, BvMap::new);
     Supplier<BvString> STRING_SUPPLIER = BvElement.registerType(BvString.TYPE, BvString.class, BvString::new);
     Supplier<BvNull> NULL_SUPPLIER = BvElement.registerType(BvNull.TYPE, BvNull.class, () -> BvNull.NULL);
     Supplier<BvNumber> NUMBER_SUPPLIER = BvElement.registerType("number", BvNumber.class, BvDouble::new);
-    Supplier<BvLootTableSet> LOOT_TABLE_SET_SUPPLIER = BvElement.registerType(BvLootTableSet.TYPE, BvLootTableSet.class, BvLootTableSet::new);
+    Supplier<BvLootTableSet> LOOT_TABLE_SET_SUPPLIER = BvElement.registerType(BvLootTableSet.TYPE, BvLootTableSet.class, BvLootTableSet::new, BvLootTableSet::fromNbt);
     Supplier<BvTag> TAG_SUPPLIER = BvElement.registerType(BvTag.TYPE, BvTag.class, BvTag::createUnsafeEmptyTag);
 
     /**
@@ -397,7 +398,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
         }
 
         ItemStack stack = new ItemStack(item);
-        BibItem.setCustomName(stack, this.getDisplayTitleText());
+        BibItem.setCustomName(stack, Text.literal(this.getType() + ": ").append(this.getDisplayTitleText()));
         BibItem.replaceLore(stack, this.getDisplayDescription());
 
         NbtCompound nbt = BvElement.serializeToNbt(this);
@@ -449,10 +450,7 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      * @since    0.2.0
      */
     static <T extends BvElement> Supplier<T> registerType(String type, Class<T> type_class, Supplier<T> supplier) {
-        TYPE_REGISTRY.put(type, (Supplier<BvElement>) supplier);
-        CLASS_REGISTRY.put(type, type_class);
-        CLASS_TO_SUPPLIER.put(type_class, (Supplier<BvElement>) supplier);
-        return supplier;
+        return registerType(type, type_class, supplier, null);
     }
 
     /**
@@ -464,7 +462,15 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
         TYPE_REGISTRY.put(type, (Supplier<BvElement>) supplier);
         CLASS_REGISTRY.put(type, type_class);
         CLASS_TO_SUPPLIER.put(type_class, (Supplier<BvElement>) supplier);
-        CLASS_TO_REVIVER.put(type_class, (Function<NbtElement, BvElement>) reviver);
+
+        if (reviver != null) {
+            CLASS_TO_REVIVER.put(type_class, (Function<NbtElement, BvElement>) reviver);
+        }
+
+        if (LOGGER.isEnabled()) {
+            LOGGER.log("Registered type", type, "as", type_class);
+        }
+
         return supplier;
     }
 
