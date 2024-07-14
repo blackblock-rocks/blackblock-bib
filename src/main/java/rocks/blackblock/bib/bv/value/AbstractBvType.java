@@ -101,6 +101,11 @@ AbstractBvType<ContainedType, OwnType extends BvElement<?, ?>>
         ContainedType own_value = this.getContainedValue();
         Object other_value = other_instance.getContainedValue();
 
+        // Be careful with instances that contain themselves
+        if (own_value == this) {
+            return own_value == other_value;
+        }
+
         return Objects.equals(own_value, other_value);
     }
 
