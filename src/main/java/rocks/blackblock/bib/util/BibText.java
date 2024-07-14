@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -144,6 +145,42 @@ public final class BibText {
     }
 
     /**
+     * Generate a slug from the given string.
+     * Check the given map for existing slugs and increment them if needed
+     *
+     * @since    0.2.0
+     */
+    @Contract("null -> null; !null -> !null")
+    public static String slugify(String text, Collection<String> existing_slugs) {
+
+        if (text == null) {
+            return null;
+        }
+
+        String slug = slugify(text);
+
+        if (existing_slugs == null) {
+            return slug;
+        }
+
+        int index = 2;
+        String original = slug;
+
+        while (existing_slugs.contains(slug)) {
+            String incremented = incrementSlug(slug);
+
+            if (incremented.equals(original)) {
+                slug = slug + "-" + index;
+                index++;
+            } else {
+                slug = incremented;
+            }
+        }
+
+        return slug;
+    }
+
+    /**
      * Generate a slug from the given text
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -201,14 +238,17 @@ public final class BibText {
 
         int index = slug.length() - 1;
 
+        // Find the last digit
         while (index > -1 && Character.isDigit(slug.charAt(index))) {
             index--;
         }
 
+        // If there are no digits, add a -2
         if (index == slug.length() - 1) {
             return slug + "-2";
         }
 
+        // Get the number
         String number = slug.substring(index + 1);
         int num = Integer.parseInt(number);
 
