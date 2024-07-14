@@ -8,6 +8,9 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.sun.nio.sctp.NotificationHandler;
 import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.ContainerLootComponent;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -17,6 +20,7 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +36,7 @@ import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.debug.BibYarn;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.diogonunes.jcolor.Attribute.*;
 
@@ -792,6 +797,25 @@ public class BibLog {
                         }
                     });
 
+                } else if (value instanceof ContainerComponent containerComponent) {
+
+                    name = "ContainerComponent";
+
+                    var items = containerComponent.stream().collect(Collectors.toSet());
+
+                    this.add("size", items.size());
+                    this.add("stacks", items);
+                } else if (value instanceof ContainerLootComponent containerLoot) {
+
+                    name = "ContainerLootComponent";
+                    this.add("loot_table", containerLoot.lootTable());
+                } else if (value instanceof LoreComponent loreComponent) {
+                    name = "LoreComponent";
+                    this.add("lines", loreComponent.lines());
+                } else if (value instanceof RegistryKey<?> key) {
+                    name = "RegistryKey";
+                    this.add("registry", key.getRegistry());
+                    this.add("identifier", key.getValue());
                 } else {
                     name = value.getClass().getSimpleName();
 
