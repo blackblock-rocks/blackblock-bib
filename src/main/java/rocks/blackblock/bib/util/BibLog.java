@@ -26,10 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.WrapperProtoChunk;
+import net.minecraft.world.chunk.*;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.BibMod;
@@ -668,16 +665,20 @@ public class BibLog {
                 } else if (value instanceof WrapperProtoChunk roc) {
                     name = "WrapperProtoChunk";
                     this.add("pos", roc.getPos());
+                    this.add("status", roc.getStatus());
                 } else if (value instanceof ProtoChunk proto) {
                     name = "ProtoChunk";
                     this.add("pos", proto.getPos());
+                    this.add("status", proto.getStatus());
                 } else if (value instanceof WorldChunk chunk) {
                     name = "WorldChunk";
                     this.add("pos", chunk.getPos());
                     this.add("world", chunk.getWorld());
+                    this.add("status", chunk.getStatus());
                 } else if (value instanceof Chunk chunk) {
                     name = "Chunk";
                     this.add("pos", chunk.getPos());
+                    this.add("status", chunk.getStatus());
                 } else if (value instanceof ServerWorld world) {
                     name = "ServerWorld";
                     this.add("name", world.getRegistryKey().getValue().toString());
@@ -696,6 +697,9 @@ public class BibLog {
                 } else if (value instanceof UUID uuid) {
                     name = "UUID";
                     this.add("uuid", uuid.toString());
+                } else if (value instanceof ChunkStatus status) {
+                    name = "ChunkStatus";
+                    this.setContent(status.getId());
                 } else if (value instanceof Packet packet) {
 
                     if (BibYarn.INSTANCE != null) {
