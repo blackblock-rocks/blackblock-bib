@@ -1,16 +1,18 @@
 package rocks.blackblock.bib.util;
 
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.thread.ThreadExecutor;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 import rocks.blackblock.bib.runnable.TickRunnable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Library for helping with control flow
@@ -24,6 +26,12 @@ public final class BibFlow {
     // The main timer
     private static Timer FLOW_TIMER = null;
 
+    // The main server thread
+    private static final Thread MAIN_SERVER_THREAD = Thread.currentThread();
+
+    // Server chunk executors per world
+    private static final Map<RegistryKey<World>, ThreadExecutor<Runnable>> WORLD_CHUNK_EXECUTORS = new HashMap<>();
+
     /**
      * Don't let anyone instantiate this class
      *
@@ -35,7 +43,41 @@ public final class BibFlow {
     }
 
     /**
-     * Do something within a certain amount of ticks
+     * Register a chunk thread executor
+     *
+     * @since    0.2.0
+     */
+    @ApiStatus.Internal
+    public static void registerWorldChunkExecutor(ServerWorld world, ThreadExecutor<Runnable> executor) {
+        WORLD_CHUNK_EXECUTORS.put(world.getRegistryKey(), executor);
+    }
+
+    /**
+     * Perform the given task on the given world's rcelated chunk thread
+     * @since    0.2.0
+     */
+    public static CompletableFuture<Void> onWorldChunkThread(World world, Runnable runnable) {
+        return onWorldChunkThread(world.getRegistryKey(), runnable);
+    }
+
+    /**
+     * Perform the given task on the given world's related chunk thread
+     * @since    0.2.0
+     */
+    public static CompletableFuture<Void> onWorldChunkThread(RegistryKey<World> world_key, Runnable runnable) {
+
+        ThreadExecutor<Runnable> executor = WORLD_CHUNK_EXECUTORS.get(world_key);
+
+        if (executor == null) {
+            throw new RuntimeException("No world chunk executor registered for " + world_key);
+        }
+
+        return executor.submit(runnable);
+    }
+
+    /**
+     * Do something within a certain amount of ticks.
+     * This will be executed on the main server thread.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
@@ -49,7 +91,8 @@ public final class BibFlow {
     }
 
     /**
-     * Do something within a certain amount of ms
+     * Do something within a certain amount of ms.
+     * This will be executed on the main server thread.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0

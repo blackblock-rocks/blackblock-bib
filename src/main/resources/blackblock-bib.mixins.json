@@ -9,7 +9,8 @@
         "MinecraftServerMixin",
         "ServerWorldMixin",
         "TACSMixin",
-        "WorldChunkMixin"
+        "WorldChunkMixin",
+        "threading.ServerChunkLoadingManagerMixin"
     ],
     "injectors": {
         "defaultRequire": 1
