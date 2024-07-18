@@ -34,6 +34,10 @@ public class Log4jDeobfuscatorFilter extends AbstractFilter {
     @Override
     public Result filter(LogEvent event) {
 
+        if (BibYarn.INSTANCE == null) {
+            return Result.NEUTRAL;
+        }
+
         if (event.getMarker() != null && event.getMarker().isInstanceOf(DEOBFUSCATED_MARKER)) {
             // Allow modified events through
             return Result.NEUTRAL;
