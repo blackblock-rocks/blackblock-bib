@@ -20,13 +20,19 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.chunk.*;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureType;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.BibMod;
@@ -506,31 +512,9 @@ public class BibLog {
                         entry = MagentaText.format(entry);
                     } else {
 
-                        if (arg instanceof WrapperProtoChunk roc) {
-                            entry = "WrapperProtoChunk{" + roc.getPos().x + ", " + roc.getPos().z + "}";
-                        } else if (arg instanceof ProtoChunk proto) {
-                            entry = "ProtoChunk{" + proto.getPos().x + ", " + proto.getPos().z + "}";
-                        } else if (arg instanceof WorldChunk chunk) {
-                            entry = "WorldChunk{" + chunk.getPos().x + ", " + chunk.getPos().z + "}";
-                        } else if (arg instanceof Chunk chunk) {
-                            entry = "Chunk{" + chunk.getPos().x + ", " + chunk.getPos().z + "}";
-                        } else if (arg instanceof ServerWorld world) {
-                            entry = "ServerWorld{" + world.getRegistryKey().getValue() + "}";
-                        } else if (arg instanceof ServerWorldAccess world) {
-                            entry = "ServerWorldAccess{" + world.toServerWorld().getRegistryKey().getValue() + "}";
-                        } else if (arg instanceof Identifier id) {
-                            entry = "Identifier{" + id.getNamespace() + ":" + id.getPath() + "}";
-                        } else if (arg instanceof UUID uuid) {
-                            entry = "UUID{" + uuid + "}";
-                        } else if (arg instanceof PlayerEntity player) {
-                            String world = player.getWorld() == null ? "~NULL~" : player.getWorld().toString();
-                            BlockPos pos = player.getBlockPos();
-                            entry = "Player{" + player.getName().getString() + ",l=" + world + ",x=" + pos.getX() + ",y=" + pos.getY() + ",z=" + pos.getZ() + "}";
-                        } else {
-                            Arg sarg = createArg(arg);
-                            sarg.setFallbackContent(entry);
-                            entry = sarg.toIndentedString(0);
-                        }
+                        Arg sarg = createArg(arg);
+                        sarg.setFallbackContent(entry);
+                        entry = sarg.toIndentedString(0);
 
                         entry = MagentaText.format(entry);
                     }
@@ -820,6 +804,18 @@ public class BibLog {
                     name = "RegistryKey";
                     this.add("registry", key.getRegistry());
                     this.add("identifier", key.getValue());
+                } else if (value instanceof StructureStart structureStart) {
+                    name = "StructureStart";
+
+                    this.add("pos", structureStart.getPos());
+                    this.add("structure", structureStart.getStructure());
+                } else if (value instanceof Structure structure) {
+                    name = "Structure";
+                    this.add("type", structure.getType());
+                    this.add("id", BibServer.getDynamicRegistry().get(RegistryKeys.STRUCTURE).getId(structure));
+                } else if (value instanceof StructureType<?> type) {
+                    name = "StructureType";
+                    this.add("id", Registries.STRUCTURE_TYPE.getId(type));
                 } else {
                     name = value.getClass().getSimpleName();
 
