@@ -2,10 +2,13 @@ package rocks.blackblock.bib.util;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.inventory.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,5 +89,31 @@ public final class BibInventory {
      */
     public static int calculateComparatorOutput(@Nullable Inventory inventory) {
         return ScreenHandler.calculateComparatorOutput(inventory);
+    }
+
+    /**
+     * Get the non-empty items in the inventory
+     * @since    0.2.0
+     */
+    @NotNull
+    public static List<ItemStack> getNonEmptyItems(Inventory inventory) {
+
+        if (inventory == null) {
+            return List.of();
+        }
+
+        List<ItemStack> result = new ArrayList<>(inventory.size());
+
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+
+            if (stack == null || stack.isEmpty()) {
+                continue;
+            }
+
+            result.add(stack);
+        }
+
+        return result;
     }
 }
