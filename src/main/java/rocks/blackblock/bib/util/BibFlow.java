@@ -92,7 +92,7 @@ public final class BibFlow {
 
     /**
      * Do something within a certain amount of ms.
-     * This will be executed on the main server thread.
+     * This will not be executed on the main server thread.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
@@ -108,6 +108,33 @@ public final class BibFlow {
         FLOW_TIMER.schedule(new WrapperTimerTask(instance), delay_in_ms);
 
         return instance;
+    }
+
+    /**
+     * Run the given runnable on a new timer thread
+     * after the given delay in ms
+     *
+     * @since    0.2.0
+     */
+    public static CompletableFuture<Void> onTimerThread(Runnable runnable, long delay_in_ms) {
+
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } catch (Throwable t) {
+                    result.completeExceptionally(t);
+                    return;
+                }
+
+                result.complete(null);
+            }
+        }, delay_in_ms);
+
+        return result;
     }
 
     /**
