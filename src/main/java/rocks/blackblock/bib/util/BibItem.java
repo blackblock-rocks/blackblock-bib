@@ -9,6 +9,7 @@ import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.collection.CompareForScenario;
+import rocks.blackblock.bib.interfaces.HasItemStackInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -567,31 +569,10 @@ public final class BibItem {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    @Nullable
+    @NotNull
+    @Deprecated
     public static List<ItemStack> extractItems(ItemStack stack) {
-
-        NbtList item_list = getItemContainerList(stack);
-
-        if (item_list == null || item_list.isEmpty()) {
-            return null;
-        }
-
-        List<ItemStack> items = new ArrayList<>();
-
-        for (int i = 0; i < item_list.size(); ++i) {
-            NbtCompound nbtCompound = item_list.getCompound(i);
-            ItemStack slot_stack = ItemStack.fromNbt(DynamicRegistryManager.EMPTY, nbtCompound).orElse(null);
-
-            if (slot_stack != null && !slot_stack.isEmpty()) {
-                items.add(slot_stack);
-            }
-        }
-
-        if (items.isEmpty()) {
-            return null;
-        }
-
-        return items;
+        return extractInventoryItems(stack);
     }
 
     /**
@@ -635,9 +616,9 @@ public final class BibItem {
      */
     public static boolean containsIdenticalItems(ItemStack stack) {
 
-        List<ItemStack> items = BibItem.extractItems(stack);
+        List<ItemStack> items = BibItem.extractInventoryItems(stack);
 
-        if (items == null) {
+        if (items.isEmpty()) {
             return false;
         }
 
@@ -860,5 +841,58 @@ public final class BibItem {
         }
 
         return unwrapped;
+    }
+
+    /**
+     * Extract items from the given ItemStack-with-inventory
+     *
+     * @since    0.2.0
+     */
+    @NotNull
+    public static List<ItemStack> extractInventoryItems(ItemStack stack) {
+
+        if (stack == null || stack.isEmpty()) {
+            return List.of();
+        }
+
+        Item item = stack.getItem();
+
+        if (item instanceof HasItemStackInventory item_with_inventory) {
+            Inventory inventory_instance = item_with_inventory.getItemStackInventory(stack);
+            return BibInventory.getNonEmptyItems(inventory_instance);
+        }
+
+        NbtCompound entity_tag = BibBlock.getBlockEntityData(stack);
+
+        if (entity_tag == null) {
+            return List.of();
+        }
+
+        if (entity_tag.contains("Items", NbtElement.LIST_TYPE)) {
+            NbtList list = entity_tag.getList("Items", NbtElement.COMPOUND_TYPE);
+
+            if (list.isEmpty()) {
+                return List.of();
+            }
+
+            List<ItemStack> item_contents = new ArrayList<>(list.size());
+
+            for (int i = 0; i < list.size(); i++) {
+                NbtCompound item_tag = list.getCompound(i);
+                ItemStack item_stack = ItemStack.fromNbt(BibMod.getDynamicRegistry(), item_tag).orElse(null);
+
+                BibLog.log(" -- Converted", i, item_tag, "into", item_stack);
+
+                if (item_stack == null || item_stack.isEmpty()) {
+                    continue;
+                }
+
+                item_contents.add(item_stack);
+            }
+
+            return item_contents;
+        }
+
+        return List.of();
     }
 }
