@@ -2,11 +2,16 @@ package rocks.blackblock.bib.placeholder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.CheckedRandom;
+import rocks.blackblock.bib.util.BibBlock;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +77,14 @@ public class BlockPlaceholderResolvers {
             EntityType<?> type = spawn_egg_item.getEntityType(source);
 
             if (type != null) {
-                //var spawner = new MobSpawnerBlockEntity()
+                var stack = new ItemStack(Items.SPAWNER);
+
+                var entity = new MobSpawnerBlockEntity(new BlockPos(0, 0, 0), Blocks.SPAWNER.getDefaultState());
+                entity.setEntityType(type, new CheckedRandom(0));
+
+                BibBlock.setBlockEntityData(stack, entity);
+
+                return placeholderContext.suggest(stack);
             }
         }
 

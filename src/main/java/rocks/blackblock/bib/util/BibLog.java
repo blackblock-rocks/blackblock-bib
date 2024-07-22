@@ -1,27 +1,26 @@
 package rocks.blackblock.bib.util;
 
 
-import carpet.script.language.Sys;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
-import com.sun.nio.sctp.NotificationHandler;
 import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.*;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
@@ -816,6 +815,22 @@ public class BibLog {
                 } else if (value instanceof StructureType<?> type) {
                     name = "StructureType";
                     this.add("id", Registries.STRUCTURE_TYPE.getId(type));
+                } else if (value instanceof NbtComponent nbt_component) {
+                    name = "NbtComponent";
+                    this.add("nbt", nbt_component.getNbt());
+                    this.add("size", nbt_component.getSize());
+                } else if (value instanceof NbtCompound nbt_compound) {
+                    name = "NbtCompound";
+
+                    for (String key : nbt_compound.getKeys()) {
+                        this.add(key, nbt_compound.get(key));
+                    }
+                } else if (value instanceof AbstractNbtNumber nbt_nr) {
+                    name = nbt_nr.getClass().getSimpleName();
+                    this.setContent(nbt_nr.numberValue() + "");
+                } else if (value instanceof NbtString nbt_string) {
+                    name = "NbtString";
+                    this.setContent(nbt_string.asString());
                 } else {
                     name = value.getClass().getSimpleName();
 

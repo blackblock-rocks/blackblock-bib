@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.interaction.InternalBibBlockBaseInteraction;
 import rocks.blackblock.bib.interaction.InternalBibBlockInteraction;
 import rocks.blackblock.bib.interaction.InternalBibBlockWithItemInteraction;
@@ -120,6 +121,16 @@ public final class BibBlock {
      */
     public static void setBlockEntityData(ItemStack target, BlockEntity block_entity, NbtCompound data) {
         BlockItem.setBlockEntityData(target, block_entity.getType(), data);
+    }
+
+    /**
+     * Set the BlockEntity data in the given ItemStack.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void setBlockEntityData(ItemStack target, BlockEntity block_entity) {
+        block_entity.setStackNbt(target, BibMod.getDynamicRegistry());
     }
 
     /**

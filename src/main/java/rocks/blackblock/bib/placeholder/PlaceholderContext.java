@@ -2,7 +2,9 @@ package rocks.blackblock.bib.placeholder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
@@ -150,6 +152,30 @@ public class PlaceholderContext implements BibLog.Argable {
     }
 
     /**
+     * Get a target state for testing
+     *
+     * @since    0.2.0
+     */
+    public BlockState getWantedTargetStateForTesting() {
+
+        if (this.target_state != null) {
+            return this.target_state;
+        }
+
+        if (this.source == null || this.source.isEmpty()) {
+            return null;
+        }
+
+        ItemStack source = this.source;
+
+        if (source.getItem() instanceof BlockItem block_item) {
+            return block_item.getBlock().getDefaultState();
+        }
+
+        return Blocks.AIR.getDefaultState();
+    }
+
+    /**
      * Set the wanted BlockState of the target block position
      *
      * @since    0.2.0
@@ -278,8 +304,6 @@ public class PlaceholderContext implements BibLog.Argable {
      */
     private boolean validateSuggestedResult(Result result) {
 
-        BibLog.log("  -- Validating suggested result", result);
-
         if (result.isEmpty()) {
             return false;
         }
@@ -290,9 +314,41 @@ public class PlaceholderContext implements BibLog.Argable {
 
         var can_be_placed = BlockPlaceholderResolver.canBlockBePlaced(copy);
 
-        BibLog.log("    -- Can be placed?", can_be_placed);
-
         return can_be_placed;
+    }
+
+    /**
+     * See if the given result is a placeholder too.
+     * Classes that are placeholder resolvers should do this themselves,
+     * but this is to catch any mistakes.
+     *
+     * @since    0.2.0
+     */
+    public Result unwrapResult(Result result) {
+
+        ItemStack stack = result.getStack();
+
+        if (stack == null || stack.isEmpty()) {
+            return result;
+        }
+
+        Item item = stack.getItem();
+
+        if (item instanceof BlockPlaceholder block_placeholder_item) {
+            var copy = this.copy();
+            copy.setSourceStack(stack);
+            copy.setWantedTargetState(null);
+            return block_placeholder_item.getBlockPlaceholderReplacementStack(copy);
+        }
+
+        if (item instanceof ItemStackPlaceholder item_stack_placeholder_item) {
+            var copy = this.copy();
+            copy.setSourceStack(stack);
+            copy.setWantedTargetState(null);
+            return item_stack_placeholder_item.getItemStackPlaceholderReplacementStack(copy);
+        }
+
+        return result;
     }
 
     /**
@@ -301,6 +357,8 @@ public class PlaceholderContext implements BibLog.Argable {
      * @since    0.2.0
      */
     public Result suggest(Result result) {
+
+        result = this.unwrapResult(result);
 
         if (!this.validateSuggestedResult(result)) {
             return Result.EMPTY;
@@ -316,12 +374,7 @@ public class PlaceholderContext implements BibLog.Argable {
      */
     public Result suggest(ItemStack stack) {
         var result = Result.of(stack);
-
-        if (!this.validateSuggestedResult(result)) {
-            return Result.EMPTY;
-        }
-
-        return result;
+        return this.suggest(result);
     }
 
     /**
@@ -331,12 +384,7 @@ public class PlaceholderContext implements BibLog.Argable {
      */
     public Result suggest(Block block) {
         var result = Result.of(block);
-
-        if (!this.validateSuggestedResult(result)) {
-            return Result.EMPTY;
-        }
-
-        return result;
+        return this.suggest(result);
     }
 
     /**

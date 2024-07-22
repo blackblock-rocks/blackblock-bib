@@ -89,8 +89,6 @@ public class BlockPlaceholderResolver {
     @NotNull
     public static PlaceholderContext.Result resolveBlockFromItem(PlaceholderContext context) {
 
-        BibLog.log("  -- Resolving block from", context);
-
         if (!context.hasSourceStack()) {
             return PlaceholderContext.Result.EMPTY;
         }
@@ -98,10 +96,8 @@ public class BlockPlaceholderResolver {
         ItemStack source = context.getSourceStack();
         Item item = source.getItem();
 
-        BibLog.log("    -- Item is", item);
-
         // Always prefer the block placeholder interface
-        if (source.getItem() instanceof BlockPlaceholder block_placeholder_item) {
+        if (item instanceof BlockPlaceholder block_placeholder_item) {
             var result = block_placeholder_item.getBlockPlaceholderReplacementStack(context);
 
             if (result == null) {
@@ -110,8 +106,6 @@ public class BlockPlaceholderResolver {
 
             return context.suggest(result);
         }
-
-        BibLog.log("    -- Item is not a BlockPlaceholder");
 
         // See if we can resolve it with the default resolvers
         for (BlockPlaceholderResolver resolver : context.getBlockResolvers()) {
@@ -122,16 +116,12 @@ public class BlockPlaceholderResolver {
             }
         }
 
-        BibLog.log("    -- No resolvers found");
-
         // If the item is a BlockItem, suggest the source block
         // Don't just suggest the block_item.getBlock() because
         // it might be a BlockEntity that needs data to be valid
         if (item instanceof BlockItem block_item) {
             return context.suggest(source);
         }
-
-        BibLog.log("    -- Item is not a BlockItem, so no block can be found");
 
         return PlaceholderContext.Result.EMPTY;
     }
@@ -163,10 +153,13 @@ public class BlockPlaceholderResolver {
 
         List<ItemStack> result = new ArrayList<>(block_item_stacks.size());
 
-        BibLog.log("Filtering", block_item_stacks.size(), "block item stacks");
-
         for (ItemStack stack : block_item_stacks) {
             PlaceholderContext copy = context.copy();
+
+            if (stack == null || stack.isEmpty()) {
+                continue;
+            }
+
             copy.setSourceStack(stack);
 
             var resolved = resolveBlockFromItem(copy);
@@ -204,6 +197,12 @@ public class BlockPlaceholderResolver {
      */
     public static boolean canBlockBePlaced(PlaceholderContext context) {
 
+        BlockState wanted_state = context.getWantedTargetStateForTesting();
+
+        if (wanted_state == null) {
+            return false;
+        }
+
         if (context.getCheckTargetPosition()) {
             // Get the current block at the given position
             BlockState current_state = context.getCurrentState();
@@ -223,25 +222,15 @@ public class BlockPlaceholderResolver {
                 }
             }
 
-            BlockState wanted_state = context.getWantedTargetState();
+            wanted_state = context.getWantedTargetState();
 
+            // Let's assume whatever the context has in its item stack form is correct
             if (wanted_state == null) {
-
-                BlockItem block_item = context.getBlockItem();
-
-                BibLog.log("    -- Block item is", block_item);
-
-                if (block_item != null) {
-                    wanted_state = block_item.getBlock().getDefaultState();
-                }
+                return true;
             }
 
-            BibLog.log("    -- Wanted state is", wanted_state);
-
-            if (wanted_state != null) {
-                if (!wanted_state.canPlaceAt(context.getWorld(), context.getTargetPos())) {
-                    return false;
-                }
+            if (!wanted_state.canPlaceAt(context.getWorld(), context.getTargetPos())) {
+                return false;
             }
         }
 
