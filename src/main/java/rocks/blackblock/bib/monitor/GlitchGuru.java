@@ -92,6 +92,9 @@ public class GlitchGuru {
         if (message != null) {
             BibLog.log(message, t);
             t.printStackTrace();
+        } else {
+            BibLog.log("Registering throwable", t);
+            t.printStackTrace();
         }
 
         if (GlitchGuru.sentry_initialized) {
