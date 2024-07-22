@@ -15,9 +15,11 @@ import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
+import rocks.blackblock.bib.text.InternalLore;
 
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +32,12 @@ import java.util.Map;
 public final class BibText {
 
     /**
+     * The Lore class
+     * @since    0.1.0
+     */
+    public static class Lore extends InternalLore<Lore> {}
+
+    /**
      * Don't let anyone instantiate this class
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -37,6 +45,34 @@ public final class BibText {
      */
     private BibText() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Create a new Lore instance
+     * @since    0.2.0
+     */
+    public static Lore createLore() {
+        return new Lore();
+    }
+
+    /**
+     * Create a new Lore instance of the given info
+     * @since    0.2.0
+     */
+    public static Lore createLore(String lore) {
+        var result = new Lore();
+        result.add(lore);
+        return result;
+    }
+
+    /**
+     * Create a new Lore instance of the given info
+     * @since    0.2.0
+     */
+    public static Lore createLore(List<? extends Text> lore) {
+        var result = new Lore();
+        result.add(lore);
+        return result;
     }
 
     /**
