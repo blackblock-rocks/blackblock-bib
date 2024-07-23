@@ -40,7 +40,11 @@ public abstract class InternalLore<T extends InternalLore<?>> {
      * @since    0.2.0
      */
     public T add(List<? extends Text> text) {
-        this.lines.addAll(text);
+
+        if (text != null) {
+            this.lines.addAll(text);
+        }
+
         return (T) this;
     }
 
@@ -74,6 +78,11 @@ public abstract class InternalLore<T extends InternalLore<?>> {
      * @since    0.2.0
      */
     public T addLine(String key, Object value) {
+
+        if (key == null && value == null) {
+            this.lines.add(Text.literal(""));
+            return (T) this;
+        }
 
         MutableText key_text = Text.literal(key).formatted(Formatting.GRAY);
         Text value_text;
