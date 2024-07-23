@@ -29,7 +29,7 @@ public abstract class InternalLore<T extends InternalLore<?>> {
         String[] parts = text.split("\n");
 
         for (String part : parts) {
-            this.addLine(part);
+            this.lines.add(Text.literal(part));
         }
 
         return (T) this;
@@ -66,7 +66,7 @@ public abstract class InternalLore<T extends InternalLore<?>> {
         } else if (value instanceof BvElement<?, ?> bv_element) {
             value_text = bv_element.toPrettyText();
         } else {
-            value_text = Text.literal(value.toString());
+            return this.add(value.toString());
         }
 
         this.lines.add(value_text);
