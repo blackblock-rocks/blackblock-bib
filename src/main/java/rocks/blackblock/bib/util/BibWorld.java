@@ -8,9 +8,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * Library class for working with worlds
@@ -21,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public final class BibWorld {
 
+    private static final List<Function<World, Integer>> WORLD_BORDER_RADIUS_CALCULATOR = new ArrayList<>();
+
     /**
      * Don't let anyone instantiate this class
      *
@@ -29,6 +36,41 @@ public final class BibWorld {
      */
     private BibWorld() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Register a world border radius calculator
+     * @since    0.2.0
+     */
+    public static void registerWorldBorderRadiusCalculator(Function<World, Integer> calculator) {
+        WORLD_BORDER_RADIUS_CALCULATOR.add(calculator);
+    }
+
+    /**
+     * Get the border radius of the world
+     * @since    0.2.0
+     */
+    public static int getWorldBorderRadius(World world) {
+
+        if (world == null) {
+            return 0;
+        }
+
+        for (Function<World, Integer> calculator : WORLD_BORDER_RADIUS_CALCULATOR) {
+            int result = calculator.apply(world);
+
+            if (result != 0) {
+                return result;
+            }
+        }
+
+        WorldBorder vanilla_border = world.getWorldBorder();
+
+        double center_x = vanilla_border.getCenterX();
+        double center_z = vanilla_border.getCenterZ();
+        double radius = vanilla_border.getSize() / 2;
+
+        return (int) Math.floor(radius);
     }
 
     /**
