@@ -7,6 +7,7 @@
         "EntityTypeMixin",
         "LockableContainerBlockEntityAccessor",
         "MinecraftServerMixin",
+        "ServerCrashSafePacketListenerMixin",
         "ServerWorldMixin",
         "TACSMixin",
         "WorldChunkMixin",
