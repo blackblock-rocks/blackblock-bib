@@ -238,6 +238,8 @@ public final class BibServer {
             return SERVER.getRegistryManager();
         }
 
+        BibLog.attention("Returning an empty DynamicRegistryManager!");
+
         return DynamicRegistryManager.EMPTY;
     }
 }
