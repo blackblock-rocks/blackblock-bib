@@ -37,6 +37,7 @@ public class CommandLeaf {
     protected ArgumentType<?> argument_type = null;
     protected List<Predicate<ServerCommandSource>> requirements = null;
     protected SuggestionProvider<ServerCommandSource> suggestion_provider = null;
+    protected Set<String> required_permissions = null;
 
     /**
      * Create the new lea finstance
@@ -74,11 +75,22 @@ public class CommandLeaf {
      * @since    0.1.0
      */
     public CommandLeaf requires(String permission) {
+
+        if (this.required_permissions == null) {
+            this.required_permissions = new HashSet<>();
+        } else {
+            if (this.required_permissions.contains(permission)) {
+                return this;
+            }
+        }
+
+        this.required_permissions.add(permission);
+
         return this.requires(source -> {
             ServerPlayerEntity player = source.getPlayer();
 
             if (player == null) {
-                return false;
+                return source.hasPermissionLevel(2);
             }
 
             return BibPlayer.hasPermission(player, permission);

@@ -46,7 +46,6 @@ public final class BibPlayer {
      * @since    0.1.0
      */
     public static boolean hasPermission(PlayerEntity player, String permission) {
-        // @TODO: implement Luckperms permission check
 
         if (player != null && player.hasPermissionLevel(2)) {
             return true;

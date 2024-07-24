@@ -19,6 +19,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class CommandCreator {
 
+    private static CommandLeaf BLACKBLOCK_ROOT = null;
     private static Map<String, CommandLeaf> ROOTS = new HashMap<>();
 
     /**
@@ -40,22 +41,28 @@ public class CommandCreator {
     }
 
     /**
-     * Get the Blackblock root
+     * Get the Blackblock root.
+     * This will automatically require the "blackblock.commands.root" permission.
+     * @since    0.2.0
+     */
+    public static CommandLeaf getBlackblockRoot() {
+
+        if (BLACKBLOCK_ROOT == null) {
+            BLACKBLOCK_ROOT = CommandCreator.getPermissionRoot("blackblock", "blackblock.commands.root");
+        }
+
+        return BLACKBLOCK_ROOT;
+    }
+
+    /**
+     * Get a custom root with the given required permission
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
     public static CommandLeaf getPermissionRoot(String name, String permission) {
-
         CommandLeaf root = getRoot(name);
-
-        if (root.requirements == null) {
-            root.requires(serverCommandSource -> {
-                // @TODO: add permission leafs
-                return serverCommandSource.hasPermissionLevel(2);
-            });
-        }
-
+        root.requires(permission);
         return root;
     }
 
