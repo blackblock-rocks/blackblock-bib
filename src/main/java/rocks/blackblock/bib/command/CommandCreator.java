@@ -42,13 +42,13 @@ public class CommandCreator {
 
     /**
      * Get the Blackblock root.
-     * This will automatically require the "blackblock.commands.root" permission.
+     * This will automatically require the "commands.blackblock.root" permission.
      * @since    0.2.0
      */
     public static CommandLeaf getBlackblockRoot() {
 
         if (BLACKBLOCK_ROOT == null) {
-            BLACKBLOCK_ROOT = CommandCreator.getPermissionRoot("blackblock", "blackblock.commands.root");
+            BLACKBLOCK_ROOT = CommandCreator.getPermissionRoot("blackblock", "commands.blackblock.root");
         }
 
         return BLACKBLOCK_ROOT;
@@ -63,6 +63,7 @@ public class CommandCreator {
     public static CommandLeaf getPermissionRoot(String name, String permission) {
         CommandLeaf root = getRoot(name);
         root.requires(permission);
+        root.setProtectDirectChildren(true);
         return root;
     }
 

@@ -38,6 +38,7 @@ public class CommandLeaf {
     protected List<Predicate<ServerCommandSource>> requirements = null;
     protected SuggestionProvider<ServerCommandSource> suggestion_provider = null;
     protected Set<String> required_permissions = null;
+    protected boolean protect_direct_children = false;
 
     /**
      * Create the new lea finstance
@@ -51,6 +52,45 @@ public class CommandLeaf {
     }
 
     /**
+     * Get our permission string
+     *
+     * @since    0.2.0
+     */
+    private String constructPermissionString() {
+
+        String result;
+
+        if (this.parent != null) {
+            result = this.parent.constructPermissionString();
+        } else {
+            result = "commands";
+        }
+
+        result += ".";
+        result += this.name;
+
+        return result;
+    }
+
+    /**
+     * Should the children be protected by default?
+     *
+     * @since    0.2.0
+     */
+    public boolean getProtectDirectChildren() {
+        return this.protect_direct_children;
+    }
+
+    /**
+     * Set if the children should be protected by default
+     *
+     * @since    0.2.0
+     */
+    public void setProtectDirectChildren(boolean protect_direct_children) {
+        this.protect_direct_children = protect_direct_children;
+    }
+
+    /**
      * Get a child leaf
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -58,6 +98,19 @@ public class CommandLeaf {
      */
     public CommandLeaf getChild(String name) {
 
+        if (this.protect_direct_children) {
+            return this.getProtectedChild(name);
+        }
+
+        return this.getUnprotectedChild(name);
+    }
+
+    /**
+     * Get a child leaf without adding new protections.
+     *
+     * @since    0.2.0
+     */
+    public CommandLeaf getUnprotectedChild(String name) {
         CommandLeaf child = this.children.get(name);
 
         if (child == null) {
@@ -65,6 +118,17 @@ public class CommandLeaf {
             this.children.put(name, child);
         }
 
+        return child;
+    }
+
+    /**
+     * Get a child leaf, but make sure it is protected
+     *
+     * @since    0.2.0
+     */
+    public CommandLeaf getProtectedChild(String name) {
+        CommandLeaf child = this.getUnprotectedChild(name);
+        child.requires(this.constructPermissionString());
         return child;
     }
 
