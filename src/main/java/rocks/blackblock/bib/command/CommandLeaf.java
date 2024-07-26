@@ -15,8 +15,10 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import rocks.blackblock.bib.interop.BibInterop;
 import rocks.blackblock.bib.util.BibLog;
 import rocks.blackblock.bib.util.BibPlayer;
+import rocks.blackblock.bib.util.BibServer;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -128,7 +130,7 @@ public class CommandLeaf {
      */
     public CommandLeaf getProtectedChild(String name) {
         CommandLeaf child = this.getUnprotectedChild(name);
-        child.requires(this.constructPermissionString());
+        child.requires(child.constructPermissionString());
         return child;
     }
 
@@ -148,6 +150,16 @@ public class CommandLeaf {
             }
         }
 
+        if (BibInterop.LUCKPERMS != null) {
+            BibInterop.LUCKPERMS.registerPermission(permission);
+        } else {
+            BibServer.withReadyServer(minecraftServer -> {
+                if (BibInterop.LUCKPERMS != null) {
+                    BibInterop.LUCKPERMS.registerPermission(permission);
+                }
+            });
+        }
+
         this.required_permissions.add(permission);
 
         return this.requires(source -> {
@@ -157,7 +169,11 @@ public class CommandLeaf {
                 return source.hasPermissionLevel(2);
             }
 
-            return BibPlayer.hasPermission(player, permission);
+            var result = BibPlayer.hasPermission(player, permission);
+
+            //BibLog.log("Checking permission", permission, "for", player.getNameForScoreboard(), "result:", result);
+
+            return result;
         });
     }
 

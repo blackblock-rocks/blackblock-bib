@@ -2,9 +2,11 @@ package rocks.blackblock.bib.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.luckperms.api.LuckPerms;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import rocks.blackblock.bib.interop.InteropLuckPerms;
 import rocks.blackblock.bib.util.BibLog;
 
 import java.util.HashMap;

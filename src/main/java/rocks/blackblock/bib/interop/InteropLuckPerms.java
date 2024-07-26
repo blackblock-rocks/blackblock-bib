@@ -5,8 +5,11 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
+import net.luckperms.api.node.Node;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.ApiStatus;
+import rocks.blackblock.bib.util.BibLog;
+import rocks.blackblock.bib.util.BibServer;
 
 /**
  * Simple class to work with LuckPerms
@@ -40,6 +43,19 @@ public class InteropLuckPerms {
         }
 
         return LUCKPERMS_INSTANCE;
+    }
+
+    /**
+     * Register a permission node
+     * @since    0.2.0
+     */
+    public void registerPermission(String permission) {
+
+        BibServer.withReadyServer(minecraftServer -> {
+            this.getLuckperms();
+            BibLog.log("Registering permission", permission);
+            Node.builder(permission).build();
+        });
     }
 
     /**
