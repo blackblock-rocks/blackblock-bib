@@ -923,6 +923,8 @@ public class BibLog {
 
             if (value instanceof String || value instanceof Number || value instanceof Boolean || value == null) {
                 // Ok
+            } else if (value instanceof Arg) {
+                // Do nothing
             } else {
                 value = createArgInternal(value);
             }
