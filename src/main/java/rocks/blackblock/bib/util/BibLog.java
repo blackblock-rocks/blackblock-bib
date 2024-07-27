@@ -11,7 +11,9 @@ import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -26,9 +28,11 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.Weight;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.chunk.*;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
@@ -831,6 +835,28 @@ public class BibLog {
                 } else if (value instanceof NbtString nbt_string) {
                     name = "NbtString";
                     this.setContent(nbt_string.asString());
+                } else if (value instanceof SpawnGroup spawnGroup) {
+                    name = "SpawnGroup";
+                    this.add("name", spawnGroup.getName());
+                    this.add("capacity", spawnGroup.getCapacity());
+                    this.add("isPeaceful", spawnGroup.isPeaceful());
+                    this.add("isRare", spawnGroup.isRare());
+                    this.add("despawnStartRange", spawnGroup.getDespawnStartRange());
+                } else if (value instanceof SpawnSettings.SpawnEntry entry) {
+                    name = "SpawnSettings.SpawnEntry";
+                    this.add("type", entry.type);
+                    this.add("weight", entry.getWeight());
+                    this.add("minGroupSize", entry.minGroupSize);
+                    this.add("maxGroupSize", entry.maxGroupSize);
+                } else if (value instanceof Weight weight) {
+                    name = "Weight";
+                    this.setContent(weight.getValue() + "");
+                } else if (value instanceof EntityType entity_type) {
+                    name = "EntityType";
+                    this.add("key", entity_type.getTranslationKey());
+                    this.add("group", entity_type.getSpawnGroup());
+                    this.add("height", entity_type.getHeight());
+                    this.add("width", entity_type.getWidth());
                 } else {
                     name = value.getClass().getSimpleName();
 
