@@ -857,6 +857,21 @@ public class BibLog {
                     this.add("group", entity_type.getSpawnGroup());
                     this.add("height", entity_type.getHeight());
                     this.add("width", entity_type.getWidth());
+                } else if (value instanceof Collection collection) {
+                    name = collection.getClass().getSimpleName();
+                    this.add("size", collection.size());
+
+                    int i = 0;
+
+                    for (Object entry : collection) {
+                        this.add("" + i, entry);
+                        i++;
+
+                        if (i > 10) {
+                            break;
+                        }
+                    }
+
                 } else {
                     name = value.getClass().getSimpleName();
 

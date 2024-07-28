@@ -59,6 +59,10 @@ public class BlockPlaceholderResolvers {
             block = Blocks.AIR;
         }
 
+        if (block == null) {
+            return null;
+        }
+
         return placeholderContext.suggest(block);
     });
 

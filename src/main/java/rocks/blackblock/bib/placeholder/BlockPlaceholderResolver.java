@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @since    0.2.0
  */
 @SuppressWarnings("unused")
-public class BlockPlaceholderResolver {
+public class BlockPlaceholderResolver implements BibLog.Argable {
 
     private final String id;
     private Function<PlaceholderContext, PlaceholderContext.Result> resolver = null;
@@ -61,7 +61,7 @@ public class BlockPlaceholderResolver {
     public PlaceholderContext.Result apply(PlaceholderContext context) {
         var result = this.resolver.apply(context);
 
-        if (result == null) {
+        if (result == null || result.isEmpty()) {
             return PlaceholderContext.Result.EMPTY;
         }
 
@@ -235,5 +235,16 @@ public class BlockPlaceholderResolver {
         }
 
         return true;
+    }
+
+    @Override
+    public BibLog.Arg toBBLogArg() {
+        return BibLog.createArg(this)
+                .add("id", this.id);
+    }
+
+    @Override
+    public String toString() {
+        return this.toBBLogArg().toString();
     }
 }
