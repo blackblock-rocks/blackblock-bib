@@ -1,6 +1,7 @@
 package rocks.blackblock.bib.interop;
 
 
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -52,9 +53,15 @@ public class InteropLuckPerms {
     public void registerPermission(String permission) {
 
         BibServer.withReadyServer(minecraftServer -> {
-            this.getLuckperms();
+            var instance = this.getLuckperms();
             BibLog.log("Registering permission", permission);
             Node.builder(permission).build();
+
+            var manager = instance.getUserManager();
+
+            manager.loadUser(FakePlayer.DEFAULT_UUID).thenAccept(user -> {
+                user.getCachedData().getPermissionData().checkPermission(permission).asBoolean();
+            });
         });
     }
 

@@ -58,18 +58,21 @@ public class CommandLeaf {
      *
      * @since    0.2.0
      */
-    private String constructPermissionString() {
+    private String constructPermissionString(boolean as_parent) {
 
         String result;
 
         if (this.parent != null) {
-            result = this.parent.constructPermissionString();
+            result = this.parent.constructPermissionString(true);
+            result += ".";
+            result += this.name;
         } else {
-            result = "commands";
-        }
+            result = this.name + ".command";
 
-        result += ".";
-        result += this.name;
+            if (!as_parent) {
+                result = result + ".root";
+            }
+        }
 
         return result;
     }
@@ -130,7 +133,7 @@ public class CommandLeaf {
      */
     public CommandLeaf getProtectedChild(String name) {
         CommandLeaf child = this.getUnprotectedChild(name);
-        child.requires(child.constructPermissionString());
+        child.requires(child.constructPermissionString(false));
         return child;
     }
 

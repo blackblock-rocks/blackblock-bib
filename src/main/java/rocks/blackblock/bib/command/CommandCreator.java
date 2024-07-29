@@ -50,7 +50,7 @@ public class CommandCreator {
     public static CommandLeaf getBlackblockRoot() {
 
         if (BLACKBLOCK_ROOT == null) {
-            BLACKBLOCK_ROOT = CommandCreator.getPermissionRoot("blackblock", "commands.blackblock.root");
+            BLACKBLOCK_ROOT = CommandCreator.getPermissionRoot("blackblock", "blackblock.command.root");
         }
 
         return BLACKBLOCK_ROOT;
