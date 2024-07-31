@@ -6,10 +6,12 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.monitor.GlitchGuru;
+import rocks.blackblock.bib.runnable.Pledge;
 import rocks.blackblock.bib.runnable.TickRunnable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -239,13 +241,17 @@ public final class BibFlow {
      *
      * @since    0.2.0
      */
-    public static <T> void done(Collection<CompletableFuture<T>> futures, Consumer<List<T>> callback) {
+    public static <T> void done(Collection<? extends CompletionStage<T>> stages, Consumer<List<T>> callback) {
+
+        List<CompletableFuture<T>> futures = new ArrayList<>(stages.size());
+        futures = stages.stream().map(CompletionStage::toCompletableFuture).toList();
 
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
+        List<CompletableFuture<T>> finalFutures = futures;
         allFutures.thenAccept(v -> {
             List<T> results = new ArrayList<>();
-            for (CompletableFuture<T> future : futures) {
+            for (CompletableFuture<T> future : finalFutures) {
                 results.add(future.join());
             }
 
@@ -263,7 +269,7 @@ public final class BibFlow {
      *
      * @since    0.2.0
      */
-    public static <T> CompletableFuture<?> series(Collection<T> entries, Function<T, CompletableFuture<?>> task) {
+    public static <T> Pledge<?> series(Collection<T> entries, Function<T, CompletionStage<?>> task) {
 
         // Start with a completed future to use as the initial point for chaining
         CompletableFuture<?> future = CompletableFuture.completedFuture(null);
@@ -273,7 +279,7 @@ public final class BibFlow {
             future = future.thenCompose(v -> task.apply(entry));
         }
 
-        return future;
+        return Pledge.from(future);
     }
 
     /**
@@ -282,14 +288,15 @@ public final class BibFlow {
      *
      * @since    0.2.0
      */
-    public static <T> CompletableFuture<Void> parallel(Collection<T> entries, Function<T, CompletableFuture<?>> task) {
+    public static <T> Pledge<Void> parallel(Collection<T> entries, Function<T, CompletionStage<?>> task) {
         // Create a list of CompletableFutures for all tasks
-        Collection<CompletableFuture<?>> futures = entries.stream()
+        var futures = entries.stream()
                 .map(task)
+                .map(CompletionStage::toCompletableFuture)
                 .toList();
 
         // Combine all futures into a single CompletableFuture
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        return Pledge.from(CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])));
     }
 
     /**
