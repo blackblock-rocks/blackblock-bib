@@ -86,6 +86,9 @@ public class BibLog {
     // Is logging enabled?
     public static final boolean VERBOSE_LOGGING;
 
+    // Log memory addresses?
+    public static boolean LOG_MEMORY_ADDRESSES;
+
     static {
         String categories = getEnv("LOGGING_CATEGORIES");
         boolean enable_verbose_logging = false;
@@ -106,6 +109,8 @@ public class BibLog {
         }
 
         VERBOSE_LOGGING = enable_verbose_logging;
+
+        LOG_MEMORY_ADDRESSES = getEnvBoolean("LOG_MEMORY_ADDRESSES") || hasEnabledCategory("identity-hash-code");
     }
 
     /**
@@ -631,6 +636,10 @@ public class BibLog {
 
         public Arg(Object value) {
             this.value = value;
+
+            if (LOG_MEMORY_ADDRESSES) {
+                this.add("@address", Integer.toHexString(System.identityHashCode(value)));
+            }
 
             if (value instanceof String) {
                 this.class_name = (String) value;
