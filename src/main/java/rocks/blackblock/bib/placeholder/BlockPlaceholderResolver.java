@@ -76,6 +76,7 @@ public class BlockPlaceholderResolver implements BibLog.Argable {
     public static PlaceholderContext.Result resolveBlockFromItem(ItemStack stack) {
         PlaceholderContext context = new PlaceholderContext();
         context.setSourceStack(stack);
+        context.setCheckTargetPosition(false);
         return resolveBlockFromItem(context);
     }
 
@@ -197,41 +198,43 @@ public class BlockPlaceholderResolver implements BibLog.Argable {
      */
     public static boolean canBlockBePlaced(PlaceholderContext context) {
 
+        if (!context.getCheckTargetPosition()) {
+            return true;
+        }
+
         BlockState wanted_state = context.getWantedTargetStateForTesting();
 
         if (wanted_state == null) {
             return false;
         }
 
-        if (context.getCheckTargetPosition()) {
-            // Get the current block at the given position
-            BlockState current_state = context.getCurrentState();
+        // Get the current block at the given position
+        BlockState current_state = context.getCurrentState();
 
-            // There is no state, so we're probably missing a lot of information
-            // Return false just to be safe
-            if (current_state == null) {
+        // There is no state, so we're probably missing a lot of information
+        // Return false just to be safe
+        if (current_state == null) {
+            return false;
+        }
+
+        // If replacement logic is disabled,
+        // we have to make sure the target block is empty
+        if (!context.getUseTargetReplacementLogic()) {
+            // If the current block is not air or a fluid, we can't place it
+            if (!current_state.isAir() && !current_state.isLiquid()) {
                 return false;
             }
+        }
 
-            // If replacement logic is disabled,
-            // we have to make sure the target block is empty
-            if (!context.getUseTargetReplacementLogic()) {
-                // If the current block is not air or a fluid, we can't place it
-                if (!current_state.isAir() && !current_state.isLiquid()) {
-                    return false;
-                }
-            }
+        wanted_state = context.getWantedTargetState();
 
-            wanted_state = context.getWantedTargetState();
+        // Let's assume whatever the context has in its item stack form is correct
+        if (wanted_state == null) {
+            return true;
+        }
 
-            // Let's assume whatever the context has in its item stack form is correct
-            if (wanted_state == null) {
-                return true;
-            }
-
-            if (!wanted_state.canPlaceAt(context.getWorld(), context.getTargetPos())) {
-                return false;
-            }
+        if (!wanted_state.canPlaceAt(context.getWorld(), context.getTargetPos())) {
+            return false;
         }
 
         return true;
