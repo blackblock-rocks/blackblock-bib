@@ -492,10 +492,10 @@ public final class BibItem {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    @Contract("null -> null; !null -> !null")
+    @Contract("null -> null")
     public static NbtElement serializeStack(ItemStack stack) {
 
-        if (stack == null) {
+        if (stack == null || stack.isEmpty()) {
             return null;
         }
 
