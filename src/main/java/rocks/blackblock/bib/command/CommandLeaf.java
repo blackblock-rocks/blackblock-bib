@@ -22,6 +22,7 @@ import rocks.blackblock.bib.util.BibServer;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a single command leaf
@@ -37,6 +38,7 @@ public class CommandLeaf {
     protected Map<String, CommandLeaf> children = new HashMap<>();
     protected Command<ServerCommandSource> main_command = null;
     protected ArgumentType<?> argument_type = null;
+    protected OnRegisterSupplier<ArgumentType<?>> argument_type_supplier = null;
     protected List<Predicate<ServerCommandSource>> requirements = null;
     protected SuggestionProvider<ServerCommandSource> suggestion_provider = null;
     protected Set<String> required_permissions = null;
@@ -221,6 +223,16 @@ public class CommandLeaf {
     }
 
     /**
+     * Set the type once ready
+     *
+     * @since    0.2.0
+     */
+    public CommandLeaf setType(OnRegisterSupplier<ArgumentType<?>> argument_type) {
+        this.argument_type_supplier = argument_type;
+        return this;
+    }
+
+    /**
      * Suggest a bunch of strings
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -261,6 +273,10 @@ public class CommandLeaf {
         ArgumentBuilder result = null;
 
         ArgumentType argument_type = this.argument_type;
+
+        if (argument_type == null && this.argument_type_supplier != null) {
+            argument_type = this.argument_type_supplier.onRegister(dispatcher, registryAccess, environment);
+        }
 
         // Default to a string argument type if none is set but there is a providesuggestion
         if (argument_type == null && this.suggestion_provider != null) {
@@ -366,5 +382,16 @@ public class CommandLeaf {
     @FunctionalInterface
     public interface PlayerSelection {
         int executeWithPlayer(CommandContext<ServerCommandSource> context, ServerPlayerEntity player);
+    }
+
+    /**
+     * A supplier that will be called when the command is registered
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    @FunctionalInterface
+    public interface OnRegisterSupplier<T> {
+        T onRegister(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment);
     }
 }
