@@ -418,13 +418,16 @@ public class PlaceholderContext implements BibLog.Argable {
         public static Result EMPTY = new Result();
         public ItemStack result_stack = null;
         public BlockState result_state = null;
+        public Block result_block = null;
 
         /**
          * Create a result of the given block
          * @since    0.2.0
          */
         public static Result of(Block block) {
-            return of(block.getDefaultState());
+            var result = of(block.getDefaultState());
+            result.result_block = block;
+            return result;
         }
 
         /**
@@ -434,6 +437,7 @@ public class PlaceholderContext implements BibLog.Argable {
         public static Result of(BlockState state) {
             var result = new Result();
             result.result_state = state;
+            result.result_block = state.getBlock();
             return result;
         }
 
@@ -444,6 +448,12 @@ public class PlaceholderContext implements BibLog.Argable {
         public static Result of(ItemStack stack) {
             var result = new Result();
             result.result_stack = stack;
+
+            if (stack != null && stack.getItem() instanceof BlockItem block_item) {
+                result.result_block = block_item.getBlock();
+                result.result_state = result.result_block.getDefaultState();
+            }
+
             return result;
         }
 
@@ -455,6 +465,7 @@ public class PlaceholderContext implements BibLog.Argable {
             var result2 = new Result();
             result2.result_stack = result.result_stack;
             result2.result_state = result.result_state;
+            result2.result_block = result.result_block;
             return result2;
         }
 
@@ -464,7 +475,7 @@ public class PlaceholderContext implements BibLog.Argable {
          * @since    0.2.0
          */
         public boolean isEmpty() {
-            return this.result_stack == null && this.result_state == null;
+            return this.result_stack == null && this.result_state == null && this.result_block == null;
         }
 
         /**
@@ -479,6 +490,8 @@ public class PlaceholderContext implements BibLog.Argable {
                     // Depending on the block and its wanted state,
                     // this might not be the correct result!
                     this.result_stack = new ItemStack(this.result_state.getBlock().asItem());
+                } else if (this.result_block != null) {
+                    this.result_stack = new ItemStack(this.result_block);
                 }
             }
 
@@ -495,13 +508,23 @@ public class PlaceholderContext implements BibLog.Argable {
         }
 
         /**
+         * Get the block representation of this result
+         *
+         * @since    0.2.0
+         */
+        public Block getBlock() {
+            return this.result_block;
+        }
+
+        /**
          * Get the Arg representation for this instance
          */
         @Override
         public BibLog.Arg toBBLogArg() {
             return BibLog.createArg(this)
                     .add("stack", this.getStack())
-                    .add("state", this.getState());
+                    .add("state", this.getState())
+                    .add("block", this.getBlock());
         }
 
         @Override
