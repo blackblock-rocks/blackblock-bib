@@ -881,6 +881,18 @@ public class BibLog {
                         }
                     }
 
+                } else if (value instanceof ChunkSection section) {
+                    name = "ChunkSection";
+                    this.add("is_empty", section.isEmpty());
+                    this.add("has_random_ticks", section.hasRandomTicks());
+                    this.add("block_state_container", section.getBlockStateContainer());
+                    this.add("biome_container", section.getBiomeContainer());
+                } else if (value instanceof PalettedContainer<?> container) {
+                    name = "PalettedContainer";
+                    this.add("packet_size", container.getPacketSize());
+                } else if (value instanceof ReadableContainer<?> container) {
+                    name = "ReadableContainer";
+                    this.add("packet_size", container.getPacketSize());
                 } else {
                     name = value.getClass().getSimpleName();
 
