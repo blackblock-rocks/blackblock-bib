@@ -6,6 +6,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -36,6 +37,31 @@ public final class BibWorld {
      */
     private BibWorld() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Get a world by its identifier
+     * @since    0.2.0
+     */
+    public static ServerWorld getWorld(Identifier id) {
+
+        if (id == null) {
+            return null;
+        }
+
+        var server = BibServer.getServer();
+
+        if (server == null) {
+            return null;
+        }
+
+        for (ServerWorld world : server.getWorlds()) {
+            if (world.getRegistryKey().getValue().equals(id)) {
+                return world;
+            }
+        }
+
+        return null;
     }
 
     /**
