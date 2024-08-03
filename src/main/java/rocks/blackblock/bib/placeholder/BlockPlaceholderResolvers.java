@@ -2,8 +2,12 @@ package rocks.blackblock.bib.placeholder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -81,12 +85,35 @@ public class BlockPlaceholderResolvers {
             EntityType<?> type = spawn_egg_item.getEntityType(source);
 
             if (type != null) {
-                var stack = new ItemStack(Items.SPAWNER);
+                var stack = placeholderContext.getTargetStackSuggestion();
 
-                var entity = new MobSpawnerBlockEntity(new BlockPos(0, 0, 0), Blocks.SPAWNER.getDefaultState());
-                entity.setEntityType(type, new CheckedRandom(0));
+                if (stack == null || stack.isEmpty()) {
+                    stack = new ItemStack(Items.SPAWNER);
+                }
 
-                BibBlock.setBlockEntityData(stack, entity);
+                var target_item = stack.getItem();
+                BlockEntity target_be = null;
+
+                if (target_item == Items.SPAWNER) {
+                    var spawner_be = new MobSpawnerBlockEntity(new BlockPos(0, 0, 0), Blocks.SPAWNER.getDefaultState());
+                    spawner_be.setEntityType(type, new CheckedRandom(0));
+                    target_be = spawner_be;
+                } else if (target_item == Items.TRIAL_SPAWNER) {
+                    var spawner_be = new TrialSpawnerBlockEntity(new BlockPos(0, 0, 0), Blocks.TRIAL_SPAWNER.getDefaultState());
+                    spawner_be.setEntityType(type, new CheckedRandom(0));
+                    target_be = spawner_be;
+                } else if (target_item == Items.MINECART) {
+                    return placeholderContext.suggest((world, pos) -> {
+                        MinecartEntity minecart = EntityType.MINECART.spawn(world, pos, SpawnReason.SPAWN_EGG);
+                        var passenger = type.create(world);
+                        passenger.startRiding(minecart, true);
+                        return true;
+                    });
+                }
+
+                if (target_be != null) {
+                    BibBlock.setBlockEntityData(stack, target_be);
+                }
 
                 return placeholderContext.suggest(stack);
             }

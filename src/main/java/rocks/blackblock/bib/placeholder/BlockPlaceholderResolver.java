@@ -9,6 +9,7 @@ import rocks.blackblock.bib.util.BibItem;
 import rocks.blackblock.bib.util.BibLog;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -125,6 +126,54 @@ public class BlockPlaceholderResolver implements BibLog.Argable {
         }
 
         return PlaceholderContext.Result.EMPTY;
+    }
+
+    /**
+     * Resolve all the entries using the Block logic
+     * @since    0.2.0
+     */
+    public static List<PlaceholderContext.Result> resolveAllBlockEntries(ItemStack stack_with_inventory, PlaceholderContext context) {
+
+        List<ItemStack> result = BibItem.extractInventoryItems(stack_with_inventory);
+
+        if (result.isEmpty()) {
+            return List.of();
+        }
+
+        return resolveAllBlockEntries(result, context);
+    }
+
+    /**
+     * Resolve all the entries using the Block logic
+     * @since    0.2.0
+     */
+    public static List<PlaceholderContext.Result> resolveAllBlockEntries(Collection<ItemStack> block_item_stacks, PlaceholderContext context) {
+
+        if (block_item_stacks == null || block_item_stacks.isEmpty()) {
+            return List.of();
+        }
+
+        List<PlaceholderContext.Result> result = new ArrayList<>(block_item_stacks.size());
+
+        for (ItemStack stack : block_item_stacks) {
+            PlaceholderContext copy = context.copy();
+
+            if (stack == null || stack.isEmpty()) {
+                continue;
+            }
+
+            copy.setSourceStack(stack);
+
+            var resolved = resolveBlockFromItem(copy);
+
+            if (resolved.isEmpty()) {
+                continue;
+            }
+
+            result.add(resolved);
+        }
+
+        return result;
     }
 
     /**

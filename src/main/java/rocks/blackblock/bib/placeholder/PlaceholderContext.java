@@ -6,6 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,7 @@ public class PlaceholderContext implements BibLog.Argable {
     private BlockState target_state = null;
     private boolean check_target_position = true;
     private boolean use_target_replacement_logic = false;
+    private ItemStack target_stack_suggestion = null;
 
     /**
      * Create a copy of this context
@@ -48,6 +50,7 @@ public class PlaceholderContext implements BibLog.Argable {
         copy.target_state = this.target_state;
         copy.check_target_position = this.check_target_position;
         copy.use_target_replacement_logic = this.use_target_replacement_logic;
+        copy.target_stack_suggestion = this.target_stack_suggestion;
         return copy;
     }
 
@@ -67,6 +70,26 @@ public class PlaceholderContext implements BibLog.Argable {
      */
     public ServerWorldAccess getWorld() {
         return this.world;
+    }
+
+    /**
+     * Set the target stack suggestion:
+     * this can be used to decide what to replace a spawn egg with,
+     * for example (it could ba a spawner, a trial spawner, ...)
+     *
+     * @since    0.2.0
+     */
+    public void setTargetStackSuggestion(ItemStack stack) {
+        this.target_stack_suggestion = stack;
+    }
+
+    /**
+     * Get the target stack suggestion
+     *
+     * @since    0.2.0
+     */
+    public ItemStack getTargetStackSuggestion() {
+        return this.target_stack_suggestion;
     }
 
     /**
@@ -298,7 +321,7 @@ public class PlaceholderContext implements BibLog.Argable {
     }
 
     /**
-     * Make sur ethe suggested result is valid
+     * Make sure the suggested result is valid
      *
      * @since    0.2.0
      */
@@ -388,6 +411,16 @@ public class PlaceholderContext implements BibLog.Argable {
     }
 
     /**
+     * Suggest a custom logic suggestion
+     *
+     * @since    0.2.0
+     */
+    public Result suggest(CustomLogicSuggestion suggestion) {
+        var result = Result.of(suggestion);
+        return this.suggest(result);
+    }
+
+    /**
      * Get the Arg representation for this instance
      */
     @Override
@@ -409,6 +442,14 @@ public class PlaceholderContext implements BibLog.Argable {
     }
 
     /**
+     * A custom logic suggestion
+     * @since    0.2.0
+     */
+    public interface CustomLogicSuggestion {
+        boolean execute(ServerWorld world, BlockPos pos);
+    }
+
+    /**
      * Result wrapper
      *
      * @since    0.2.0
@@ -419,6 +460,17 @@ public class PlaceholderContext implements BibLog.Argable {
         public ItemStack result_stack = null;
         public BlockState result_state = null;
         public Block result_block = null;
+        public CustomLogicSuggestion suggestion = null;
+
+        /**
+         * Create a result of the given custom logic suggestion
+         * @since    0.2.0
+         */
+        public static Result of(CustomLogicSuggestion suggestion) {
+            var result = new Result();
+            result.suggestion = suggestion;
+            return result;
+        }
 
         /**
          * Create a result of the given block
@@ -466,6 +518,7 @@ public class PlaceholderContext implements BibLog.Argable {
             result2.result_stack = result.result_stack;
             result2.result_state = result.result_state;
             result2.result_block = result.result_block;
+            result2.suggestion = result.suggestion;
             return result2;
         }
 
@@ -475,7 +528,7 @@ public class PlaceholderContext implements BibLog.Argable {
          * @since    0.2.0
          */
         public boolean isEmpty() {
-            return this.result_stack == null && this.result_state == null && this.result_block == null;
+            return this.result_stack == null && this.result_state == null && this.result_block == null && this.suggestion == null;
         }
 
         /**
@@ -517,6 +570,14 @@ public class PlaceholderContext implements BibLog.Argable {
         }
 
         /**
+         * Get the custom logic suggestion
+         * @since    0.2.0
+         */
+        public CustomLogicSuggestion getCustomLogicSuggestion() {
+            return this.suggestion;
+        }
+
+        /**
          * Get the Arg representation for this instance
          */
         @Override
@@ -524,7 +585,8 @@ public class PlaceholderContext implements BibLog.Argable {
             return BibLog.createArg(this)
                     .add("stack", this.getStack())
                     .add("state", this.getState())
-                    .add("block", this.getBlock());
+                    .add("block", this.getBlock())
+                    .add("suggestion", this.getCustomLogicSuggestion());
         }
 
         @Override
