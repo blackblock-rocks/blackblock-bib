@@ -327,7 +327,13 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
      * @since    0.2.0
      */
     default Text getDisplayTitleText() {
-        return Text.literal(this.getDisplayTitle());
+        var title = this.getDisplayTitle();
+
+        if (title == null) {
+            return null;
+        }
+
+        return Text.literal(title);
     }
 
     /**
