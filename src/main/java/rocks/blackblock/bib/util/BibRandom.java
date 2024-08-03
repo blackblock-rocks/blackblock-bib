@@ -3,10 +3,7 @@ package rocks.blackblock.bib.util;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.interfaces.HasWeight;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Library class for working with random numbers & chances
@@ -85,6 +82,27 @@ public final class BibRandom {
     }
 
     /**
+     * Take a random entry from a collection,
+     * and remove it from the collection
+     *
+     * @author  Jelle De Loecker <jelle@elevenways.be>
+     * @since   0.2.0
+     */
+    @Nullable
+    public static <T> T takeRandomEntry(Collection<T> list) {
+
+        var value = BibRandom.getRandomEntry(list);
+
+        if (value == null) {
+            return null;
+        }
+
+        list.remove(value);
+
+        return value;
+    }
+
+    /**
      * Get a random entry from a map
      *
      * @author  Jelle De Loecker <jelle@elevenways.be>
@@ -93,6 +111,28 @@ public final class BibRandom {
     @Nullable
     public static <K, V> Map.Entry<K, V> getRandomEntry(Map<K, V> map) {
         return getRandomEntry(map.entrySet().stream().toList());
+    }
+
+    /**
+     * Take a random entry from a map,
+     * and remove it from the map
+     *
+     * @author  Jelle De Loecker <jelle@elevenways.be>
+     * @since   0.2.0
+     */
+    @Nullable
+    public static <K, V> Map.Entry<K, V> takeRandomEntry(Map<K, V> map) {
+
+        var keys = map.keySet();
+        var random_key = BibRandom.getRandomEntry(keys);
+
+        if (random_key == null) {
+            return null;
+        }
+
+        var value = map.remove(random_key);
+
+        return new AbstractMap.SimpleEntry<>(random_key, value);
     }
 
     /**
