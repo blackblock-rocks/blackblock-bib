@@ -641,6 +641,8 @@ public class BibLog {
                 this.add("@address", Integer.toHexString(System.identityHashCode(value)));
             }
 
+            boolean is_argable = value instanceof Argable;
+
             if (value instanceof String) {
                 this.class_name = (String) value;
             } else if (value != null) {
@@ -911,7 +913,7 @@ public class BibLog {
                         }
                     }
 
-                    if (name.isEmpty() || name.startsWith("class_")) {
+                    if (!is_argable && (name.isEmpty() || name.startsWith("class_"))) {
                         this.full_override = value + "";
                     }
                 }
