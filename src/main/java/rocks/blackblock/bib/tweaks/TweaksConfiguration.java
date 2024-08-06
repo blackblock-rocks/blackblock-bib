@@ -87,6 +87,17 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
     }
 
     /**
+     * Root parameters can't be stored in a root map:
+     * they are the root itself.
+     *
+     * @since    0.2.0
+     */
+    @Override
+    public BvMap getFromRootMap(BvMap map) {
+        return map;
+    }
+
+    /**
      * Augmented versions of tweak configurations
      *
      * @since    0.2.0

@@ -7,6 +7,7 @@ import rocks.blackblock.bib.bv.value.AbstractBvType;
 import rocks.blackblock.bib.bv.value.BvElement;
 import rocks.blackblock.bib.bv.value.BvMap;
 import rocks.blackblock.bib.command.CommandLeaf;
+import rocks.blackblock.bib.util.BibLog;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +55,8 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
      */
     public <T extends BvElement<?, ?>, P extends TweakParameter<T>> P add(P param) {
         this.contained_parameters.put(param.getName(), param);
+
+        param.setParent(this);
 
         if (this.root_parameter == null) {
             param.setRootParameter(this);
@@ -119,7 +122,7 @@ public class MapParameter<V extends AbstractBvType<?, ?>>
         BvMap parent_map;
 
         if (this.parent_parameter == null) {
-            parent_map = root_map;
+            return root_map;
         } else {
             parent_map = this.parent_parameter.ensureMapExistsInRoot(root_map);
         }

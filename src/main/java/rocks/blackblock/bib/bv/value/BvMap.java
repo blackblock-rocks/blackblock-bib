@@ -283,7 +283,7 @@ public class BvMap
     @Override
     public BibLog.Arg toBBLogArg() {
 
-        BibLog.Arg result = BibLog.createArg(this);
+        BibLog.Arg result = BibLog.createArg(this.getClass().getSimpleName());
         int size = 0;
 
         if (this.values != null) {
