@@ -11,6 +11,9 @@
         "ServerWorldMixin",
         "TACSMixin",
         "WorldChunkMixin",
+        "player.EntityMixin",
+        "player.PlayerEntityMixin",
+        "player.ServerPlayerEntityMixin",
         "threading.ServerChunkLoadingManagerMixin"
     ],
     "injectors": {
