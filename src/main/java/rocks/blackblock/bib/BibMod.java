@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.bv.operator.BvOperators;
+import rocks.blackblock.bib.bv.parameter.MapParameter;
+import rocks.blackblock.bib.util.BibPerf;
 import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.config.Config;
 import rocks.blackblock.bib.interop.BibInterop;
@@ -32,6 +34,9 @@ public class BibMod implements ModInitializer {
 	public static final TweaksConfiguration.PerChunk CHUNK_TWEAKS = new TweaksConfiguration.PerChunk(id("chunk-tweaks"));
 	public static final TweaksConfiguration.PerWorld WORLD_TWEAKS = new TweaksConfiguration.PerWorld(id("world-tweaks"));
 
+	// The "perf" tweaks, available under `/blackblock tweaks perf`
+	public static final MapParameter<?> PERF_TWEAKS = GLOBAL_TWEAKS.add(new MapParameter<>("perf"));
+
 	@Override
 	public void onInitialize() {
 
@@ -39,6 +44,7 @@ public class BibMod implements ModInitializer {
 		BibInterop.initializeInterops();
 		Config.initializeAllConfigs();
 		CommandRegistrationCallback.EVENT.register(BibServer::setCommandCanBeRegistered);
+		BibPerf.start();
 
 		// Initialize the augments when everything has registered
 		BibServer.withReadyServer(minecraftServer -> {
