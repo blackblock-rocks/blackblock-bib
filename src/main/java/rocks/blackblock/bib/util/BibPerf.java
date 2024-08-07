@@ -232,13 +232,15 @@ public class BibPerf {
         private RollingAverage<Float> rolling_average = new RollingAverage<>();
 
         // The world this info is for
-        private World world = null;
+        private final World world;
 
         /**
          * Create a new Info instance
          * @since    0.2.0
          */
-        public Info() {}
+        public Info() {
+            this.world = null;
+        }
 
         /**
          * Create a new Info instance for the given world
@@ -246,6 +248,14 @@ public class BibPerf {
          */
         public Info(World world) {
             this.world = world;
+        }
+
+        /**
+         * Get the world
+         * @since    0.2.0
+         */
+        public World getWorld() {
+            return this.world;
         }
 
         /**

@@ -7,6 +7,7 @@ import rocks.blackblock.bib.bv.value.BvElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A builder of lore
@@ -15,7 +16,7 @@ import java.util.List;
  * @since    0.2.0
  */
 @SuppressWarnings("unused")
-public abstract class InternalLore<T extends InternalLore<?>> {
+public abstract class InternalLore<T extends InternalLore<?>> implements Supplier<Text> {
 
     protected List<Text> lines = new ArrayList<>();
 
@@ -109,5 +110,35 @@ public abstract class InternalLore<T extends InternalLore<?>> {
      */
     public List<Text> getLines() {
         return this.lines;
+    }
+
+    /**
+     * Turn it into a single text
+     * @since    0.2.0
+     */
+    public MutableText toConcatenatedText() {
+
+        MutableText combined = Text.empty();
+        int count = 0;
+
+        for (Text line : this.lines) {
+            if (count > 0) {
+                combined.append("\n");
+            }
+
+            combined.append(line);
+            count++;
+        }
+
+        return combined;
+    }
+
+    /**
+     * Get the text
+     * @since    0.2.0
+     */
+    @Override
+    public Text get() {
+        return this.toConcatenatedText();
     }
 }
