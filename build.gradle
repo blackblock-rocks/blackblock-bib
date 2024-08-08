@@ -118,6 +118,7 @@ repositories {
 }
 
 loom {
+	accessWidenerPath = file("src/main/resources/blackblockbib.accesswidener")
 	splitEnvironmentSourceSets()
 
 	mods {

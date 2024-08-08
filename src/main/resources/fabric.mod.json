@@ -32,6 +32,7 @@
 	"mixins": [
 		"blackblock-bib.mixins.json"
 	],
+	"accessWidener": "blackblockbib.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "~1.21",
