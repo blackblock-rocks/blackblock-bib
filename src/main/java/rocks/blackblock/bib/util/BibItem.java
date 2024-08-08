@@ -11,6 +11,7 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -23,6 +24,7 @@ import net.minecraft.registry.RegistryOps;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -894,5 +896,29 @@ public final class BibItem {
         }
 
         return List.of();
+    }
+
+    /**
+     * Can we consider the given stack to be garbage?
+     *
+     * @since    0.2.0
+     */
+    public static boolean isGarbage(ItemStack stack) {
+
+        if (stack == null) {
+            return true;
+        }
+
+        if (stack.isEmpty()) {
+            return true;
+        }
+
+        Rarity rarity = stack.getRarity();
+
+        if (rarity == Rarity.COMMON) {
+            return true;
+        }
+
+        return false;
     }
 }
