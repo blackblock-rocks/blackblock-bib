@@ -321,6 +321,9 @@ public class BibPerf {
         // The number of seconds since the server was ramping up
         private int ramp_up_seconds = 0;
 
+        // The server is "critical"
+        private boolean is_critical = false;
+
         // The server is "overloaded" when the MSPT goes over 50ms
         private boolean is_overloaded = false;
 
@@ -469,6 +472,7 @@ public class BibPerf {
             }
 
             // Update boolean flags based on current state
+            this.is_critical = (this.current_state == State.CRITICAL);
             this.is_overloaded = (this.current_state == State.CRITICAL || this.current_state == State.OVERLOADED);
             this.is_busy = (this.current_state == State.VERY_BUSY || this.current_state == State.BUSY);
             this.is_normal = (this.current_state == State.NORMAL);
@@ -603,7 +607,15 @@ public class BibPerf {
         }
 
         /**
-         * Is the server overloaded?
+         * Is the state critical?
+         * @since    0.2.0
+         */
+        public boolean isCritical() {
+            return this.is_critical;
+        }
+
+        /**
+         * Is the state overloaded?
          * @since    0.2.0
          */
         public boolean isOverloaded() {
@@ -611,7 +623,7 @@ public class BibPerf {
         }
 
         /**
-         * Is the server busy?
+         * Is the state busy?
          * @since    0.2.0
          */
         public boolean isBusy() {
@@ -619,7 +631,7 @@ public class BibPerf {
         }
 
         /**
-         * Is the server normal?
+         * Is the state normal?
          * @since    0.2.0
          */
         public boolean isNormal() {
@@ -627,7 +639,7 @@ public class BibPerf {
         }
 
         /**
-         * Is the server idle?
+         * Is the state idle?
          * @since    0.2.0
          */
         public boolean isIdle() {
