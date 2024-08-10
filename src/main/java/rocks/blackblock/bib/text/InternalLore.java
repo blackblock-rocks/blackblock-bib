@@ -37,6 +37,19 @@ public abstract class InternalLore<T extends InternalLore<?>> implements Supplie
     }
 
     /**
+     * Add a text
+     * @since    0.2.0
+     */
+    public T add(Text text) {
+
+        if (text != null) {
+            this.lines.add(text);
+        }
+
+        return (T) this;
+    }
+
+    /**
      * Add the given data
      * @since    0.2.0
      */
