@@ -40,6 +40,7 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Blackb
     @Inject(method = "tick", at = @At("HEAD"))
     public void bb$OnTick(CallbackInfo ci) {
         this.bb$tick_count++;
+        this.bb$ticks_since_last_movement++;
 
         if (this.bb$tick_count % 20 == 0) {
             this.bb$perSecond();
@@ -66,6 +67,16 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Blackb
     }
 
     /**
+     * Get the ticks since the last movement
+     * @since    0.2.0
+     */
+    @Unique
+    @Override
+    public int bb$getTicksSinceLastMovement() {
+        return this.bb$ticks_since_last_movement;
+    }
+
+    /**
      * Get the amount of seconds this player has been online
      * @since    0.2.0
      */
@@ -76,6 +87,7 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Blackb
     }
 
     @Unique
+    @Override
     public void bb$setIsStationary(boolean stationary) {
         this.bb$is_stationary = stationary;
     }

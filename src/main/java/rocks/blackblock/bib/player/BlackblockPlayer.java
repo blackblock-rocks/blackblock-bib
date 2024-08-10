@@ -15,6 +15,12 @@ public interface BlackblockPlayer {
     boolean bb$isStationary();
 
     /**
+     * Mark this player as stationary
+     * @since    0.2.0
+     */
+    void bb$setIsStationary(boolean stationary);
+
+    /**
      * How many seconds has this player been online?
      * @since    0.2.0
      */
@@ -25,4 +31,10 @@ public interface BlackblockPlayer {
      * @since    0.2.0
      */
     boolean bb$isAfk();
+
+    /**
+     * Get the ticks since the last movement
+     * @since    0.2.0
+     */
+    int bb$getTicksSinceLastMovement();
 }

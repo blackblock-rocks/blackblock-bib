@@ -30,5 +30,4 @@ public class ServerChunkLoadingManagerMixin {
     private void onInit(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, ThreadExecutor mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier persistentStateManagerFactory, int viewDistance, boolean dsync, CallbackInfo ci) {
         BibFlow.registerWorldChunkExecutor(world, this.mainThreadExecutor);
     }
-
 }
