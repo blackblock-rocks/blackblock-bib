@@ -51,6 +51,11 @@ public class RollingAverage<T extends Number> {
      * @since 0.2.0
      */
     public void addValue(T value) {
+
+        if (value == null) {
+            return;
+        }
+
         if (count < buffer_size) {
             // Buffer not full yet
             sum += value.doubleValue();
