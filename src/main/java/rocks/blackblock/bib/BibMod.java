@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.bv.operator.BvOperators;
 import rocks.blackblock.bib.bv.parameter.MapParameter;
+import rocks.blackblock.bib.debug.rendering.shapes.payload.DebugShapesPayload;
 import rocks.blackblock.bib.util.BibPerf;
 import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.config.Config;
@@ -40,6 +41,7 @@ public class BibMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		DebugShapesPayload.register();
 		BvOperators.register(null);
 		BibInterop.initializeInterops();
 		Config.initializeAllConfigs();
