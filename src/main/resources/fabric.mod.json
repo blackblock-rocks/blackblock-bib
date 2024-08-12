@@ -19,7 +19,7 @@
 			"rocks.blackblock.bib.BibMod"
 		],
 		"preLaunch": [
-			"rocks.blackblock.bib.debug.DeobfuscatorSetup"
+			"rocks.blackblock.bib.debug.logging.DeobfuscatorSetup"
 		]
 	},
 	"custom": {

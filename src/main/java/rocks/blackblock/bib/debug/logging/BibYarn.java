@@ -1,4 +1,4 @@
-package rocks.blackblock.bib.debug;
+package rocks.blackblock.bib.debug.logging;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

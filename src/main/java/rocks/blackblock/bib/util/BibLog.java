@@ -40,7 +40,7 @@ import net.minecraft.world.gen.structure.StructureType;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.BibMod;
-import rocks.blackblock.bib.debug.BibYarn;
+import rocks.blackblock.bib.debug.logging.BibYarn;
 
 import java.util.*;
 import java.util.stream.Collectors;

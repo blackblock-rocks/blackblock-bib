@@ -1,4 +1,4 @@
-package rocks.blackblock.bib.debug;
+package rocks.blackblock.bib.debug.logging;
 
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;

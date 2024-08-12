@@ -1,4 +1,4 @@
-package rocks.blackblock.bib.debug;
+package rocks.blackblock.bib.debug.logging;
 
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import org.apache.logging.log4j.LogManager;
