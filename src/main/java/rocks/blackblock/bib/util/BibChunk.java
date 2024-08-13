@@ -5,6 +5,7 @@ import net.minecraft.server.world.OptionalChunk;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -74,5 +75,53 @@ public final class BibChunk {
     @Nullable
     private static ChunkHolder getChunkHolder(ServerWorld server_world, int chunk_x, int chunk_z) {
         return server_world.getChunkManager().getChunkHolder(ChunkPos.toLong(chunk_x, chunk_z));
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
+    public static boolean isChunkLoaded(ServerWorld world, ChunkPos chunk_pos) {
+        return isChunkLoaded(world, chunk_pos.x, chunk_pos.z);
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
+    public static boolean isChunkLoaded(World world, BlockPos block_pos) {
+        return isChunkLoaded(world, block_pos.getX() >> 4, block_pos.getZ() >> 4);
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
+    public static boolean isChunkLoaded(ServerWorld world, BlockPos block_pos) {
+        return isChunkLoaded(world, block_pos.getX() >> 4, block_pos.getZ() >> 4);
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
+    public static boolean isChunkLoaded(World world, int chunk_x, int chunk_z) {
+        if (world instanceof ServerWorld server_world) {
+            return isChunkLoaded(getChunkHolder(server_world, chunk_x, chunk_z));
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isChunkLoaded(ServerWorld server_world, int chunk_x, int chunk_z) {
+        return isChunkLoaded(getChunkHolder(server_world, chunk_x, chunk_z));
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
+    public static boolean isChunkLoaded(ChunkHolder holder) {
+        return getChunkFromHolder(holder) != null;
     }
 }
