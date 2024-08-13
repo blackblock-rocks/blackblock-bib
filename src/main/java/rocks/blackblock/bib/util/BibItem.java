@@ -10,10 +10,7 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -917,6 +914,54 @@ public final class BibItem {
 
         if (rarity == Rarity.COMMON) {
             return true;
+        }
+
+        Item item = stack.getItem();
+
+        // We don't care about any tool lower or equal to gold,
+        // even if it's enchanted
+        if (item instanceof ToolItem tool_item) {
+            var material = tool_item.getMaterial();
+
+            if (material == ToolMaterials.WOOD) {
+                return true;
+            }
+
+            if (material == ToolMaterials.STONE) {
+                return true;
+            }
+
+            if (material == ToolMaterials.IRON) {
+                return true;
+            }
+
+            if (material == ToolMaterials.GOLD) {
+                return true;
+            }
+        }
+
+        if (item instanceof ArmorItem armor_item) {
+            var material = armor_item.getMaterial();
+
+            if (material == ArmorMaterials.LEATHER) {
+                return true;
+            }
+
+            if (material == ArmorMaterials.CHAIN) {
+                return true;
+            }
+
+            if (material == ArmorMaterials.IRON) {
+                return true;
+            }
+
+            if (material == ArmorMaterials.GOLD) {
+                return true;
+            }
+
+            if (material == ArmorMaterials.TURTLE) {
+                return true;
+            }
         }
 
         return false;
