@@ -12,29 +12,39 @@ public interface PlayerActivityInfo {
      * Is this player stationary?
      * @since    0.2.0
      */
-    boolean bb$isStationary();
+    default boolean bb$isStationary() {
+        return false;
+    }
 
     /**
      * Mark this player as stationary
      * @since    0.2.0
      */
-    void bb$setIsStationary(boolean stationary);
+    default void bb$setIsStationary(boolean stationary) {
+        // Ignore
+    }
 
     /**
      * How many seconds has this player been online?
      * @since    0.2.0
      */
-    int bb$getSecondsOnline();
+    default int bb$getSecondsOnline() {
+        return 0;
+    }
 
     /**
      * Is this player AFK?
      * @since    0.2.0
      */
-    boolean bb$isAfk();
+    default boolean bb$isAfk() {
+        return false;
+    }
 
     /**
      * Get the ticks since the last movement
      * @since    0.2.0
      */
-    int bb$getTicksSinceLastMovement();
+    default int bb$getTicksSinceLastMovement() {
+        return 0;
+    }
 }
