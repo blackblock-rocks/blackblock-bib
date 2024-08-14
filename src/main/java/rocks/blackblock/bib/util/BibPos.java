@@ -207,4 +207,30 @@ public final class BibPos {
 
         return null;
     }
+
+    /**
+     * Return the X coordinate from a long ChunkPos value
+     * @since    0.2.0
+     */
+    public static int getChunkX(long chunk_pos) {
+        return (int) chunk_pos;
+    }
+
+    /**
+     * Return the Z coordinate from a long ChunkPos value
+     * @since    0.2.0
+     */
+    public static int getChunkZ(long chunk_pos) {
+        return (int) (chunk_pos >> 32);
+    }
+
+    /**
+     * Turn an X and Z coordinate into a long ChunkPos value:
+     * The first 32 bits represent the x-coordinate and
+     * the last 32 bits represent the z-coordinate
+     * @since    0.2.0
+     */
+    public static long toLong(int chunk_x, int chunk_z) {
+        return ((long) chunk_x << 32) | (chunk_z & 0xFFFFFFFFL);
+    }
 }
