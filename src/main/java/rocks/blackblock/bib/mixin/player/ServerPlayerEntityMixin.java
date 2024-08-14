@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import rocks.blackblock.bib.player.BlackblockPlayer;
+import rocks.blackblock.bib.player.PlayerActivityInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin extends PlayerEntityMixin implements BlackblockPlayer {
+public class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo {
 
     @Unique
     private byte bb$tick_count = 0;

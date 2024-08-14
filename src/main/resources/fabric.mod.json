@@ -25,7 +25,7 @@
 	"custom": {
 		"loom:injected_interfaces": {
 			"net/minecraft/class_3222": [
-				"rocks/blackblock/bib/player/BlackblockPlayer"
+				"rocks/blackblock/bib/player/PlayerActivityInfo"
 			]
 		}
 	},

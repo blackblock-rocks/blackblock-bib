@@ -6,7 +6,7 @@ package rocks.blackblock.bib.player;
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.2.0
  */
-public interface BlackblockPlayer {
+public interface PlayerActivityInfo {
 
     /**
      * Is this player stationary?
