@@ -231,6 +231,6 @@ public final class BibPos {
      * @since    0.2.0
      */
     public static long toLong(int chunk_x, int chunk_z) {
-        return ((long) chunk_x << 32) | (chunk_z & 0xFFFFFFFFL);
+        return ((long) chunk_z << 32) | (chunk_x & 0xFFFFFFFFL);
     }
 }
