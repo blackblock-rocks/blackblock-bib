@@ -483,6 +483,95 @@ public class BibPerf {
         }
 
         /**
+         * Get the MSPT as a formatted text
+         * @since    0.2.0
+         */
+        public MutableText getMsptText() {
+
+            // MSPT (color based on value)
+            Formatting mspt_color;
+
+            if (this.mspt >= 50) {
+                mspt_color = Formatting.DARK_PURPLE;
+            } else if (this.mspt >= 40) {
+                mspt_color = Formatting.RED;
+            } else if (this.mspt >= 30) {
+                mspt_color = Formatting.GOLD;
+            } else {
+                mspt_color = Formatting.GREEN;
+            }
+
+            return Text.literal(String.format("%.0f", this.mspt)).formatted(mspt_color);
+        }
+
+        /**
+         * Get the TPS as a formatted text
+         * @since    0.2.0
+         */
+        public MutableText getTpsText() {
+
+            // TPS (color based on value)
+            Formatting tps_color;
+
+            if (this.tps < 10) {
+                tps_color = Formatting.DARK_PURPLE;
+            } else if (this.tps < 15) {
+                tps_color = Formatting.RED;
+            } else if (this.tps < 20) {
+                tps_color = Formatting.GOLD;
+            } else {
+                tps_color = Formatting.GREEN;
+            }
+
+            return Text.literal(String.format("%.0f", this.tps)).formatted(tps_color);
+        }
+
+        /**
+         * Get the current state as a formatted text
+         * @since    0.2.0
+         */
+        public MutableText getStateText() {
+
+            // Current performance state with direction indicator
+            Formatting stateColor = switch (this.current_state) {
+                case CRITICAL -> Formatting.DARK_PURPLE;
+                case OVERLOADED -> Formatting.RED;
+                case VERY_BUSY, BUSY -> Formatting.GOLD;
+                case NORMAL -> Formatting.GREEN;
+                case IDLE -> Formatting.GREEN;
+            };
+
+            String directionIndicator;
+            Formatting directionColor;
+            if (this.current_state.getSeverity() < this.target_state.getSeverity()) {
+                directionIndicator = " »»»";
+                directionColor = Formatting.RED;
+            } else if (this.current_state.getSeverity() > this.target_state.getSeverity()) {
+                directionIndicator = " «««";
+                directionColor = Formatting.GREEN;
+            } else {
+                directionIndicator = " ===";
+                directionColor = Formatting.YELLOW;
+            }
+
+            MutableText stateText = Text.literal(this.current_state.name()).formatted(stateColor)
+                    .append(Text.literal(directionIndicator).formatted(directionColor));
+
+            // Add hover tooltip for state change info
+            if (this.current_state != this.target_state) {
+                String stateChangeInfo;
+                if (this.current_state.getSeverity() > this.target_state.getSeverity()) {
+                    stateChangeInfo = "Recovering to " + this.target_state.name();
+                } else {
+                    stateChangeInfo = "Ramping up to " + this.target_state.name();
+                }
+                stateText.setStyle(stateText.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(stateChangeInfo))));
+            }
+
+            return stateText;
+        }
+
+        /**
          * Create a MutableText representation of this instance
          * @since    0.2.0
          */
