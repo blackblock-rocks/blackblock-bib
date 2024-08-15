@@ -271,6 +271,16 @@ public final class BibPos {
     }
 
     /**
+     * Get the squared distance between 2 positions
+     * @since    0.2.0
+     */
+    public static double getSquaredDistance(double x1, double z1, double x2, double z2) {
+        final double dx = x1 - x2;
+        final double dy = z1 - z2;
+        return dx * dx + dy * dy;
+    }
+
+    /**
      * Position consumer interface
      * @since    0.2.0
      */
