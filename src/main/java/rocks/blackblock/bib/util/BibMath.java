@@ -30,4 +30,24 @@ public abstract class BibMath {
     public static long getTrailingBit(final long n) {
         return -n & n;
     }
+
+    /**
+     * Calculate the inverse square root of a number very fast but less accurate
+     * @since 0.2.0
+     */
+    public static double fastInverseSqrt(double x) {
+        double d = 0.5 * x;
+        long l = Double.doubleToRawLongBits(x);
+        l = 6910469410427058090L - (l >> 1);
+        x = Double.longBitsToDouble(l);
+        return x * (1.5 - d * x * x);
+    }
+
+    /**
+     * Calculate a square root of a number very fast but less accurate
+     * @since 0.2.0
+     */
+    public static double fastSqrt(double x) {
+        return x * fastInverseSqrt(x);
+    }
 }
