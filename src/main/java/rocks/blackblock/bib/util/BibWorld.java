@@ -146,5 +146,4 @@ public final class BibWorld {
             server_world.spawnParticles(particle, pos.getX(), pos.getY(), pos.getZ(), 1, 1.0, 0.0, 0.0, 0.0);
         }
     }
-
 }

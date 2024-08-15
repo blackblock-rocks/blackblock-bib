@@ -1,5 +1,6 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.OptionalChunk;
 import net.minecraft.server.world.ServerWorld;
@@ -7,9 +8,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -123,5 +126,20 @@ public final class BibChunk {
      */
     public static boolean isChunkLoaded(ChunkHolder holder) {
         return getChunkFromHolder(holder) != null;
+    }
+
+    /**
+     * Get the biome at the given position, using a rough approximation
+     * @since 0.2.0
+     */
+    @NotNull
+    public static RegistryEntry<Biome> getRoughBiome(World world, BlockPos pos) {
+        Chunk chunk = getChunkNow(world, pos);
+
+        int x = pos.getX() >> 2;
+        int y = pos.getY() >> 2;
+        int z = pos.getZ() >> 2;
+
+        return chunk != null ? chunk.getBiomeForNoiseGen(x, y, z) : world.getGeneratorStoredBiome(x, y, z);
     }
 }
