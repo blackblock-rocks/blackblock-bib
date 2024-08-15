@@ -1,5 +1,7 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.OptionalChunk;
@@ -25,6 +27,17 @@ import java.util.concurrent.CompletableFuture;
  */
 @SuppressWarnings("unused")
 public final class BibChunk {
+
+    /**
+     * Get the blockstate at the given position,
+     * but return Air if the chunk is not loaded
+     * @since 0.2.0
+     */
+    @NotNull
+    public static BlockState getBlockStateIfLoaded(World world, BlockPos pos) {
+        Chunk chunk = getChunkNow(world, pos);
+        return chunk != null ? chunk.getBlockState(pos) : Blocks.AIR.getDefaultState();
+    }
 
     /**
      * Try to immediately get the chunk at the given position
