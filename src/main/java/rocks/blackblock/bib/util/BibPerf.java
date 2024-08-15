@@ -135,6 +135,52 @@ public class BibPerf {
     }
 
     /**
+     * Profile a runnable
+     *
+     * @since    0.2.0
+     */
+    public static void profile(String name, Runnable runnable) {
+
+        BibLog.log("Profiling", name, "...");
+
+        long start = System.nanoTime();
+        int iterations = 100;
+
+        for (int i = 0; i < 100; i++) {
+            runnable.run();
+        }
+
+        long end = System.nanoTime();
+        long diff = end - start;
+
+        // If it took less than 3ms,
+        // profile it longer
+        if (diff < 3000000) {
+            start = System.nanoTime();
+            iterations = 1000;
+
+            for (int i = 0; i < 1000; i++) {
+                runnable.run();
+            }
+
+            end = System.nanoTime();
+            diff = end - start;
+        }
+
+        // Calculate the average time per iteration
+        double avg = (double) diff / (double) iterations;
+
+        // Calculate the time in ms
+        double ms = avg / 1000000;
+
+        // Calculate how many times it can run in a second
+        int ops = (int) (1000000000 / avg);
+
+        BibLog.log("»» Took", ms, "ms, or", avg, "ns");
+        BibLog.log("»» Ops:", ops, "(test runs:", iterations, ")");
+    }
+
+    /**
      * Set a new world info getter
      *
      * @since    0.2.0
