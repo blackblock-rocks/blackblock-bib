@@ -233,4 +233,49 @@ public final class BibPos {
     public static long toLong(int chunk_x, int chunk_z) {
         return ((long) chunk_z << 32) | (chunk_x & 0xFFFFFFFFL);
     }
+
+    /**
+     * Spiral around a position.
+     * @since    0.2.0
+     */
+    public static boolean spiralAroundPosition(int center_x, int center_z, int radius, PositionConsumer action) {
+        int x = 0;
+        int z = 0;
+        int dx = 0;
+        int dz = -1;
+        int max_steps = (2 * radius + 1) * (2 * radius + 1);
+
+        for (int i = 0; i < max_steps; i++) {
+            if ((-radius <= x && x <= radius) && (-radius <= z && z <= radius)) {
+
+                // Skip the center
+                if (x != 0 || z != 0) {
+                    if (!action.accept(center_x + x, center_z + z)) {
+                        return false;
+                    }
+                }
+            }
+
+            if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
+                // Change direction
+                int temp = dx;
+                dx = -dz;
+                dz = temp;
+            }
+
+            x += dx;
+            z += dz;
+        }
+
+        return true;
+    }
+
+    /**
+     * Position consumer interface
+     * @since    0.2.0
+     */
+    @FunctionalInterface
+    public interface PositionConsumer {
+        boolean accept(int x, int z);
+    }
 }

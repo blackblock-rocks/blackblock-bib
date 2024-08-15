@@ -1,6 +1,6 @@
 package rocks.blackblock.bib.util;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -184,6 +185,52 @@ public final class BibBlock {
         }
 
         return 0;
+    }
+
+    /**
+     * Is the given block mostly air?
+     * @since    0.2.0
+     */
+    public static boolean isMostlyAir(Block block) {
+
+        if (block == Blocks.AIR || block == Blocks.CAVE_AIR || block == Blocks.VOID_AIR) {
+            return true;
+        }
+
+        if (block instanceof LeavesBlock) {
+            return true;
+        }
+
+        if (block instanceof ShortPlantBlock) {
+            return true;
+        }
+
+        if (block instanceof TallPlantBlock) {
+            return true;
+        }
+
+        if (block instanceof CactusBlock) {
+            return true;
+        }
+
+        if (block instanceof SugarCaneBlock) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Is the given blockstate mostly air?
+     * @since    0.2.0
+     */
+    public static boolean isMostlyAir(BlockState state) {
+
+        if (state.isAir() || state.isIn(BlockTags.FIRE)) {
+            return true;
+        }
+
+        return isMostlyAir(state.getBlock());
     }
 
     /**
