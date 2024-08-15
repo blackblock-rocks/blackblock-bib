@@ -9,6 +9,25 @@ package rocks.blackblock.bib.util;
 @SuppressWarnings("unused")
 public abstract class BibMath {
 
+    private static final int ATAN2_BITS = 8;
+    private static final int ATAN2_BITS2 = ATAN2_BITS << 1;
+    private static final int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
+    private static final int ATAN2_COUNT = ATAN2_MASK + 1;
+    private static final int ATAN2_DIM = (int) Math.sqrt(ATAN2_COUNT);
+    private static final float INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
+    private static final float[] ATAN2_MAP = new float[ATAN2_COUNT];
+
+    static {
+        for (int i = 0; i < ATAN2_DIM; i++) {
+            for (int j = 0; j < ATAN2_DIM; j++) {
+                float x0 = (float) i / ATAN2_DIM;
+                float y0 = (float) j / ATAN2_DIM;
+
+                ATAN2_MAP[j * ATAN2_DIM + i] = (float) Math.atan2(y0, x0);
+            }
+        }
+    }
+
     private BibMath() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
@@ -49,5 +68,46 @@ public abstract class BibMath {
      */
     public static double fastSqrt(double x) {
         return x * fastInverseSqrt(x);
+    }
+
+    /**
+     * Calculate the arc tangent of a number very fast but less accurate.
+     * Profiled against Math.atan2 and MathHelper.atan2:
+     * A lot faster than Math.atan2, but only sometimes faster than MathHelper.atan2
+     *
+     * @since 0.2.0
+     */
+    public static float fastAtan2(double y, double x) {
+        float add, mul;
+
+        if (x < 0.0f)  {
+            if (y < 0.0f) {
+                x = -x;
+                y = -y;
+
+                mul = 1.0f;
+            } else{
+                x = -x;
+                mul = -1.0f;
+            }
+
+            add = -3.141592653f;
+        } else {
+            if (y < 0.0f) {
+                y = -y;
+                mul = -1.0f;
+            } else {
+                mul = 1.0f;
+            }
+
+            add = 0.0f;
+        }
+
+        double invDiv = 1.0f / (((x < y) ? y : x) * INV_ATAN2_DIM_MINUS_1);
+
+        int xi = (int) (x * invDiv);
+        int yi = (int) (y * invDiv);
+
+        return (ATAN2_MAP[yi * ATAN2_DIM + xi] + add) * mul;
     }
 }
