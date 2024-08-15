@@ -24,6 +24,12 @@
 	},
 	"custom": {
 		"loom:injected_interfaces": {
+			"net/minecraft/class_1936": [
+				"rocks/blackblock/bib/interfaces/HasPerformanceInfo"
+			],
+			"net/minecraft/class_1937": [
+				"rocks/blackblock/bib/interfaces/HasPerformanceInfo"
+			],
 			"net/minecraft/class_3222": [
 				"rocks/blackblock/bib/player/PlayerActivityInfo"
 			]

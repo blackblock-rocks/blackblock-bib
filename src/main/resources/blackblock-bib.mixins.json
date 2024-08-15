@@ -11,6 +11,8 @@
         "ServerWorldMixin",
         "TACSMixin",
         "WorldChunkMixin",
+        "performance_info.WorldAccessMixin",
+        "performance_info.WorldMixinForPerformanceInfo",
         "player.EntityMixin",
         "player.PlayerEntityMixin",
         "player.ServerPlayerEntityMixin",
