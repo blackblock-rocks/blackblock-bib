@@ -1,15 +1,20 @@
 package rocks.blackblock.bib.mixin.player;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocks.blackblock.bib.player.PlayerActivityInfo;
+import rocks.blackblock.bib.util.BibPerf;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo {
+public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo {
+
+    @Shadow public abstract ServerWorld getServerWorld();
 
     @Unique
     private byte bb$tick_count = 0;
@@ -22,6 +27,12 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Player
 
     @Unique
     private boolean bb$is_stationary = false;
+
+    @Unique
+    private boolean bb$is_afk = false;
+
+    @Unique
+    private boolean bb$is_ignored = false;
 
     /**
      * Catch setPos changes.
@@ -64,6 +75,8 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Player
             // Make stationary after 5 minutes of no movement
             this.bb$setIsStationary(true);
         }
+
+        this.bb$updateIgnoredStatus();
     }
 
     /**
@@ -90,6 +103,32 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Player
     @Override
     public void bb$setIsStationary(boolean stationary) {
         this.bb$is_stationary = stationary;
+
+        if (stationary) {
+            this.bb$is_afk = false;
+            this.bb$is_ignored = false;
+        } else {
+            this.bb$is_afk = true;
+            this.bb$updateIgnoredStatus();
+        }
+    }
+
+    @Unique
+    private void bb$updateIgnoredStatus() {
+
+        if (!this.bb$is_afk) {
+            this.bb$is_ignored = false;
+        }
+
+        BibPerf.Info info = BibPerf.getWorldInfo(this.getServerWorld());
+
+        if (info.isCritical()) {
+            this.bb$is_ignored = true;
+        } else if (info.isRandomlyDisabled()) {
+            this.bb$is_ignored = true;
+        } else {
+            this.bb$is_ignored = false;
+        }
     }
 
     @Unique
@@ -101,6 +140,12 @@ public class ServerPlayerEntityMixin extends PlayerEntityMixin implements Player
     @Unique
     @Override
     public boolean bb$isAfk() {
-        return this.bb$isStationary();
+        return this.bb$is_afk;
+    }
+
+    @Unique
+    @Override
+    public boolean bb$ignoreDueToSystemLoad() {
+        return this.bb$is_ignored;
     }
 }

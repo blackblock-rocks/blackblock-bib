@@ -47,4 +47,12 @@ public interface PlayerActivityInfo {
     default int bb$getTicksSinceLastMovement() {
         return 0;
     }
+
+    /**
+     * Should this player be ignored due to system load?
+     * @since    0.2.0
+     */
+    default boolean bb$ignoreDueToSystemLoad() {
+        return false;
+    }
 }
