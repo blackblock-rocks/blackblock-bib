@@ -55,6 +55,9 @@ public class BibPerf {
     // This is true on every fourth tick
     public static boolean ON_FOURTH_TICK = false;
 
+    // This is true every half second (or 10 ticks)
+    public static boolean ON_HALF_SECOND = false;
+
     // This is true each second
     public static boolean ON_FULL_SECOND = false;
 
@@ -155,6 +158,7 @@ public class BibPerf {
         BibPerf.ON_EVEN_TICK = ticks % 2 == 0;
         BibPerf.ON_THIRD_TICK = ticks % 3 == 0;
         BibPerf.ON_FOURTH_TICK = ticks % 4 == 0;
+        BibPerf.ON_HALF_SECOND = ticks % 10 == 0;
         BibPerf.ON_FULL_SECOND = ticks % 20 == 0;
     }
 
