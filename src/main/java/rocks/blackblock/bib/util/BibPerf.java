@@ -46,6 +46,18 @@ public class BibPerf {
     // This has a chance of being true when the server is busy
     public static boolean RANDOMLY_DISABLED_WHEN_BUSY = false;
 
+    // This is true on every other tick
+    public static boolean ON_EVEN_TICK = false;
+
+    // This is true on every third tick
+    public static boolean ON_THIRD_TICK = false;
+
+    // This is true on every fourth tick
+    public static boolean ON_FOURTH_TICK = false;
+
+    // This is true each second
+    public static boolean ON_FULL_SECOND = false;
+
     // The current MSPT
     public static float MSPT = 0.0f;
 
@@ -132,6 +144,18 @@ public class BibPerf {
                 GlitchGuru.registerThrowable(t, "Failed to run performance update listener");
             }
         }
+    }
+
+    /**
+     * We're about to tick all the worlds
+     * @since    0.2.0
+     */
+    @ApiStatus.Internal
+    public static void registerPreTick(int ticks) {
+        BibPerf.ON_EVEN_TICK = ticks % 2 == 0;
+        BibPerf.ON_THIRD_TICK = ticks % 3 == 0;
+        BibPerf.ON_FOURTH_TICK = ticks % 4 == 0;
+        BibPerf.ON_FULL_SECOND = ticks % 20 == 0;
     }
 
     /**
