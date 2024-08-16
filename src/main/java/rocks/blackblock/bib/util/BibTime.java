@@ -18,6 +18,7 @@ public final class BibTime {
     public static LocalDate LOCAL_DATE = LocalDate.now();
     public static LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
     public static boolean IS_AROUND_HALLOWEEN = false;
+    public static boolean IS_HALLOWEEN = false;
 
     /**
      * Initialize the time class
@@ -42,6 +43,12 @@ public final class BibTime {
         int day_of_month = LOCAL_DATE.get(ChronoField.DAY_OF_MONTH);
         int month_of_year = LOCAL_DATE.get(ChronoField.MONTH_OF_YEAR);
         IS_AROUND_HALLOWEEN = month_of_year == 10 && day_of_month >= 20 || month_of_year == 11 && day_of_month <= 3;
+
+        if (IS_AROUND_HALLOWEEN) {
+            IS_HALLOWEEN = month_of_year == 10 && day_of_month == 31;
+        } else {
+            IS_HALLOWEEN = false;
+        }
     }
 
     /**
