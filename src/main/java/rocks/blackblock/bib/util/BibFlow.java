@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public final class BibFlow {
 
     // The main timer
-    private static Timer FLOW_TIMER = null;
+    private static Timer FLOW_TIMER = new Timer("BibFlow", true);
 
     // The main server thread
     private static final Thread MAIN_SERVER_THREAD = Thread.currentThread();
@@ -93,6 +93,19 @@ public final class BibFlow {
     }
 
     /**
+     * Schedule something on the existing timer thread
+     * @since    0.2.0
+     */
+    public static void setInterval(Runnable runnable, long delay_in_ms) {
+        FLOW_TIMER.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }, delay_in_ms, delay_in_ms);
+    }
+
+    /**
      * Do something within a certain amount of ms.
      * This will not be executed on the main server thread.
      *
@@ -100,10 +113,6 @@ public final class BibFlow {
      * @since    0.1.0
      */
     public static TickRunnable onMsTimeout(Runnable runnable, long delay_in_ms) {
-
-        if (FLOW_TIMER == null) {
-            FLOW_TIMER = new Timer(true);
-        }
 
         TickRunnable instance = new TickRunnable(runnable, 0);
 

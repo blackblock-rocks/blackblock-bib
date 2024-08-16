@@ -20,6 +20,7 @@ import rocks.blackblock.bib.interop.BibInterop;
 import rocks.blackblock.bib.platform.FabricPlatform;
 import rocks.blackblock.bib.platform.Platform;
 import rocks.blackblock.bib.util.BibServer;
+import rocks.blackblock.bib.util.BibTime;
 
 @SuppressWarnings("unused")
 public class BibMod implements ModInitializer {
@@ -41,6 +42,7 @@ public class BibMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		BibTime.initialize();
 		DebugShapesPayload.register();
 		BvOperators.register(null);
 		BibInterop.initializeInterops();
