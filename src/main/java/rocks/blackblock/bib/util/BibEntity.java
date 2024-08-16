@@ -59,7 +59,21 @@ public final class BibEntity {
      * Does this entity have a roof above it?
      * @since    0.2.0
      */
+    public static boolean hasRoofAbove(Entity entity) {
+        BlockPos pos = entity.getBlockPos();
+        return !entity.getWorld().isSkyVisible(pos);
+    }
+
+    /**
+     * Does this entity have a roof above it?
+     * @since    0.2.0
+     */
     public static boolean hasRoofAbove(Entity entity, int max_y_range) {
+
+        if (!hasRoofAbove(entity)) {
+            return false;
+        }
+
         return hasRoofAbove(entity.getWorld(), entity.getBlockPos().mutableCopy(), entity.getBlockPos().getY(), max_y_range);
     }
 
@@ -166,7 +180,7 @@ public final class BibEntity {
         BlockPos.Mutable mutable = pos.mutableCopy();
 
         // Check for a solid roof above the player
-        if (!hasRoofAbove(world, mutable, start_y, 35)) {
+        if (world.isSkyVisible(mutable)) {
             return false;
         }
 
@@ -176,12 +190,7 @@ public final class BibEntity {
             radius = 15;
         }
 
-        boolean has_ceiling = BibPos.spiralAroundPosition(pos.getX(), pos.getZ(), radius, (x, z) -> {
-
-            mutable.set(x, start_y, z);
-
-            return hasRoofAbove(world, mutable, start_y, 35);
-        });
+        boolean has_ceiling = BibPos.spiralAroundPosition(pos.getX(), pos.getZ(), radius, (x, z) -> world.isSkyVisible(mutable.set(x, start_y, z)));
 
         return has_ceiling;
     }
