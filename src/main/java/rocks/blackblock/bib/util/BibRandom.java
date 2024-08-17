@@ -1,10 +1,14 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.interfaces.HasWeight;
 import rocks.blackblock.bib.random.ConcurrentRandom;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Library class for working with random numbers & chances
@@ -141,6 +145,31 @@ public final class BibRandom {
      * @since   0.2.0
      */
     public static <T extends HasWeight> T getRandomEntryFromWeightedCollection(Collection<T> list, Random random) {
+
+        int total_weight = 0;
+
+        for (T entry : list) {
+            total_weight += entry.getWeight();
+        }
+
+        int random_value = random.nextInt(total_weight);
+        int current_sum = 0;
+
+        for (T entry : list) {
+            current_sum += entry.getWeight();
+            if (random_value < current_sum) {
+                return entry;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a random entry from a weighted list
+     * @since   0.2.0
+     */
+    public static <T extends HasWeight> T getRandomEntryFromWeightedCollection(Collection<T> list, java.util.Random random) {
 
         int total_weight = 0;
 
