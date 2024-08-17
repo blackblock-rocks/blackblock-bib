@@ -173,9 +173,9 @@ public class BibPerf {
         BibLog.log("Profiling", name, "...");
 
         long start = System.nanoTime();
-        int iterations = 100;
+        int iterations = 1000;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < iterations; i++) {
             runnable.run();
         }
 
@@ -186,9 +186,9 @@ public class BibPerf {
         // profile it longer
         if (diff < 3000000) {
             start = System.nanoTime();
-            iterations = 1000;
+            iterations = 5000;
 
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < iterations; i++) {
                 runnable.run();
             }
 
@@ -216,22 +216,19 @@ public class BibPerf {
      */
     public static void profileNumbers(String name, Consumer<Double> runnable) {
 
+        int iterations = 60000;
+
         Random random = Random.create();
-        double[] values = new double[5000];
-        for (int i = 0; i < 5000; i++) {
+        double[] values = new double[iterations];
+        for (int i = 0; i < iterations; i++) {
             values[i] = random.nextDouble();
         }
 
         BibLog.log("Profiling", name, "...");
 
         long start = System.nanoTime();
-        int iterations = 5000;
 
-
-        start = System.nanoTime();
-        iterations = 1000;
-
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < iterations; i++) {
             runnable.accept(values[i]);
         }
 

@@ -51,7 +51,8 @@ public abstract class BibMath {
     }
 
     /**
-     * Calculate the inverse square root of a number very fast but less accurate
+     * Calculate the inverse square root of a number very fast but less accurate.
+     * In most cases, this is only slightly faster than doing `1 / Math.sqrt(x)`.
      * @since 0.2.0
      */
     public static double fastInverseSqrt(double x) {
