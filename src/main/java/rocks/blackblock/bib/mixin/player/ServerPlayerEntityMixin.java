@@ -14,10 +14,8 @@ import rocks.blackblock.bib.util.BibPerf;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo {
 
-    @Shadow public abstract ServerWorld getServerWorld();
-
-    @Unique
-    private byte bb$tick_count = 0;
+    @Shadow
+    public abstract ServerWorld getServerWorld();
 
     @Unique
     private int bb$seconds_online = 0;
@@ -50,12 +48,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
      */
     @Inject(method = "tick", at = @At("HEAD"))
     public void bb$OnTick(CallbackInfo ci) {
-        this.bb$tick_count++;
         this.bb$ticks_since_last_movement++;
 
-        if (this.bb$tick_count % 20 == 0) {
+        if (BibPerf.ON_FULL_SECOND) {
             this.bb$perSecond();
-            this.bb$tick_count = 0;
         }
     }
 
@@ -67,7 +63,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
     public void bb$perSecond() {
         this.bb$seconds_online++;
 
-        if (this.bb$is_stationary) {
+        if (this.bb$is_stationary || this.bb$is_afk) {
             if (this.bb$ticks_since_last_movement < 100) {
                 this.bb$setIsStationary(false);
             }
@@ -102,14 +98,15 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
     @Unique
     @Override
     public void bb$setIsStationary(boolean stationary) {
+
         this.bb$is_stationary = stationary;
 
         if (stationary) {
-            this.bb$is_afk = false;
-            this.bb$is_ignored = false;
-        } else {
             this.bb$is_afk = true;
             this.bb$updateIgnoredStatus();
+        } else {
+            this.bb$is_afk = false;
+            this.bb$is_ignored = false;
         }
     }
 
@@ -118,6 +115,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
 
         if (!this.bb$is_afk) {
             this.bb$is_ignored = false;
+            return;
         }
 
         BibPerf.Info info = BibPerf.getWorldInfo(this.getServerWorld());
