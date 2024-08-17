@@ -1,7 +1,6 @@
 package rocks.blackblock.bib;
 
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryWrapper;
@@ -12,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.bv.operator.BvOperators;
 import rocks.blackblock.bib.bv.parameter.MapParameter;
-import rocks.blackblock.bib.debug.rendering.shapes.payload.DebugShapesPayload;
-import rocks.blackblock.bib.util.BibPerf;
-import rocks.blackblock.bib.tweaks.TweaksConfiguration;
 import rocks.blackblock.bib.config.Config;
+import rocks.blackblock.bib.debug.rendering.shapes.payload.DebugShapesPayload;
 import rocks.blackblock.bib.interop.BibInterop;
 import rocks.blackblock.bib.platform.FabricPlatform;
 import rocks.blackblock.bib.platform.Platform;
+import rocks.blackblock.bib.tweaks.TweaksConfiguration;
+import rocks.blackblock.bib.util.BibPerf;
 import rocks.blackblock.bib.util.BibServer;
 import rocks.blackblock.bib.util.BibTime;
 

@@ -63,14 +63,6 @@ public abstract class BibMath {
     }
 
     /**
-     * Calculate a square root of a number very fast but less accurate
-     * @since 0.2.0
-     */
-    public static double fastSqrt(double x) {
-        return x * fastInverseSqrt(x);
-    }
-
-    /**
      * Calculate the arc tangent of a number very fast but less accurate.
      * Profiled against Math.atan2 and MathHelper.atan2:
      * A lot faster than Math.atan2, but only sometimes faster than MathHelper.atan2

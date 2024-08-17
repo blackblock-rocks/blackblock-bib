@@ -5,6 +5,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.BibMod;
@@ -206,6 +207,57 @@ public class BibPerf {
 
         BibLog.log("»» Took", ms, "ms, or", avg, "ns");
         BibLog.log("»» Ops:", ops, "(test runs:", iterations, ")");
+    }
+
+    /**
+     * Profile something with random numbers
+     *
+     * @since    0.2.0
+     */
+    public static void profileNumbers(String name, Consumer<Double> runnable) {
+
+        Random random = Random.create();
+        double[] values = new double[5000];
+        for (int i = 0; i < 5000; i++) {
+            values[i] = random.nextDouble();
+        }
+
+        BibLog.log("Profiling", name, "...");
+
+        long start = System.nanoTime();
+        int iterations = 5000;
+
+
+        start = System.nanoTime();
+        iterations = 1000;
+
+        for (int i = 0; i < 5000; i++) {
+            runnable.accept(values[i]);
+        }
+
+        long end = System.nanoTime();
+        long diff = end - start;
+
+        // Calculate the average time per iteration
+        double avg = (double) diff / (double) iterations;
+
+        // Calculate the time in ms
+        double ms = avg / 1000000;
+
+        // Calculate how many times it can run in a second
+        int ops = (int) (1000000000 / avg);
+
+        BibLog.log("»» Took", ms, "ms, or", avg, "ns");
+        BibLog.log("»» Ops:", ops, "(test runs:", iterations, ")");
+    }
+
+    /**
+     * Take in a value
+     *
+     * @since    0.2.0
+     */
+    public static void consume(Object value) {
+        // Ignore
     }
 
     /**
