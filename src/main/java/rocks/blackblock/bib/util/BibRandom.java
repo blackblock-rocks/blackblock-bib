@@ -2,6 +2,7 @@ package rocks.blackblock.bib.util;
 
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.interfaces.HasWeight;
+import rocks.blackblock.bib.random.ConcurrentRandom;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ import java.util.*;
 @SuppressWarnings("unused")
 public final class BibRandom {
 
-    public static final Random RANDOM = new Random();
+    public static final ConcurrentRandom RANDOM = new ConcurrentRandom();
 
     /**
      * Don't let anyone instantiate this class
