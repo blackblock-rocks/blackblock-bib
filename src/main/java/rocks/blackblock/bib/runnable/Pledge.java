@@ -8,6 +8,7 @@ import rocks.blackblock.bib.monitor.GlitchGuru;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -399,12 +400,17 @@ public class Pledge<T> implements Future<T>, CompletionStage<T> {
 
     @Override
     public T get() throws InterruptedException, ExecutionException {
+
+        while (!this.isDone()) {
+            LockSupport.parkNanos("waiting for result", 100000L);
+        }
+
         return this.result;
     }
 
     @Override
     public T get(long l, @NotNull TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
-        return this.result;
+        return this.get();
     }
 
     @Override

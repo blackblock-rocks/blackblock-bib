@@ -904,6 +904,12 @@ public class BibLog {
                     this.add("max_x", (int) box.maxX);
                     this.add("max_y", (int) box.maxY);
                     this.add("max_z", (int) box.maxZ);
+                } else if (value instanceof Thread thread) {
+                    name = thread.getClass().getSimpleName();
+                    this.add("name", thread.getName());
+                    this.add("state", thread.getState().toString());
+                    this.add("priority", thread.getPriority());
+                    this.add("is_daemon", thread.isDaemon());
                 } else {
                     name = value.getClass().getSimpleName();
 
