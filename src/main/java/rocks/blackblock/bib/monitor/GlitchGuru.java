@@ -1,5 +1,6 @@
 package rocks.blackblock.bib.monitor;
 
+import com.mojang.serialization.DataResult;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.interop.InteropSentry;
@@ -7,6 +8,7 @@ import rocks.blackblock.bib.util.BibLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class for tracking errors/performances
@@ -69,6 +71,30 @@ public class GlitchGuru {
             GlitchGuru.sentry_initialized = true;
             InteropSentry.setSentryOtions(dsn, sample_rate);
         }
+    }
+
+    /**
+     * Register a dataresult error
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static void registerThrowable(DataResult.Error<?> error) {
+
+        String message = error.message();
+
+        if (message == null) {
+            message = "Unknown error";
+        }
+
+        Optional<?> partial = error.resultOrPartial();
+        String partial_message = partial.map(value -> ": " + value).orElse("");
+
+        if (!partial_message.isBlank()) {
+            message += "\nPartial result: " + partial_message;
+        }
+
+        registerThrowable(new RuntimeException(message), error.message());
     }
 
     /**
