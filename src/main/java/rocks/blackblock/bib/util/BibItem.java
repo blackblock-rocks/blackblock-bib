@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.collection.CompareForScenario;
 import rocks.blackblock.bib.interfaces.HasItemStackInventory;
+import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -848,8 +849,18 @@ public final class BibItem {
         DataResult<Optional<ItemStack>> unwrap_result = custom_data.get(overlay_codec);
 
         if (unwrap_result.error().isPresent()) {
+            DataResult.Error<?> error = unwrap_result.error().get();
+
+            GlitchGuru.registerThrowable(error);
+
+            // Split the error message up into multiple lines:
+            // this prevents the tooltip lore from spanning the entire screen
+            String message = BibText.createWrappedString(error.message(), 45);
+            BibText.Lore error_lore = BibText.createLore(message);
+
             unwrapped = new ItemStack(Items.ROTTEN_FLESH);
-            unwrapped.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Invalid Item").formatted(Formatting.ITALIC));
+            BibItem.setCustomName(unwrapped, Text.literal("Unwrap Error Item").formatted(Formatting.ITALIC));
+            BibItem.appendLore(unwrapped, error_lore.formatted(Formatting.RED));
         } else {
             // Return the original only if it's present
             unwrapped = unwrap_result.getOrThrow().orElse(null);
