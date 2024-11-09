@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.*;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
@@ -15,7 +17,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.text.Text;
@@ -846,7 +847,8 @@ public final class BibItem {
             return wrapped_stack.copy();
         }
 
-        DataResult<Optional<ItemStack>> unwrap_result = custom_data.get(overlay_codec);
+        var registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
+        DataResult<Optional<ItemStack>> unwrap_result = custom_data.get(registry_ops, overlay_codec);
 
         if (unwrap_result.error().isPresent()) {
             DataResult.Error<?> error = unwrap_result.error().get();
