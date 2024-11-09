@@ -1,6 +1,5 @@
 package rocks.blackblock.bib.bv.value;
 
-import carpet.script.value.ListValue;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -52,7 +51,9 @@ public class BvList<ListContentType extends BvElement>
 
         BvList<EntryType> result = new BvList<>();
 
-        result.addAll(source);
+        if (source != null) {
+            result.addAll(source);
+        }
 
         return result;
     }
