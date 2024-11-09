@@ -298,6 +298,18 @@ public final class BibItem {
     }
 
     /**
+     * Append a lore instance
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static void appendLore(ItemStack stack, BibText.Lore lore) {
+        for (Text line : lore.getLines()) {
+            BibItem.appendLore(stack, line);
+        }
+    }
+
+    /**
      * Append the given text to the ItemStack's lore
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -318,6 +330,16 @@ public final class BibItem {
         }
 
         stack.set(DataComponentTypes.LORE, lore_component);
+    }
+
+    /**
+     * Replace the ItemStack's lore
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static void replaceLore(ItemStack stack, BibText.Lore lore) {
+        BibItem.replaceLore(stack, lore.getLines());
     }
 
     /**
