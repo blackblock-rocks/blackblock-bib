@@ -154,4 +154,35 @@ public abstract class InternalLore<T extends InternalLore<?>> implements Supplie
     public Text get() {
         return this.toConcatenatedText();
     }
+
+    /**
+     * Create a new empty instance
+     * @since    0.2.0
+     */
+    protected abstract T createEmptyLore();
+
+    /**
+     * Create a copy of this Lore
+     * @since    0.2.0
+     */
+    public T copy() {
+        var copy = this.createEmptyLore();
+        copy.lines.addAll(this.lines);
+        return copy;
+    }
+
+    /**
+     * Get a formatted version
+     * @since    0.2.0
+     */
+    public T formatted(Formatting formatting) {
+
+        var result = this.createEmptyLore();
+
+        for (Text line : this.lines) {
+            result.lines.add(line.copy().formatted(formatting));
+        }
+
+        return result;
+    }
 }

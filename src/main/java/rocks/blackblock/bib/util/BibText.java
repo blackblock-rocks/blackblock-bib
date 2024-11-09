@@ -35,7 +35,15 @@ public final class BibText {
      * The Lore class
      * @since    0.1.0
      */
-    public static class Lore extends InternalLore<Lore> {}
+    public static class Lore extends InternalLore<Lore> {
+        /**
+         * Create a new empty instance
+         * @since    0.2.0
+         */
+        protected Lore createEmptyLore() {
+            return new Lore();
+        }
+    }
 
     /**
      * Don't let anyone instantiate this class
