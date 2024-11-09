@@ -328,4 +328,43 @@ public final class BibText {
     public static String fillPlaceholders(String haystack, Map<String, String> values) {
         return StringSubstitutor.replace(haystack, values, "{", "}");
     }
+
+    /**
+     * Add word wrapping
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static String createWrappedString(String text, int max_width) {
+
+        if (text == null || text.isEmpty() || max_width <= 0) {
+            return text;
+        }
+
+        StringBuilder result = new StringBuilder();
+        String[] words = text.split("\\s+");
+        int current_line_length = 0;
+
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+
+            // Handle first word differently
+            if (i == 0) {
+                result.append(word);
+                current_line_length = word.length();
+                continue;
+            }
+
+            // Check if adding the next word exceeds maxWidth
+            if (current_line_length + word.length() + 1 > max_width) {
+                result.append("\n").append(word);
+                current_line_length = word.length();
+            } else {
+                result.append(" ").append(word);
+                current_line_length += word.length() + 1;
+            }
+        }
+
+        return result.toString();
+    }
 }
