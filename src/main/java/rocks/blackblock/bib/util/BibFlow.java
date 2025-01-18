@@ -9,6 +9,7 @@ import rocks.blackblock.bib.monitor.GlitchGuru;
 import rocks.blackblock.bib.runnable.Pledge;
 import rocks.blackblock.bib.runnable.TickRunnable;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -138,14 +139,41 @@ public final class BibFlow {
                     runnable.run();
                 } catch (Throwable t) {
                     result.completeExceptionally(t);
+                    timer.cancel();
                     return;
                 }
 
                 result.complete(null);
+                timer.cancel();
             }
         }, delay_in_ms);
 
         return result;
+    }
+
+    /**
+     * Observe something every X ms while the instance exists
+     * @since    0.2.0
+     */
+    public static void onIntervalWhileReferenced(Runnable runnable, Object object, long interval_in_ms) {
+
+        if (object == null) {
+            return;
+        }
+
+        var timer = new Timer(true);
+        var ref = new WeakReference<>(object);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (ref.get() != null) {
+                    runnable.run();
+                } else {
+                    timer.cancel();
+                }
+            }
+        }, interval_in_ms, interval_in_ms);
     }
 
     /**
