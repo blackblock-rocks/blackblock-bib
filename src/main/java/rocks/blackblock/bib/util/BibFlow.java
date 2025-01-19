@@ -385,4 +385,73 @@ public final class BibFlow {
             this.runnable.run();
         }
     }
+
+    /**
+     * A small on-the-fly profiler
+     */
+    public static class Profiler {
+
+        private final String name;
+        private final List<ProfilerPair> timings = new ArrayList<>();
+        private long total = 0;
+        private long startTime;
+        private long endTime;
+
+        public Profiler(String name) {
+            this.name = name;
+            this.startTime = System.currentTimeMillis();
+        }
+
+        private void addPair(ProfilerPair pair) {
+            this.timings.add(pair);
+            this.endTime = System.currentTimeMillis();
+        }
+
+        public void run(String name, Runnable runnable) {
+
+            var start = System.currentTimeMillis();
+            runnable.run();
+            var end = System.currentTimeMillis();
+            var dur = end - start;
+            this.total += dur;
+
+            this.addPair(new ProfilerPair(name, dur));
+        }
+
+        public <T> T run(String name, Supplier<T> runnable) {
+
+            var start = System.currentTimeMillis();
+            var result = runnable.get();
+            var end = System.currentTimeMillis();
+            var dur = end - start;
+            this.total += dur;
+
+            this.addPair(new ProfilerPair(name, dur));
+
+            return result;
+        }
+
+        public long getTotalDuration() {
+            return this.total;
+        }
+
+        public List<ProfilerPair> getTimings() {
+            return this.timings;
+        }
+
+        public void print() {
+            BibLog.log("Profiler result of '" + this.name + "'");
+
+            this.timings.forEach(pair -> {
+                BibLog.log("  »",pair.name(), "took", pair.ms(), "ms");
+            });
+
+            long total = this.endTime - this.startTime;
+
+            BibLog.log("  Sum of runs:", this.total, "ms");
+            BibLog.log("  Total time:", total, "ms");
+        }
+    }
+
+    private record ProfilerPair(String name, Long ms) {}
 }
