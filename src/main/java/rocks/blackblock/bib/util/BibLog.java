@@ -33,6 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.chunk.*;
 import net.minecraft.world.gen.structure.Structure;
@@ -910,6 +911,12 @@ public class BibLog {
                     this.add("state", thread.getState().toString());
                     this.add("priority", thread.getPriority());
                     this.add("is_daemon", thread.isDaemon());
+                } else if (value instanceof TeleportTarget target) {
+                    name = "TeleportTarget";
+                    this.add("world", target.world());
+                    this.add("pos", target.pos());
+                    this.add("missingRespawnBlock", target.missingRespawnBlock());
+                    this.add("postDimensionTransition", target.postDimensionTransition());
                 } else {
                     name = value.getClass().getSimpleName();
 
