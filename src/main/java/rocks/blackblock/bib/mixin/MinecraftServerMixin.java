@@ -57,5 +57,9 @@ public class MinecraftServerMixin {
     )
     public void onTickWorlds(BooleanSupplier should_keep_ticking, CallbackInfo ci) {
         BibPerf.registerPreTick(this.ticks);
+
+        if (BibPerf.ON_TENTH_SECOND) {
+            AugmentManager.collectGarbage();
+        }
     }
 }

@@ -43,6 +43,22 @@ public class AugmentManager<C extends Augment> {
     protected final AugmentKey<C> augment_key;
 
     /**
+     * Do a garbage collection
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static void collectGarbage() {
+        for (AugmentKey<?> key : Augment.ALL_AUGMENTS.keySet()) {
+            try {
+                key.collectGarbage();
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to collect augment garbage for " + key.getId());
+            }
+        }
+    }
+
+    /**
      * Save as many augment instances that we know of.
      * (Not all augments keep track of their instances, so those might be saved elsewhere)
      *
@@ -51,6 +67,13 @@ public class AugmentManager<C extends Augment> {
      */
     public static void saveAll() {
         for (AugmentKey<?> key : Augment.ALL_AUGMENTS.keySet()) {
+
+            try {
+                key.collectGarbage();
+            } catch (Throwable t) {
+                BibServer.registerThrowable(t, "Failed to collect augment garbage for " + key.getId());
+            }
+
             try {
                 key.saveAll();
             } catch (Throwable t) {
@@ -94,7 +117,9 @@ public class AugmentManager<C extends Augment> {
     }
 
     /**
-     * Handle a player tick
+     * Handle a player tick.
+     * This has to be called by someone else.
+     * (For the Blackblock.rocks server, this is done by blackblock-core)
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0

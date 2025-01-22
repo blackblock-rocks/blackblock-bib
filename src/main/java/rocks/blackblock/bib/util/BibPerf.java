@@ -62,6 +62,9 @@ public class BibPerf {
     // This is true each second
     public static boolean ON_FULL_SECOND = false;
 
+    // This is true every 10 seconds
+    public static boolean ON_TENTH_SECOND = false;
+
     // The current MSPT
     public static float MSPT = 0.0f;
 
@@ -158,9 +161,10 @@ public class BibPerf {
     public static void registerPreTick(int ticks) {
         BibPerf.ON_EVEN_TICK = ticks % 2 == 0;
         BibPerf.ON_THIRD_TICK = ticks % 3 == 0;
-        BibPerf.ON_FOURTH_TICK = ticks % 4 == 0;
-        BibPerf.ON_HALF_SECOND = ticks % 10 == 0;
-        BibPerf.ON_FULL_SECOND = ticks % 20 == 0;
+        BibPerf.ON_FOURTH_TICK = BibPerf.ON_EVEN_TICK && ticks % 4 == 0;
+        BibPerf.ON_HALF_SECOND = BibPerf.ON_EVEN_TICK && ticks % 10 == 0;
+        BibPerf.ON_FULL_SECOND = BibPerf.ON_HALF_SECOND && ticks % 20 == 0;
+        BibPerf.ON_TENTH_SECOND = BibPerf.ON_FULL_SECOND && ticks % 200 == 0;
     }
 
     /**

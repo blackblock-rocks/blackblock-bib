@@ -84,6 +84,13 @@ public abstract class AugmentKey<$C extends Augment> {
     abstract protected String getMainFileName($C instance);
 
     /**
+     * Do some kind of cleanup
+     *
+     * @since    0.2.0
+     */
+    public void collectGarbage() {}
+
+    /**
      * Save all the instances of this augment to file if needed.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -649,6 +656,21 @@ public abstract class AugmentKey<$C extends Augment> {
             super(id, augment_class);
             this.instantiator = instantiator;
             this.do_tick = do_tick;
+        }
+
+        /**
+         * Remove expired players from the cache
+         *
+         * @author   Jelle De Loecker <jelle@elevenways.be>
+         * @since    0.2.0
+         */
+        @Override
+        public void collectGarbage() {
+            for (ServerPlayerEntity player : cache.keySet()) {
+                if (player.bb$isDisconnecting()) {
+                    cache.remove(player);
+                }
+            }
         }
 
         /**
