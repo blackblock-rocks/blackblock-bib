@@ -121,6 +121,18 @@ public final class BibChunk {
      * Is the given chunk loaded?
      * @since 0.2.0
      */
+    public static boolean isChunkLoaded(World world, Chunk chunk) {
+        if (world instanceof ServerWorld serverWorld) {
+            return isChunkLoaded(serverWorld, chunk.getPos());
+        }
+
+        return true;
+    }
+
+    /**
+     * Is the given chunk loaded?
+     * @since 0.2.0
+     */
     public static boolean isChunkLoaded(World world, int chunk_x, int chunk_z) {
         if (world instanceof ServerWorld server_world) {
             return isChunkLoaded(getChunkHolder(server_world, chunk_x, chunk_z));

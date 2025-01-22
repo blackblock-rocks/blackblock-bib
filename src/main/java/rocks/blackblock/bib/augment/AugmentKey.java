@@ -424,7 +424,7 @@ public abstract class AugmentKey<$C extends Augment> {
 
         // Chunk augments have 1 instance per chunk
         // Though when the chunk is loaded, it's a ProtoChunk. Afterwards a normal Chunk is created.
-        private final WeakHashMap<Chunk, C> cache = new WeakHashMap<>();
+        private final WeakHashMap<Chunk, ChunkCacheEntry<C>> cache = new WeakHashMap<>();
 
         // The instantiator
         private final Augment.PerChunk.Instantiator<C> instantiator;
@@ -434,6 +434,9 @@ public abstract class AugmentKey<$C extends Augment> {
 
         // Should this augment be ticked with the chunk?
         private final boolean tick_with_chunk;
+
+        // Cache entry record
+        private record ChunkCacheEntry<C>(World world, C instance) {}
 
         /**
          * Initialize the augment key
@@ -449,6 +452,40 @@ public abstract class AugmentKey<$C extends Augment> {
         }
 
         /**
+         * Save & dereference unloaded chunks
+         */
+        @Override
+        public void collectGarbage() {
+
+            if (cache.size() < 1) {
+                return;
+            }
+
+            // If the data is stored in the chunk nbt itself,
+            // we can safely remove it from the cache
+            if (this.storeInChunkNbt()) {
+                this.cache.entrySet().removeIf(pair -> !this.isChunkLoaded(pair.getValue().world(), pair.getKey()));
+                return;
+            }
+
+            // It's stored in a separate file,
+            // we need to make sure we trigger a save first
+            Iterator<Map.Entry<Chunk, ChunkCacheEntry<C>>> iterator = this.cache.entrySet().iterator();
+
+            // Remove chunks that are not loaded
+            while (iterator.hasNext()) {
+                Map.Entry<Chunk, ChunkCacheEntry<C>> pair = iterator.next();
+                Chunk chunk = pair.getKey();
+                ChunkCacheEntry<C> entry = pair.getValue();
+
+                if (!this.isChunkLoaded(entry.world(), chunk)) {
+                    this.save(entry.instance);
+                    iterator.remove();
+                }
+            }
+        }
+
+        /**
          * Should this augment's data be stored inside the Chunk's nbt?
          * By default, this is false, and the data will be stored in a separate file.
          *
@@ -457,6 +494,13 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         public boolean storeInChunkNbt() {
             return this.store_in_chunk_nbt;
+        }
+
+        /**
+         * Is the given chunk & entry loaded?
+         */
+        private boolean isChunkLoaded(World world, Chunk chunk) {
+            return BibChunk.isChunkLoaded(world, chunk);
         }
 
         /**
@@ -473,8 +517,8 @@ public abstract class AugmentKey<$C extends Augment> {
                 return false;
             }
 
-            for (C instance : this.cache.values()) {
-                this.save(instance);
+            for (ChunkCacheEntry<C> entry : this.cache.values()) {
+                this.save(entry.instance);
             }
 
             return true;
@@ -511,10 +555,10 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         public C getFromCache(Chunk chunk) {
 
-            C result = this.cache.get(chunk);
+            ChunkCacheEntry<C> entry = this.cache.get(chunk);
 
-            if (result != null) {
-                return result;
+            if (entry != null) {
+                return entry.instance;
             }
 
             if (chunk instanceof WrapperProtoChunk roc) {
@@ -524,10 +568,14 @@ public abstract class AugmentKey<$C extends Augment> {
                     return null;
                 }
 
-                result = this.cache.get(chunk);
+                entry = this.cache.get(chunk);
             }
 
-            return result;
+            if (entry == null) {
+                return null;
+            }
+
+            return entry.instance;
         }
 
         /**
@@ -573,7 +621,8 @@ public abstract class AugmentKey<$C extends Augment> {
                 this.manager.readFromFile(result);
             }
 
-            this.cache.put(chunk, result);
+            ChunkCacheEntry<C> entry = new ChunkCacheEntry<>(world, result);
+            this.cache.put(chunk, entry);
 
             return result;
         }
@@ -614,13 +663,15 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         public void handleUpgradedProtoChunk(ProtoChunk proto_chunk, WorldChunk world_chunk) {
 
-            C instance = this.getFromCache(proto_chunk);
+            ChunkCacheEntry<C> entry = this.cache.get(proto_chunk);
 
-            if (instance == null) {
+            if (entry == null) {
                 return;
             }
 
-            cache.put(world_chunk, instance);
+            C instance = entry.instance;
+
+            cache.put(world_chunk, entry);
             instance.onUpgrade(proto_chunk, world_chunk);
 
             if (instance.isDirty()) {
