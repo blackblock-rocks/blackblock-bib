@@ -30,8 +30,15 @@
 			"net/minecraft/class_1937": [
 				"rocks/blackblock/bib/interfaces/HasPerformanceInfo"
 			],
+			"net/minecraft/class_2535": [
+				"rocks/blackblock/bib/interfaces/HasDisconnectionInfo"
+			],
 			"net/minecraft/class_3222": [
-				"rocks/blackblock/bib/player/PlayerActivityInfo"
+				"rocks/blackblock/bib/player/PlayerActivityInfo",
+				"rocks/blackblock/bib/interfaces/HasDisconnectionInfo"
+			],
+			"net/minecraft/class_8609": [
+				"rocks/blackblock/bib/interfaces/HasDisconnectionInfo"
 			]
 		}
 	},

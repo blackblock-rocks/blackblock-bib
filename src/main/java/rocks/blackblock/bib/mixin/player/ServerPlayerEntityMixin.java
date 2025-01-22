@@ -1,5 +1,6 @@
 package rocks.blackblock.bib.mixin.player;
 
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,14 +9,24 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import rocks.blackblock.bib.interfaces.HasDisconnectionInfo;
 import rocks.blackblock.bib.player.PlayerActivityInfo;
 import rocks.blackblock.bib.util.BibPerf;
 
+/**
+ * Implement the PlayerActivityInfo & HasDisconnectionInfo interface
+ *
+ * @author   Jelle De Loecker <jelle@elevenways.be>
+ * @since    0.1.0
+ */
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo {
+public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo, HasDisconnectionInfo {
 
     @Shadow
     public abstract ServerWorld getServerWorld();
+
+    @Shadow
+    public ServerPlayNetworkHandler networkHandler;
 
     @Unique
     private int bb$seconds_online = 0;
@@ -145,5 +156,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
     @Override
     public boolean bb$ignoreDueToSystemLoad() {
         return this.bb$is_ignored;
+    }
+
+    @Unique
+    @Override
+    public boolean bb$isDisconnecting() {
+        return this.networkHandler.bb$isDisconnecting();
     }
 }

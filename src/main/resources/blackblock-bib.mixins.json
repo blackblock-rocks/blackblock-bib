@@ -11,6 +11,8 @@
         "ServerWorldMixin",
         "TACSMixin",
         "WorldChunkMixin",
+        "network.ClientConnectionMixinForDisconnectInfo",
+        "network.ServerCommonNetworkHandlerMixinForDisconnectInfo",
         "performance_info.WorldAccessMixin",
         "performance_info.WorldMixinForPerformanceInfo",
         "player.EntityMixin",
