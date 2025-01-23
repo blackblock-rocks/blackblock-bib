@@ -15,7 +15,6 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import rocks.blackblock.bib.util.BibBlock;
-import rocks.blackblock.bib.util.BibLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +80,9 @@ public class BlockPlaceholderResolvers {
 
         Item item = source.getItem();
 
+
         if (item instanceof SpawnEggItem spawn_egg_item) {
-            EntityType<?> type = spawn_egg_item.getEntityType(source);
+            EntityType<?> type = spawn_egg_item.getEntityType(placeholderContext.getWorld().getRegistryManager(), source);
 
             if (type != null) {
                 var stack = placeholderContext.getTargetStackSuggestion();
@@ -104,8 +104,8 @@ public class BlockPlaceholderResolvers {
                     target_be = spawner_be;
                 } else if (target_item == Items.MINECART) {
                     return placeholderContext.suggest((world, pos) -> {
-                        MinecartEntity minecart = EntityType.MINECART.spawn(world, pos, SpawnReason.SPAWN_EGG);
-                        var passenger = type.create(world);
+                        MinecartEntity minecart = EntityType.MINECART.spawn(world, pos, SpawnReason.STRUCTURE);
+                        var passenger = type.create(world, SpawnReason.STRUCTURE);
                         passenger.startRiding(minecart, true);
                         return true;
                     });
