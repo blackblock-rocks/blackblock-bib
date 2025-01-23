@@ -188,11 +188,14 @@ public class BibLoot {
 
         startBuffer();
         Registries.ENTITY_TYPE.forEach(entityType -> {
-            var loot_table_key = entityType.getLootTableId();
 
-            if (loot_table_key == null) {
+            var optional = entityType.getLootTableKey();
+
+            if (optional.isEmpty()) {
                 return;
             }
+
+            var loot_table_key = optional.get();
 
             var group = entityType.getSpawnGroup();
             var with_item_icon = (HasItemIcon) entityType;
