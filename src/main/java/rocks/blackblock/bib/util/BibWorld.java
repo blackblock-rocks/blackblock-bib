@@ -2,8 +2,10 @@ package rocks.blackblock.bib.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -12,10 +14,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.minecraft.world.explosion.ExplosionImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -105,13 +109,11 @@ public final class BibWorld {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static Explosion createExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, World.ExplosionSourceType explosionSourceType) {
-        Explosion explosion = world.createExplosion(entity, damageSource, behavior, pos, power, createFire, explosionSourceType);
+    public static void createExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, World.ExplosionSourceType explosionSourceType) {
+        world.createExplosion(entity, damageSource, behavior, pos, power, createFire, explosionSourceType);
 
         // The `affectWorld` only adds particles on the client-side
         BibWorld.spawnParticles(world, ParticleTypes.EXPLOSION_EMITTER, pos);
-
-        return explosion;
     }
 
     /**
@@ -120,17 +122,24 @@ public final class BibWorld {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static Explosion createExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, Explosion.DestructionType destruction_type) {
-        boolean particles = true;
+    public static void createExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, Explosion.DestructionType destruction_type) {
 
-        Explosion explosion = new Explosion(world, entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, destruction_type, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.ENTITY_GENERIC_EXPLODE);
-        explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld(particles);
+        if (!(world instanceof ServerWorld serverWorld)) {
+            BibLog.log("Not creating explosion at", pos, ", world is not a ServerWorld");
+            return;
+        }
 
-        // The `affectWorld` only adds particles on the client-side
-        BibWorld.spawnParticles(world, ParticleTypes.EXPLOSION_EMITTER, pos);
+        Vec3d vec3d = new Vec3d(pos.x, pos.y, pos.z);
+        ExplosionImpl explosionImpl = new ExplosionImpl(serverWorld, entity, damageSource, behavior, vec3d, power, createFire, destruction_type);
+        explosionImpl.explode();
+        ParticleEffect particleEffect = explosionImpl.isSmall() ? ParticleTypes.EXPLOSION : ParticleTypes.EXPLOSION_EMITTER;
 
-        return explosion;
+        for (ServerPlayerEntity serverPlayerEntity : serverWorld.getPlayers()) {
+            if (serverPlayerEntity.squaredDistanceTo(vec3d) < 4096.0) {
+                Optional<Vec3d> optional = Optional.ofNullable(explosionImpl.getKnockbackByPlayer().get(serverPlayerEntity));
+                serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(vec3d, optional, particleEffect, SoundEvents.ENTITY_GENERIC_EXPLODE));
+            }
+        }
     }
 
     /**
