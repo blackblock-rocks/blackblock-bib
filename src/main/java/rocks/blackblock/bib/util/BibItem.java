@@ -12,13 +12,16 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -36,8 +39,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static net.minecraft.item.ItemStack.ITEM_CODEC;
-
 /**
  * Library class for working with Items & ItemStacks
  *
@@ -48,6 +49,7 @@ import static net.minecraft.item.ItemStack.ITEM_CODEC;
 public final class BibItem {
 
     private static final String UNWRAPPED_ITEM_KEY = "BB:BackupItem";
+    private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Item.ENTRY_CODEC;
     private static final Codec<ItemStack> ITEM_DATA_COPY_CODEC = RecordCodecBuilder.create((instance) -> instance.group(ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry), ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(ItemStack::getComponentChanges)).apply(instance, (id, components) -> new ItemStack(id, 1, components)));
     private static final MapCodec<Optional<ItemStack>> ORIGINAL_ITEM_CODEC = ITEM_DATA_COPY_CODEC.optionalFieldOf(UNWRAPPED_ITEM_KEY);
 
@@ -98,7 +100,7 @@ public final class BibItem {
      * @since    0.1.0
      */
     public static Optional<Item> getByIdentifierOrEmpty(Identifier identifier) {
-        return Registries.ITEM.getOrEmpty(identifier);
+        return Registries.ITEM.getOptionalValue(identifier);
     }
 
     /**
@@ -260,7 +262,8 @@ public final class BibItem {
         if (custom_model_data_value == null) {
             stack.remove(DataComponentTypes.CUSTOM_MODEL_DATA);
         } else {
-            var cmd_component = new CustomModelDataComponent(custom_model_data_value);
+            // @TODO: CustomModel stuff has totally changed, this needs a lot of updates
+            var cmd_component = new CustomModelDataComponent(List.of((float) custom_model_data_value), List.of(), List.of(), List.of());
             stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, cmd_component);
         }
 
@@ -522,7 +525,7 @@ public final class BibItem {
             return null;
         }
 
-        return stack.encode(BibMod.getDynamicRegistry());
+        return stack.toNbt(BibMod.getDynamicRegistry());
     }
 
     /**
@@ -952,51 +955,15 @@ public final class BibItem {
         }
 
         Item item = stack.getItem();
+        var components = stack.getComponents();
+        var toolComponent = components.get(DataComponentTypes.TOOL);
+        var repairable = stack.getComponents().get(DataComponentTypes.REPAIRABLE);
 
-        // We don't care about any tool lower or equal to gold,
-        // even if it's enchanted
-        if (item instanceof ToolItem tool_item) {
-            var material = tool_item.getMaterial();
-
-            if (material == ToolMaterials.WOOD) {
-                return true;
-            }
-
-            if (material == ToolMaterials.STONE) {
-                return true;
-            }
-
-            if (material == ToolMaterials.IRON) {
-                return true;
-            }
-
-            if (material == ToolMaterials.GOLD) {
-                return true;
-            }
-        }
-
-        if (item instanceof ArmorItem armor_item) {
-            var material = armor_item.getMaterial();
-
-            if (material == ArmorMaterials.LEATHER) {
-                return true;
-            }
-
-            if (material == ArmorMaterials.CHAIN) {
-                return true;
-            }
-
-            if (material == ArmorMaterials.IRON) {
-                return true;
-            }
-
-            if (material == ArmorMaterials.GOLD) {
-                return true;
-            }
-
-            if (material == ArmorMaterials.TURTLE) {
-                return true;
-            }
+        // @TODO: We can't use ToolMaterials anymore (that info is now data-driven)
+        // So we can't check what an item is made out of anymore.
+        // Adding a bunch of these might be an option, but I don't know if it's worth it
+        if (item == Items.WOODEN_AXE || item == Items.WOODEN_HOE || item == Items.WOODEN_PICKAXE || item == Items.WOODEN_SHOVEL || item == Items.WOODEN_SWORD) {
+            return true;
         }
 
         return false;
