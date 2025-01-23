@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -131,7 +132,24 @@ public final class BibBlock {
      * @since    0.1.0
      */
     public static void setBlockEntityData(ItemStack target, BlockEntity block_entity) {
-        block_entity.setStackNbt(target, BibMod.getDynamicRegistry());
+
+        if (block_entity == null) {
+            return;
+        }
+
+        World world = block_entity.getWorld();
+        DynamicRegistryManager registry_manager;
+
+        if (world != null) {
+            registry_manager = world.getRegistryManager();
+        } else {
+            registry_manager = BibMod.getDynamicRegistry();
+        }
+
+        NbtCompound nbtCompound = block_entity.createComponentlessNbt(registry_manager);
+        block_entity.removeFromCopiedStackNbt(nbtCompound);
+        BlockItem.setBlockEntityData(target, block_entity.getType(), nbtCompound);
+        target.applyComponentsFrom(block_entity.createComponentMap());
     }
 
     /**

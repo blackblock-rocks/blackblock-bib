@@ -3,7 +3,7 @@ package rocks.blackblock.bib;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,7 +74,7 @@ public class BibMod implements ModInitializer {
 	 * @since    0.1.0
 	 */
 	@NotNull
-	public static RegistryWrapper.WrapperLookup getDynamicRegistry(PlayerEntity player) {
+	public static DynamicRegistryManager getDynamicRegistry(PlayerEntity player) {
 
 		if (player == null) {
 			return getDynamicRegistry();
@@ -90,7 +90,7 @@ public class BibMod implements ModInitializer {
 	 * @since    0.1.0
 	 */
 	@NotNull
-	public static RegistryWrapper.WrapperLookup getDynamicRegistry() {
+	public static DynamicRegistryManager getDynamicRegistry() {
 		return BibServer.getDynamicRegistry();
 	}
 }
