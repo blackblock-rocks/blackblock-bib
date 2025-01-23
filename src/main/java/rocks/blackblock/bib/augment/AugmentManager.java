@@ -407,23 +407,7 @@ public class AugmentManager<C extends Augment> {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public static void deserializeChunkAugments(ServerWorld world, Chunk chunk, NbtCompound source_nbt) {
-
-        NbtCompound chunk_augments_nbt = null;
-
-        if (source_nbt.contains("BlackBlockAugments", NbtElement.COMPOUND_TYPE)) {
-            chunk_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockAugments");
-        } else if (source_nbt.contains("BlackBlockComponents", NbtElement.COMPOUND_TYPE)) {
-            chunk_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockComponents");
-        }
-
-        if (chunk_augments_nbt == null) {
-            return;
-        }
-
-        if (chunk_augments_nbt.isEmpty()) {
-            return;
-        }
+    public static void deserializeChunkAugments(ServerWorld world, Chunk chunk, NbtCompound chunk_augments_nbt) {
 
         // Augments that store their data in the chunk should always be deserialized
         for (AugmentKey.PerChunk<?> key : Augment.PerChunk.STORED_IN_CHUNK_NBT.keySet()) {

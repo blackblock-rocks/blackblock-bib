@@ -3,10 +3,11 @@
     "package": "rocks.blackblock.bib.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "ChunkSerializerMixin",
         "EntityTypeMixin",
         "LockableContainerBlockEntityAccessor",
         "MinecraftServerMixin",
+        "SerializedChunk_ChunkAugmentsMixin",
+        "ServerChunkLoadingManager_ChunkAugmentMixin",
         "ServerCrashSafePacketListenerMixin",
         "ServerWorldMixin",
         "TACSMixin",
