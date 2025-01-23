@@ -152,9 +152,6 @@ dependencies {
 	// Spark is a performance profiler
 	modImplementation "me.lucko:spark-api:${project.spark_api_version}"
 
-	// Servercore is a mod that aims to optimize the minecraft server
-	modImplementation "maven.modrinth:servercore:${project.servercore_version}"
-
 	// Luckperms permissions
 	modImplementation "net.luckperms:api:${project.luckperms_api_version}"
 

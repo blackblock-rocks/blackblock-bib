@@ -8,9 +8,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
-import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.collection.RollingAverage;
-import rocks.blackblock.bib.interop.InteropServerCore;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.util.ArrayList;
@@ -115,24 +113,6 @@ public class BibPerf {
 
         global_info.processAverageMspt(server.getAverageTickTime());
         int pct = global_info.load;
-
-        if (BibMod.PLATFORM.isModLoaded("servercore")) {
-            MOBCAP_MODIFIER = InteropServerCore.getMobcapModifier();
-
-            if (MOBCAP_MODIFIER < 1) {
-                if (pct < 100) {
-                    pct = 100;
-                } else {
-                    pct = pct + (int) (100 - (100 * (MOBCAP_MODIFIER / 2)));
-
-                    if (global_info.mspt < 50 && pct > 100) {
-                        pct = 100;
-                    }
-                }
-            }
-        }
-
-        global_info.load = pct;
 
         BibPerf.MSPT = global_info.mspt;
         BibPerf.TPS = global_info.tps;
