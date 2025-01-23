@@ -14,7 +14,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -259,9 +262,9 @@ public final class BibBlock {
      */
     public enum InteractionResult {
         SUCCESS(ActionResult.SUCCESS),
-        SUCCESS_NO_ITEM_USED(ActionResult.SUCCESS_NO_ITEM_USED),
+        SUCCESS_NO_ITEM_USED(ActionResult.SUCCESS.noIncrementStat()),
         CONSUME(ActionResult.CONSUME),
-        CONSUME_PARTIAL(ActionResult.CONSUME_PARTIAL),
+        CONSUME_PARTIAL(ActionResult.CONSUME.noIncrementStat()),
         PASS(ActionResult.PASS),
         FAIL(ActionResult.FAIL);
 
@@ -283,20 +286,29 @@ public final class BibBlock {
      * @since    0.1.0
      */
     public enum InteractionWithItemResult {
-        SUCCESS(ItemActionResult.SUCCESS),
-        CONSUME(ItemActionResult.CONSUME),
-        CONSUME_PARTIAL(ItemActionResult.CONSUME_PARTIAL),
-        PASS_TO_DEFAULT_BLOCK_INTERACTION(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION),
-        SKIP_DEFAULT_BLOCK_INTERACTION(ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION),
-        FAIL(ItemActionResult.FAIL);
 
-        public final ItemActionResult actual_result;
+        // SUCCESS used to be used for server-side success,
+        // but now SUCCESS_SERVER is added instead. So now we have
+        // the confusing situation where our SUCCESS is the opposite of the vanilla one
+        SUCCESS(ActionResult.SUCCESS_SERVER),
+        SUCCESS_CLIENT(ActionResult.SUCCESS),
+        CONSUME(ActionResult.CONSUME),
+        // CONSUME_PARTIAL no longer exists, but it wasn't exactly used either
+        CONSUME_PARTIAL(ActionResult.CONSUME),
+        PASS_TO_DEFAULT_BLOCK_INTERACTION(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION),
 
-        InteractionWithItemResult(ItemActionResult actual_result) {
+        // SKIP_DEFAULT_BLOCK_INTERACTION no longer exists,
+        // most uses have been replaced with ActionResult.PASS
+        SKIP_DEFAULT_BLOCK_INTERACTION(ActionResult.PASS),
+        FAIL(ActionResult.FAIL);
+
+        public final ActionResult actual_result;
+
+        InteractionWithItemResult(ActionResult actual_result) {
             this.actual_result = actual_result;
         }
 
-        public ItemActionResult getVanillaResult() {
+        public ActionResult getVanillaResult() {
             return this.actual_result;
         }
     }
