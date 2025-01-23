@@ -717,11 +717,7 @@ public abstract class AugmentKey<$C extends Augment> {
          */
         @Override
         public void collectGarbage() {
-            for (ServerPlayerEntity player : cache.keySet()) {
-                if (player.bb$isDisconnecting()) {
-                    cache.remove(player);
-                }
-            }
+            cache.keySet().removeIf(player -> player.bb$isDisconnecting());
         }
 
         /**
