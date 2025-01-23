@@ -1,3 +1,4 @@
 accessWidener	v2	named
 accessible field net/minecraft/server/world/ChunkHolder UNLOADED_WORLD_CHUNK_FUTURE Ljava/util/concurrent/CompletableFuture;
 accessible method net/minecraft/server/world/ServerChunkManager getChunkHolder (J)Lnet/minecraft/server/world/ChunkHolder;
+extendable class net/minecraft/item/ToolMaterial

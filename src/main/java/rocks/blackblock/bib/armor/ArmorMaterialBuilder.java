@@ -1,10 +1,10 @@
 package rocks.blackblock.bib.armor;
 
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.item.equipment.EquipmentAsset;
+import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -13,7 +13,6 @@ import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.material.MaterialBuilder;
 
 import java.util.EnumMap;
-import java.util.List;
 
 /**
  * Builder class for making ArmorMaterial
@@ -27,16 +26,13 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
     // The eventual registry entry
     private RegistryEntry<ArmorMaterial> registry_entry = null;
 
-    private final EnumMap<ArmorItem.Type, Integer> defenses = new EnumMap<>(ArmorItem.Type.class);
+    private final EnumMap<EquipmentType, Integer> defenses = new EnumMap<>(EquipmentType.class);
 
     // Use the generic sound by default
     private RegistryEntry<SoundEvent> equip_sound = SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
 
     private float toughness = 0.0F;
     private float knockback_resistance = 0.0F;
-
-    // This is for leather only, not implemented here
-    private List<ArmorMaterial.Layer> layers = null;
 
     /**
      * Create a new instance
@@ -64,7 +60,7 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public ArmorMaterialBuilder setDefense(ArmorItem.Type armor_type, int amount) {
+    public ArmorMaterialBuilder setDefense(EquipmentType armor_type, int amount) {
         this.defenses.put(armor_type, amount);
         return this;
     }
@@ -127,8 +123,11 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
         }
 
         Identifier armor_id = BibMod.id(this.id);
-        List<ArmorMaterial.Layer> material_list = List.of(new ArmorMaterial.Layer(armor_id));
 
+        // @TODO: Implement new ArmorMaterial registration
+        RegistryKey<EquipmentAsset> equipmentAsset = null;
+
+        /*
         ArmorMaterial material = new ArmorMaterial(
                 this.defenses,
                 this.enchantability,
@@ -144,6 +143,7 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
                 armor_id,
                 material
         );
+        */
 
         return this.registry_entry;
     }
