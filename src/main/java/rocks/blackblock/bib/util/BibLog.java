@@ -708,7 +708,7 @@ public class BibLog {
                         name = "Packet";
                     }
 
-                    this.add("packet_id", packet.getPacketId());
+                    this.add("packet_id", packet.getPacketType());
 
                     if (packet instanceof EntityTrackerUpdateS2CPacket et) {
                         this.add("entity_id", et.id());
@@ -828,7 +828,7 @@ public class BibLog {
                 } else if (value instanceof Structure structure) {
                     name = "Structure";
                     this.add("type", structure.getType());
-                    this.add("id", BibServer.getDynamicRegistry().get(RegistryKeys.STRUCTURE).getId(structure));
+                    this.add("id", BibServer.getDynamicRegistry().getOrThrow(RegistryKeys.STRUCTURE).getId(structure));
                 } else if (value instanceof StructureType<?> type) {
                     name = "StructureType";
                     this.add("id", Registries.STRUCTURE_TYPE.getId(type));
@@ -914,9 +914,9 @@ public class BibLog {
                 } else if (value instanceof TeleportTarget target) {
                     name = "TeleportTarget";
                     this.add("world", target.world());
-                    this.add("pos", target.pos());
+                    this.add("pos", target.position());
                     this.add("missingRespawnBlock", target.missingRespawnBlock());
-                    this.add("postDimensionTransition", target.postDimensionTransition());
+                    this.add("postTeleportTransition", target.postTeleportTransition());
                 } else {
                     name = value.getClass().getSimpleName();
 
