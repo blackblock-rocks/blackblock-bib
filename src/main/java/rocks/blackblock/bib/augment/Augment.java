@@ -320,7 +320,7 @@ public interface Augment {
             // Only do this for augments that are stored in the chunk's NBT?
             Chunk chunk = this.getChunk();
             if (chunk != null) {
-                chunk.setNeedsSaving(true);
+                chunk.markNeedsSaving();
             }
 
             this.setDirty(true);
