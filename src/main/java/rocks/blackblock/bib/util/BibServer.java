@@ -1,8 +1,10 @@
 package rocks.blackblock.bib.util;
 
 import com.mojang.brigadier.CommandDispatcher;
+import eu.pb4.polymer.common.api.PolymerCommonUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.network.listener.PacketListener;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -16,6 +18,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Library class for working with the main server instance
@@ -241,5 +244,65 @@ public final class BibServer {
         BibLog.attention("Returning an empty DynamicRegistryManager!");
 
         return DynamicRegistryManager.EMPTY;
+    }
+
+    /**
+     * Are we currently on a networking thread?
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static boolean isNetworkingThread() {
+        return PolymerCommonUtils.isNetworkingThread();
+    }
+
+    /**
+     * Execute with networking logic enabled
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static void executeWithNetworkingLogic(Runnable runnable) {
+        PolymerCommonUtils.executeWithNetworkingLogic(runnable);
+    }
+
+    /**
+     * Execute with networking logic enabled
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static <T> T executeWithNetworkingLogic(Supplier<T> supplier) {
+        return PolymerCommonUtils.executeWithNetworkingLogic(supplier);
+    }
+
+    /**
+     * Execute with networking logic enabled
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static <T> T executeWithNetworkingLogic(PacketListener listener, Supplier<T> supplier) {
+        return PolymerCommonUtils.executeWithNetworkingLogic(listener, supplier);
+    }
+
+    /**
+     * Execute with networking logic disabled
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static void executeWithoutNetworkingLogic(Runnable runnable) {
+        PolymerCommonUtils.executeWithoutNetworkingLogic(runnable);
+    }
+
+    /**
+     * Execute with networking logic disabled
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static <T> T executeWithoutNetworkingLogic(Supplier<T> supplier) {
+        return PolymerCommonUtils.executeWithoutNetworkingLogic(supplier);
     }
 }

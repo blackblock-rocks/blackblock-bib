@@ -1,7 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.9-SNAPSHOT'
 	id 'maven-publish'
-	id 'org.checkerframework' version '0.6.40'
+	id 'org.checkerframework' version '0.6.48'
 }
 
 apply plugin: 'org.checkerframework'
@@ -68,7 +68,11 @@ repositories {
 
 	// NucleoidMC
 	maven {
-		url "https://maven.nucleoid.xyz/"
+		url "https://maven.nucleoid.xyz"
+		content {
+			includeGroup("xyz.nucleoid")
+			includeGroup("eu.pb4")
+		}
 	}
 
 	// PolyMC
@@ -157,6 +161,10 @@ dependencies {
 
 	// The Sentry client for error reporting
 	modImplementation include("io.sentry:sentry:${project.sentry_version}")
+
+	modImplementation include("eu.pb4:polymer-common:${project.polymer_version}") {
+		exclude group: 'net.fabricmc', module: 'fabric-loader'
+	}
 }
 
 // Modify the contents of the "fabric.mod.json" file
