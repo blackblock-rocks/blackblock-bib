@@ -119,6 +119,26 @@ public final class BibBlock {
     }
 
     /**
+     * Create new Block Settings
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static AbstractBlock.Settings createBlockSettings() {
+        return AbstractBlock.Settings.create();
+    }
+
+    /**
+     * Create new Block Settings based on the given block
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static AbstractBlock.Settings createBlockSettings(AbstractBlock block) {
+        return AbstractBlock.Settings.copy(block);
+    }
+
+    /**
      * Set the BlockEntity data in the given ItemStack.
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
