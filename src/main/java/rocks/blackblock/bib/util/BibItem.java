@@ -10,9 +10,12 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -22,10 +25,14 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -967,5 +974,59 @@ public final class BibItem {
         }
 
         return false;
+    }
+
+    /**
+     * Let the given entity drop the given stack
+     *
+     * @since    0.3.0
+     */
+    @Nullable
+    public static ItemEntity dropStack(Entity entity, ItemConvertible item, float offset_y) {
+        return dropStack(entity, new ItemStack(item), offset_y);
+    }
+
+    /**
+     * Let the given entity drop the given stack
+     *
+     * @since    0.3.0
+     */
+    @Nullable
+    public static ItemEntity dropStack(Entity entity, ItemStack item, float offset_y) {
+        Vec3d position = entity.getPos().add(0, offset_y, 0);
+        return dropStack(entity.getWorld(), item, position);
+    }
+
+    /**
+     * Drop a stack in the given world at the precise given position
+     *
+     * @since    0.3.0
+     */
+    @Nullable
+    public static ItemEntity dropStack(World world, ItemStack stack, Position pos) {
+
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return null;
+        }
+
+        return dropStack(serverWorld, stack, pos);
+    }
+
+    /**
+     * Drop a stack in the given world at the precise given position
+     *
+     * @since    0.3.0
+     */
+    @Nullable
+    public static ItemEntity dropStack(ServerWorld world, ItemStack stack, Position pos) {
+
+        if (stack.isEmpty()) {
+            return null;
+        }
+
+        ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+        itemEntity.setToDefaultPickupDelay();
+        world.spawnEntity(itemEntity);
+        return itemEntity;
     }
 }
