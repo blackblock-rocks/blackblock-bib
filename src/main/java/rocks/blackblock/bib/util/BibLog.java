@@ -6,18 +6,18 @@ import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.component.type.ContainerLootComponent;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.AbstractNbtNumber;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
@@ -27,7 +27,9 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -917,6 +919,25 @@ public class BibLog {
                     this.add("pos", target.position());
                     this.add("missingRespawnBlock", target.missingRespawnBlock());
                     this.add("postTeleportTransition", target.postTeleportTransition());
+                } else if (value instanceof CustomModelDataComponent cmd) {
+                    name = "CustomModelDataComponent";
+                    this.add("colors", cmd.colors());
+                    this.add("flags", cmd.flags());
+                    this.add("floats", cmd.floats());
+                    this.add("strings", cmd.strings());
+                } else if (value instanceof MutableText mtext) {
+                    name = "MutableText";
+                    this.setContent(mtext.toString());
+                } else if (value instanceof Rarity rarity) {
+                    name = "Rarity";
+                    this.setContent(rarity.asString());
+                } else if (value instanceof AttributeModifiersComponent attr) {
+                    name = "AttributeModifiersComponent";
+                    this.add("modifiers", attr.modifiers());
+                    this.add("show_in_tooltip", attr.showInTooltip());
+                } else if (value instanceof Item item) {
+                    name = item.getClass().getSimpleName();
+                    this.add("translation_key", item.getTranslationKey());
                 } else {
                     name = value.getClass().getSimpleName();
 
