@@ -18,6 +18,7 @@ import net.minecraft.world.explosion.ExplosionImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -41,6 +42,21 @@ public final class BibWorld {
      */
     private BibWorld() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Get all the worlds
+     * @since    0.2.0
+     */
+    public static Iterable<ServerWorld> getWorlds() {
+
+        var server = BibServer.getServer();
+
+        if (server == null) {
+            return Collections.emptyList();
+        }
+
+        return server.getWorlds();
     }
 
     /**
