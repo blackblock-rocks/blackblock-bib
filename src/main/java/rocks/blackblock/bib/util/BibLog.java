@@ -479,6 +479,17 @@ public class BibLog {
      * @param    args  Multiple arguments
      */
     private static StringBuilder concatenateArguments(Object[] args) {
+        try {
+            return unsafeConcatenateArguments(args);
+        } catch (Throwable e) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Error concatenating arguments: ");
+            builder.append(e.getMessage());
+            return builder;
+        }
+    }
+
+    private static StringBuilder unsafeConcatenateArguments(Object[] args) {
 
         StringBuilder builder = new StringBuilder();
         int i = 0;
@@ -491,46 +502,14 @@ public class BibLog {
 
             String entry;
 
-            if (arg instanceof Argable argable) {
-                Arg temp = argable.toBBLogArg();
+            try {
+                entry = unsafeStringifyArgument(arg);
+            } catch (Throwable e) {
+                entry = "Error formatting argument: " + e;
+                entry = "[" + RedText.format(entry) + "]";
 
-                if (temp != null) {
-                    arg = temp;
-                }
-            }
-
-            if (arg == null) {
-                entry = "null";
-            } else if (arg instanceof Arg) {
-                entry = arg.toString();
-            } else {
-                try {
-                    entry = arg.toString();
-
-                    if (arg instanceof Number) {
-                        entry = BlueText.format(entry);
-                    } else if (arg instanceof Boolean bool) {
-                        if (bool) {
-                            entry = GreenText.format(entry);
-                        } else {
-                            entry = RedText.format(entry);
-                        }
-                    } else if (arg instanceof String) {
-                        entry = YellowText.format(entry);
-                    } else if (arg instanceof BlockPos pos) {
-                        entry = "BlockPos{" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "}";
-                        entry = MagentaText.format(entry);
-                    } else {
-
-                        Arg sarg = createArg(arg);
-                        sarg.setFallbackContent(entry);
-                        entry = sarg.toIndentedString(0);
-
-                        entry = MagentaText.format(entry);
-                    }
-                } catch (Throwable t) {
-                    entry = "Error formatting argument: " + t;
-                    entry = RedText.format(entry);
+                if (arg != null) {
+                    entry = arg.getClass().getSimpleName() + entry;
                 }
             }
 
@@ -539,6 +518,55 @@ public class BibLog {
         }
 
         return builder;
+    }
+
+    private static String unsafeStringifyArgument(Object arg) {
+        String entry;
+
+        if (arg instanceof Argable argable) {
+            Arg temp = argable.toBBLogArg();
+
+            if (temp != null) {
+                arg = temp;
+            }
+        }
+
+        if (arg == null) {
+            entry = "null";
+        } else if (arg instanceof Arg) {
+            entry = arg.toString();
+        } else {
+            try {
+                entry = arg.toString();
+
+                if (arg instanceof Number) {
+                    entry = BlueText.format(entry);
+                } else if (arg instanceof Boolean bool) {
+                    if (bool) {
+                        entry = GreenText.format(entry);
+                    } else {
+                        entry = RedText.format(entry);
+                    }
+                } else if (arg instanceof String) {
+                    entry = YellowText.format(entry);
+                } else if (arg instanceof BlockPos pos) {
+                    entry = "BlockPos{" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "}";
+                    entry = MagentaText.format(entry);
+                } else {
+
+                    Arg sarg = createArg(arg);
+                    sarg.setFallbackContent(entry);
+                    entry = sarg.toIndentedString(0);
+
+                    entry = MagentaText.format(entry);
+                }
+            } catch (Throwable t) {
+                entry = "Error formatting argument: " + t;
+                entry = RedText.format(entry);
+            }
+        }
+
+        return entry;
     }
 
     public static Arg createArg(Object value) {
