@@ -2,6 +2,7 @@ package rocks.blackblock.bib.armor;
 
 import net.minecraft.item.Items;
 import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.equipment.EquipmentAsset;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.RegistryKey;
@@ -144,6 +145,10 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
                 material
         );
         */
+
+        if (this.registry_entry == null) {
+            return RegistryEntry.of(ArmorMaterials.GOLD);
+        }
 
         return this.registry_entry;
     }
