@@ -1,11 +1,9 @@
 package rocks.blackblock.bib.tool;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.TagKey;
-
-import java.util.function.Supplier;
 
 /**
  * Base Custom Tool Material class
@@ -15,7 +13,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("unused")
 public class CustomToolMaterial extends ToolMaterial {
-    public CustomToolMaterial(TagKey<Block> inverseTag, int itemDurability, float miningSpeed, float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient) {
-        super(inverseTag, itemDurability, miningSpeed, attackDamage, enchantability, null);
+    public CustomToolMaterial(TagKey<Block> inverseTag, int itemDurability, float miningSpeed, float attackDamage, int enchantability, TagKey<Item> repair_item) {
+        super(inverseTag, itemDurability, miningSpeed, attackDamage, enchantability, repair_item);
     }
 }

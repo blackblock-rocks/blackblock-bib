@@ -1,12 +1,12 @@
 package rocks.blackblock.bib.armor;
 
-import net.minecraft.item.Items;
 import net.minecraft.item.equipment.ArmorMaterial;
 import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.equipment.EquipmentAsset;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -119,8 +119,8 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
         this.has_been_registered = true;
 
         // If there is no repair ingredient, use something expensive
-        if (this.repair_ingredient == null) {
-            this.setRepairItem(Items.DIAMOND);
+        if (this.repair_item == null) {
+            this.setRepairItem(ItemTags.DIAMOND_TOOL_MATERIALS);
         }
 
         Identifier armor_id = BibMod.id(this.id);

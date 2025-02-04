@@ -1,7 +1,7 @@
 package rocks.blackblock.bib.material;
 
 import net.minecraft.item.Item;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.TagKey;
 
 /**
  * Builder class for making ArmorMaterial
@@ -22,7 +22,7 @@ public abstract class MaterialBuilder<T> {
     protected int enchantability = 9;
 
     // The item used to repair it
-    protected Ingredient repair_ingredient = null;
+    protected TagKey<Item> repair_item = null;
 
     /**
      * Keep the constructor private
@@ -53,19 +53,8 @@ public abstract class MaterialBuilder<T> {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public T setRepairItem(Item repair_item) {
-        this.repair_ingredient = Ingredient.ofItems(repair_item);
-        return (T) this;
-    }
-
-    /**
-     * Set the ingredient (item) that can be used to repair the armor
-     *
-     * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
-     */
-    public T setRepairItem(Ingredient repair_ingredient) {
-        this.repair_ingredient = repair_ingredient;
+    public T setRepairItem(TagKey<Item> repair_item) {
+        this.repair_item = repair_item;
         return (T) this;
     }
 }

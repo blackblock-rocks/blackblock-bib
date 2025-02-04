@@ -1,9 +1,9 @@
 package rocks.blackblock.bib.tool;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import rocks.blackblock.bib.material.MaterialBuilder;
 
@@ -133,8 +133,8 @@ public class ToolMaterialBuilder extends MaterialBuilder<ToolMaterialBuilder> {
         this.has_been_registered = true;
 
         // If there is no repair ingredient, use something expensive
-        if (this.repair_ingredient == null) {
-            this.setRepairItem(Items.DIAMOND);
+        if (this.repair_item == null) {
+            this.setRepairItem(ItemTags.DIAMOND_TOOL_MATERIALS);
         }
 
         this.custom_material = new CustomToolMaterial(
@@ -143,7 +143,7 @@ public class ToolMaterialBuilder extends MaterialBuilder<ToolMaterialBuilder> {
                 this.mining_speed,
                 this.attack_damage,
                 this.enchantability,
-                () -> this.repair_ingredient
+                this.repair_item
         );
 
         return this.custom_material;
