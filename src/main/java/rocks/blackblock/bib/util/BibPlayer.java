@@ -1,6 +1,9 @@
 package rocks.blackblock.bib.util;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import rocks.blackblock.bib.interop.BibInterop;
 
 /**
@@ -71,5 +74,35 @@ public final class BibPlayer {
         }
 
         return player.getNameForScoreboard();
+    }
+
+    /**
+     * Spawn particles only the given player can see
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static void spawnParticles(ServerPlayerEntity player, ParticleEffect particle, Vec3d pos) {
+        spawnParticles(player, particle, pos.x, pos.y, pos.z);
+    }
+
+    /**
+     * Spawn particles only the given player can see
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static void spawnParticles(ServerPlayerEntity player, ParticleEffect particle, double x, double y, double z) {
+        spawnParticles(player, particle, x, y, z, 1);
+    }
+
+    /**
+     * Spawn particles only the given player can see
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.3.0
+     */
+    public static void spawnParticles(ServerPlayerEntity player, ParticleEffect particle, double x, double y, double z, int count) {
+        player.getServerWorld().spawnParticles(player, particle, true, true, x, y, z, count, 0, 0, 0, 0);
     }
 }
