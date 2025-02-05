@@ -4,8 +4,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+
+import java.util.Set;
 
 /**
  * Library class for working with entities
@@ -193,5 +198,31 @@ public final class BibEntity {
         boolean has_ceiling = BibPos.spiralAroundPosition(pos.getX(), pos.getZ(), radius, (x, z) -> world.isSkyVisible(mutable.set(x, start_y, z)));
 
         return has_ceiling;
+    }
+
+    /**
+     * Teleport an entity
+     * @since    0.3.0
+     */
+    public static void teleport(Entity entity, World world, Position target) {
+        teleport(entity, world, target.getX(), target.getY(), target.getZ());
+    }
+
+    /**
+     * Teleport an entity
+     * @since    0.3.0
+     */
+    public static void teleport(Entity entity, World world, Vec3i target) {
+        teleport(entity, world, target.getX(), target.getY(), target.getZ());
+    }
+
+    /**
+     * Teleport an entity
+     * @since    0.3.0
+     */
+    public static void teleport(Entity entity, World world, double x, double y, double z) {
+        if (world instanceof ServerWorld serverWorld) {
+            entity.teleport(serverWorld, x, y, z, Set.of(), entity.getYaw(), entity.getPitch(), false);
+        }
     }
 }
