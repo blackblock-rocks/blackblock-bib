@@ -1,8 +1,8 @@
 package rocks.blackblock.bib.armor;
 
 import net.minecraft.item.equipment.ArmorMaterial;
-import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.equipment.EquipmentAsset;
+import net.minecraft.item.equipment.EquipmentAssetKeys;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -111,7 +111,7 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    public RegistryEntry<ArmorMaterial> register() {
+    public ArmorMaterial register() {
         if (this.has_been_registered) {
             throw new RuntimeException("Trying to register armor material '" + this.id + "' again!");
         }
@@ -124,33 +124,20 @@ public class ArmorMaterialBuilder extends MaterialBuilder<ArmorMaterialBuilder> 
         }
 
         Identifier armor_id = BibMod.id(this.id);
+        RegistryKey<EquipmentAsset> asset_id = RegistryKey.of(EquipmentAssetKeys.REGISTRY_KEY, armor_id);
 
-        // @TODO: Implement new ArmorMaterial registration
-        RegistryKey<EquipmentAsset> equipmentAsset = null;
-
-        /*
         ArmorMaterial material = new ArmorMaterial(
+                this.durability,
                 this.defenses,
                 this.enchantability,
                 this.equip_sound,
-                () -> this.repair_ingredient,
-                material_list,
                 this.toughness,
-                this.knockback_resistance
+                this.knockback_resistance,
+                this.repair_item,
+                asset_id
         );
 
-        this.registry_entry = Registry.registerReference(
-            Registries.ARMOR_MATERIAL,
-                armor_id,
-                material
-        );
-        */
-
-        if (this.registry_entry == null) {
-            return RegistryEntry.of(ArmorMaterials.GOLD);
-        }
-
-        return this.registry_entry;
+        return material;
     }
 
     /**

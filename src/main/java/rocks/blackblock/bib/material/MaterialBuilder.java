@@ -24,6 +24,9 @@ public abstract class MaterialBuilder<T> {
     // The item used to repair it
     protected TagKey<Item> repair_item = null;
 
+    // The durability of this material
+    protected int durability = 5;
+
     /**
      * Keep the constructor private
      *
@@ -55,6 +58,15 @@ public abstract class MaterialBuilder<T> {
      */
     public T setRepairItem(TagKey<Item> repair_item) {
         this.repair_item = repair_item;
+        return (T) this;
+    }
+
+    /**
+     * Set the durability of this material
+     * @since    0.3.0
+     */
+    public T setDurability(int durability) {
+        this.durability = durability;
         return (T) this;
     }
 }
