@@ -1,17 +1,32 @@
 package rocks.blackblock.bib.util;
 
+import com.mojang.datafixers.DSL;
+import com.mojang.datafixers.DataFix;
+import com.mojang.datafixers.DataFixerBuilder;
+import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
+import rocks.blackblock.bib.mixin.dfu.DataFixerBuilderAccessor;
+import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Library class for working with NBT and other types of data
@@ -22,6 +37,11 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public final class BibData {
 
+    private static DataFixerBuilder DATA_FIXER_BUILDER = null;
+    private static boolean DATA_FIXER_OPEN = false;
+    private static List<Runnable> DATA_FIXER_SCHEMA_GET_QUEUE = null;
+    private static final Int2ObjectOpenHashMap<Map<DSL.TypeReference, List<CustomFixer>>> CUSTOM_FIXERS = new Int2ObjectOpenHashMap<>();
+
     /**
      * Don't let anyone instantiate this class
      *
@@ -30,6 +50,63 @@ public final class BibData {
      */
     private BibData() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Set the data-fixer-builder (called via the SchemasMixin)
+     */
+    @ApiStatus.Internal
+    public static void setDataFixerBuilder(@NotNull DataFixerBuilder builder, boolean open) {
+        DATA_FIXER_BUILDER = builder;
+        DATA_FIXER_OPEN = open;
+
+        if (open) {
+
+            if (DATA_FIXER_SCHEMA_GET_QUEUE != null) {
+                for (Runnable runnable : DATA_FIXER_SCHEMA_GET_QUEUE) {
+                    runnable.run();
+                }
+                DATA_FIXER_SCHEMA_GET_QUEUE = null;
+            }
+
+            List<BlackblockDataFixerEntrypoint> entrypoints = FabricLoader.getInstance().getEntrypoints("blackblock-data-fixers", BlackblockDataFixerEntrypoint.class);
+
+            for (BlackblockDataFixerEntrypoint entrypointEntry : entrypoints) {
+                entrypointEntry.registerDataFixer(builder);
+            }
+        }
+    }
+
+    /**
+     * Something is being updated, check for our custom data-fixers
+     */
+    @ApiStatus.Internal
+    public static <T> void handleTriggeredUpdate(DSL.TypeReference type, Dynamic<T> input, int old_version, int new_version) {
+        for (int version = old_version; version <= new_version; version++) {
+            handleTriggeredUpdate(type, input, version);
+        }
+    }
+
+    /**
+     * Handle a specific version update
+     */
+    private static <T> void handleTriggeredUpdate(DSL.TypeReference type, Dynamic<T> input, int version) {
+
+        Map<DSL.TypeReference, List<CustomFixer>> fixers = CUSTOM_FIXERS.get(version);
+
+        if (fixers == null) {
+            return;
+        }
+
+        List<CustomFixer> fixersForType = fixers.get(type);
+
+        if (fixersForType == null) {
+            return;
+        }
+
+        for (CustomFixer fixer : fixersForType) {
+            fixer.performFix(input);
+        }
     }
 
     /**
@@ -215,5 +292,71 @@ public final class BibData {
         String path = data.getString("path");
 
         return Identifier.of(namespace, path);
+    }
+
+    /**
+     * Get the builder & schema for a specific version
+     *
+     * @since    0.3.0
+     */
+    private static void getDataFixerSchemaForAdding(int version, BiConsumer<DataFixerBuilder, Schema> consumer) {
+
+        if (DATA_FIXER_BUILDER == null) {
+            if (DATA_FIXER_SCHEMA_GET_QUEUE == null) {
+                DATA_FIXER_SCHEMA_GET_QUEUE = new ArrayList<>();
+            }
+
+            DATA_FIXER_SCHEMA_GET_QUEUE.add(() -> {
+                getDataFixerSchemaForAdding(version, consumer);
+            });
+
+            return;
+        }
+
+        if (!DATA_FIXER_OPEN) {
+            throw new RuntimeException("The DataFixers have already been built, unable to add a new schema for '" + version + "'");
+        }
+
+        var schemas = ((DataFixerBuilderAccessor) DATA_FIXER_BUILDER).bb$getSchemas();
+        var schema = schemas.get(version);
+
+        if (schema == null) {
+            schema = DATA_FIXER_BUILDER.addSchema(version, Schema::new);
+        }
+
+        consumer.accept(DATA_FIXER_BUILDER, schema);
+    }
+
+    /**
+     * Add a fixer for the given version
+     *
+     * @since    0.3.0
+     */
+    public static void addDataFixer(int version, Function<Schema, DataFix> fixer_creator) {
+        getDataFixerSchemaForAdding(version, (builder, schema) -> {
+            builder.addFixer(fixer_creator.apply(schema));
+        });
+    }
+
+    /**
+     * Add a very simple "DataFixer"-like consumer for a specific version
+     * that can directly work on the root Dynamic value
+     *
+     * @since    0.3.0
+     */
+    public static void addDataFixer(int version, DSL.TypeReference type, String name, Consumer<Dynamic<?>> consumer) {
+        var version_fixers = CUSTOM_FIXERS.computeIfAbsent(version, v -> new Object2ObjectOpenHashMap<>());
+        var type_fixers = version_fixers.computeIfAbsent(type, t -> new ArrayList<>());
+        type_fixers.add(new CustomFixer(name, consumer));
+    }
+
+    private record CustomFixer(String name, Consumer<Dynamic<?>> consumer) {
+        public void performFix(Dynamic<?> input) {
+            try {
+                consumer.accept(input);
+            } catch (Throwable t) {
+                GlitchGuru.registerThrowable(t, "Failed to perform custom datafixer '" + name + "'");
+            }
+        }
     }
 }
