@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 import rocks.blackblock.bib.runnable.Pledge;
 import rocks.blackblock.bib.runnable.TickRunnable;
@@ -97,13 +98,18 @@ public final class BibFlow {
      * Schedule something on the existing timer thread
      * @since    0.2.0
      */
-    public static void setInterval(Runnable runnable, long delay_in_ms) {
-        FLOW_TIMER.schedule(new TimerTask() {
+    public static TimerTask setInterval(Runnable runnable, long delay_in_ms) {
+
+        var task = new TimerTask() {
             @Override
             public void run() {
                 runnable.run();
             }
-        }, delay_in_ms, delay_in_ms);
+        };
+
+        FLOW_TIMER.schedule(task, delay_in_ms, delay_in_ms);
+
+        return task;
     }
 
     /**
@@ -155,16 +161,17 @@ public final class BibFlow {
      * Observe something every X ms while the instance exists
      * @since    0.2.0
      */
-    public static void onIntervalWhileReferenced(Runnable runnable, Object object, long interval_in_ms) {
+    @Nullable
+    public static TimerTask onIntervalWhileReferenced(Runnable runnable, Object object, long interval_in_ms) {
 
         if (object == null) {
-            return;
+            return null;
         }
 
         var timer = new Timer(true);
         var ref = new WeakReference<>(object);
 
-        timer.schedule(new TimerTask() {
+        var task = new TimerTask() {
             @Override
             public void run() {
                 if (ref.get() != null) {
@@ -173,7 +180,11 @@ public final class BibFlow {
                     timer.cancel();
                 }
             }
-        }, interval_in_ms, interval_in_ms);
+        };
+
+        timer.schedule(task, interval_in_ms, interval_in_ms);
+
+        return task;
     }
 
     /**
