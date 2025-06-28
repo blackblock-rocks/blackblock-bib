@@ -691,8 +691,8 @@ public final class BibJson {
             return jsonify(list);
         }
 
-        if (nbt instanceof NbtString str) {
-            return new JsonPrimitive(str.asString());
+        if (nbt instanceof NbtString(String str)) {
+            return new JsonPrimitive(str);
         }
 
         if (nbt instanceof AbstractNbtNumber nbt_nr) {

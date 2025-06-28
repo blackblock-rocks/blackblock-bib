@@ -210,11 +210,7 @@ public final class BibItem {
             return null;
         }
 
-        if (!nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-            return null;
-        }
-
-        return nbt.getCompound(key);
+        return BibData.getCompound(nbt, key);
     }
 
     /**
@@ -227,14 +223,14 @@ public final class BibItem {
     public static NbtCompound getOrCreateCustomSubNbt(ItemStack stack, String key) {
 
         NbtCompound nbt = getOrCreateCustomNbt(stack);
+        NbtCompound subNbt = BibData.getCompound(nbt, key);
 
-        if (!nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-            NbtCompound nbtCompound = new NbtCompound();
-            nbt.put(key, nbtCompound);
-            return nbtCompound;
+        if (subNbt == null) {
+            subNbt = new NbtCompound();
+            nbt.put(key, subNbt);
         }
 
-        return nbt.getCompound(key);
+        return subNbt;
     }
 
     /**
@@ -532,7 +528,10 @@ public final class BibItem {
             return null;
         }
 
-        return stack.toNbt(BibMod.getDynamicRegistry());
+        // Use the Codec approach for serialization
+        var registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
+        var result = ItemStack.CODEC.encodeStart(registry_ops, stack);
+        return result.result().orElse(null);
     }
 
     /**
@@ -543,7 +542,10 @@ public final class BibItem {
      */
     @Nullable
     public static ItemStack deserializeToStack(NbtElement nbt) {
-        return ItemStack.fromNbt(BibMod.getDynamicRegistry(), nbt).orElse(null);
+        // Use the Codec approach for deserialization
+        var registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
+        var result = ItemStack.CODEC.parse(registry_ops, nbt);
+        return result.result().orElse(null);
     }
 
     /**
@@ -567,15 +569,13 @@ public final class BibItem {
             return null;
         }
 
-        if (nbt.contains("BlockEntityTag")) {
-            nbt = nbt.getCompound("BlockEntityTag");
+        NbtCompound blockEntityTag = BibData.getCompound(nbt, "BlockEntityTag");
+
+        if (blockEntityTag != null) {
+            nbt = blockEntityTag;
         }
 
-        if (nbt == null || !nbt.contains("Items")) {
-            return null;
-        }
-
-        return nbt.getList("Items", NbtElement.COMPOUND_TYPE);
+        return BibData.getList(nbt, "Items");
     }
 
     /**
@@ -617,9 +617,10 @@ public final class BibItem {
     public static void insertItems(ItemStack stack, List<ItemStack> stacks) {
 
         NbtCompound nbt = BibItem.getOrCreateCustomNbt(stack);
+        NbtCompound blockEntityTag = BibData.getCompound(nbt, "BlockEntityTag");
 
-        if (nbt.contains("BlockEntityTag")) {
-            nbt = nbt.getCompound("BlockEntityTag");
+        if (blockEntityTag != null) {
+            nbt = blockEntityTag;
         }
 
         NbtList nbtList = new NbtList();
@@ -912,8 +913,9 @@ public final class BibItem {
             return List.of();
         }
 
-        if (entity_tag.contains("Items", NbtElement.LIST_TYPE)) {
-            NbtList list = entity_tag.getList("Items", NbtElement.COMPOUND_TYPE);
+        NbtList list = BibData.getListContainingType(entity_tag, "Items", NbtCompound.TYPE);
+
+        if (list != null) {
 
             if (list.isEmpty()) {
                 return List.of();
@@ -922,8 +924,13 @@ public final class BibItem {
             List<ItemStack> item_contents = new ArrayList<>(list.size());
 
             for (int i = 0; i < list.size(); i++) {
-                NbtCompound item_tag = list.getCompound(i);
-                ItemStack item_stack = ItemStack.fromNbt(BibMod.getDynamicRegistry(), item_tag).orElse(null);
+                NbtCompound item_tag = list.getCompound(i).orElse(null);
+
+                if (item_tag == null) {
+                    continue;
+                }
+
+                ItemStack item_stack = BibItem.deserializeToStack(item_tag);
 
                 BibLog.log(" -- Converted", i, item_tag, "into", item_stack);
 

@@ -188,6 +188,38 @@ public final class BibData {
     }
 
     /**
+     * Get a list that contains the given type
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static NbtList getListContainingType(NbtCompound compound, String key, NbtType<?> expectedType) {
+        NbtList list = BibData.getPropertyOfType(compound, key, NbtList.TYPE);
+
+        if (list == null || list.isEmpty()) {
+            return list;
+        }
+
+        for (NbtElement element : list) {
+            if (element.getNbtType() != expectedType) {
+                return null;
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Get a compound
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static NbtCompound getCompound(NbtCompound compound, String key) {
+        return BibData.getPropertyOfType(compound, key, NbtCompound.TYPE);
+    }
+
+    /**
      * Perform DataFixers on the given NBT data
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
