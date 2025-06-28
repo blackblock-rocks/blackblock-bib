@@ -79,10 +79,9 @@ public class BvBoolean extends AbstractBvType<Boolean, BvBoolean> {
             } else {
                 this.setContainedValue(true);
             }
-        } else if (nbt_value instanceof NbtString nbt_string) {
-            String val = nbt_string.asString();
+        } else if (nbt_value instanceof NbtString(String value)) {
 
-            if (val == null || val.isEmpty() || val.equals("false")) {
+            if (value == null || value.isEmpty() || value.equals("false")) {
                 this.setContainedValue(false);
             } else {
                 this.setContainedValue(true);

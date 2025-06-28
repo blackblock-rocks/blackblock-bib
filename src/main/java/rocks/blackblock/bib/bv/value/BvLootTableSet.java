@@ -44,11 +44,11 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
             return null;
         }
 
-        if (!data.contains("ref_id", NbtElement.STRING_TYPE)) {
+        String ref_id = BibData.getString(data, "ref_id");
+
+        if (ref_id == null) {
             return null;
         }
-
-        String ref_id = data.getString("ref_id");
 
         return BibLoot.LOOT_TABLES_BY_ID.get(ref_id);
     }
@@ -264,8 +264,10 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
             return;
         }
 
-        if (data.contains("ref_id", NbtElement.STRING_TYPE)) {
-            this.ref_id = data.getString("ref_id");
+        String ref_id = BibData.getString(data, "ref_id");
+
+        if (ref_id != null) {
+            this.ref_id = ref_id;
 
             if (BibLoot.LOOT_TABLES_BY_ID.containsKey(this.ref_id)) {
                 var other_instance = BibLoot.LOOT_TABLES_BY_ID.get(this.ref_id);
@@ -281,8 +283,9 @@ public class BvLootTableSet extends AbstractBvType<Set<LootTable>, BvLootTableSe
             }
         }
 
-        if (data.contains("keys", NbtElement.LIST_TYPE)) {
-            NbtList list = data.getList("keys", NbtElement.COMPOUND_TYPE);
+        NbtList list = BibData.getList(data, "keys");
+
+        if (list != null) {
 
             this.keys = new HashSet<>(list.size());
 

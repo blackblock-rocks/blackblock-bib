@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.bv.operator.BvOperator;
 import rocks.blackblock.bib.bv.operator.BvOperators;
 import rocks.blackblock.bib.interfaces.HasItemIcon;
+import rocks.blackblock.bib.util.BibData;
 import rocks.blackblock.bib.util.BibItem;
 import rocks.blackblock.bib.util.BibLog;
 
@@ -673,11 +674,12 @@ public interface BvElement<ContainedType, OwnType extends BvElement<?, ?>> exten
             return null;
         }
 
-        if (!compound.contains("$type", NbtElement.STRING_TYPE)) {
+        String type = BibData.getString(compound, "$type");
+
+        if (type == null) {
             return null;
         }
 
-        String type = compound.getString("$type");
         NbtElement data_nbt = compound.get("$data");
 
         // Try to revive an instance first

@@ -162,20 +162,29 @@ public final class BibData {
     }
 
     /**
+     * Get a string from a compount
+     *
+     * @since    0.3.0
+     */
+    public static String getString(NbtCompound target, String key) {
+
+        NbtString value = getPropertyOfType(target, key, NbtString.TYPE);
+
+        if (value == null) {
+            return null;
+        }
+
+        return value.value();
+    }
+
+    /**
      * Get a list without checking the type
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
     public static NbtList getList(NbtCompound compound, String key) {
-
-        NbtElement element = compound.get(key);
-
-        if (element == null) {
-            return null;
-        }
-
-        return (NbtList) element;
+        return BibData.getPropertyOfType(compound, key, NbtList.TYPE);
     }
 
     /**

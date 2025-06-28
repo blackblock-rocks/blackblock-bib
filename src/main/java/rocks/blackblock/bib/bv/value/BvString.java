@@ -1,6 +1,5 @@
 package rocks.blackblock.bib.bv.value;
 
-import carpet.script.value.StringValue;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.nbt.NbtElement;
@@ -72,12 +71,17 @@ public class BvString extends AbstractBvType<String, BvString> {
     @Override
     public void loadFromNbt(NbtElement nbt_value) {
 
+        if (nbt_value instanceof NbtString(String value)) {
+            this.setContainedValue(value);
+            return;
+        }
+
         if (nbt_value == null) {
             this.setContainedValue(null);
             return;
         }
 
-        this.setContainedValue(nbt_value.asString());
+        this.setContainedValue(nbt_value.asString().orElse(null));
     }
 
     /**
