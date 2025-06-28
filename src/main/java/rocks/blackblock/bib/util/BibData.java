@@ -196,7 +196,7 @@ public final class BibData {
     public static NbtCompound performUpdates(NbtCompound input) {
 
         int saved_data_version = NbtHelper.getDataVersion(input, 1343);
-        int current_data_version = SharedConstants.getGameVersion().getSaveVersion().getId();
+        int current_data_version = SharedConstants.getGameVersion().dataVersion().id();
 
         NbtCompound result = DataFixTypes.SAVED_DATA_COMMAND_STORAGE.update(
                 Schemas.getFixer(),
