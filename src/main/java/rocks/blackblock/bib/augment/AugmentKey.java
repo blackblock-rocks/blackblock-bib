@@ -997,12 +997,9 @@ public abstract class AugmentKey<$C extends Augment> {
             }
 
             NbtCompound root = BibItem.getOrCreateCustomNbt(stack);
+            NbtCompound container = BibData.getPropertyOfType(root, this.nbt_id, NbtCompound.TYPE);
 
-            NbtCompound container;
-
-            if (root.contains(this.nbt_id, NbtElement.COMPOUND_TYPE)) {
-                container = root.getCompound(this.nbt_id);
-            } else {
+            if (container == null) {
                 container = new NbtCompound();
                 root.put(this.nbt_id, container);
             }
@@ -1215,7 +1212,7 @@ public abstract class AugmentKey<$C extends Augment> {
                 return false;
             }
 
-            NbtList origin_list = nbt.getList("origins", NbtElement.COMPOUND_TYPE);
+            NbtList origin_list = nbt.getList("origins").orElse(new NbtList());
 
             for (NbtElement element : origin_list) {
                 NbtCompound data = (NbtCompound) element;

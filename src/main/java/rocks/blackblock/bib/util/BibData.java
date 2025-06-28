@@ -110,6 +110,58 @@ public final class BibData {
     }
 
     /**
+     * Get a property from the NbtCompound but only if the type matches
+     *
+     * @since    0.3.0
+     */
+    public static NbtElement getPropertyOfType(NbtCompound target, String key, byte expectedType) {
+
+        NbtElement value = target.get(key);
+
+        if (value == null || value.getType() != expectedType) {
+            return null;
+        }
+
+        return value;
+    }
+
+    /**
+     * See if the NBTCompount contains a property of the given type
+     *
+     * @since    0.3.0
+     */
+    public static <T extends NbtElement> T getPropertyOfType(NbtCompound target, String key, NbtType<T> expectedType) {
+
+        NbtElement value = target.get(key);
+
+        if (value == null || value.getNbtType() != expectedType) {
+            return null;
+        }
+
+        return (T) value;
+    }
+
+    /**
+     * See if the NBTCompount contains a property of the given type
+     *
+     * @since    0.3.0
+     */
+    public static boolean contains(NbtCompound target, String key, byte expectedType) {
+        NbtElement value = getPropertyOfType(target, key, expectedType);
+        return value != null;
+    }
+
+    /**
+     * See if the NBTCompount contains a property of the given type
+     *
+     * @since    0.3.0
+     */
+    public static boolean contains(NbtCompound target, String key, NbtType<?> expectedType) {
+        NbtElement value = getPropertyOfType(target, key, expectedType);
+        return value != null;
+    }
+
+    /**
      * Get a list without checking the type
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -284,14 +336,19 @@ public final class BibData {
             return null;
         }
 
-        if (!data.contains("namespace", NbtElement.STRING_TYPE) || !data.contains("path", NbtElement.STRING_TYPE)) {
+        var namespace = BibData.getPropertyOfType(data, "namespace", NbtString.TYPE);
+
+        if (namespace == null) {
             return null;
         }
 
-        String namespace = data.getString("namespace");
-        String path = data.getString("path");
+        var path = BibData.getPropertyOfType(data, "path", NbtString.TYPE);
 
-        return Identifier.of(namespace, path);
+        if (path == null) {
+            return null;
+        }
+
+        return Identifier.of(namespace.value(), path.value());
     }
 
     /**
