@@ -3,7 +3,6 @@ package rocks.blackblock.bib.augment;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -192,26 +191,20 @@ public class AugmentManager<C extends Augment> {
             key.get(player);
         }
 
-        NbtCompound player_augments_nbt = null;
-
-        if (source_nbt.contains("BlackBlockAugments", NbtElement.COMPOUND_TYPE)) {
-            player_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockAugments");
-        } else if (source_nbt.contains("BlackBlockComponents", NbtElement.COMPOUND_TYPE)) {
-            player_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockComponents");
-        }
+        NbtCompound player_augments_nbt = BibData.getPropertyOfType(source_nbt, "BlackBlockAugments", NbtCompound.TYPE);
 
         if (player_augments_nbt == null) {
-            return;
+            player_augments_nbt = BibData.getPropertyOfType(source_nbt, "BlackBlockComponents", NbtCompound.TYPE);
         }
 
-        if (player_augments_nbt.isEmpty()) {
+        if (player_augments_nbt == null || player_augments_nbt.isEmpty()) {
             return;
         }
 
         // Augments that store their data in the chunk should always be deserialized
         for (AugmentKey.PerPlayer<?> key : Augment.PerPlayer.REGISTRY.keySet()) {
 
-            NbtCompound augment_nbt = player_augments_nbt.getCompound(key.getId().toString());
+            NbtCompound augment_nbt = player_augments_nbt.getCompound(key.getId().toString()).orElse(new NbtCompound());
 
             if (augment_nbt.isEmpty()) {
                 continue;
@@ -412,9 +405,9 @@ public class AugmentManager<C extends Augment> {
         // Augments that store their data in the chunk should always be deserialized
         for (AugmentKey.PerChunk<?> key : Augment.PerChunk.STORED_IN_CHUNK_NBT.keySet()) {
 
-            NbtCompound augment_nbt = chunk_augments_nbt.getCompound(key.getId().toString());
+            NbtCompound augment_nbt = BibData.getPropertyOfType(chunk_augments_nbt, key.getId().toString(), NbtCompound.TYPE);
 
-            if (augment_nbt.isEmpty()) {
+            if (augment_nbt == null || augment_nbt.isEmpty()) {
                 continue;
             }
 
@@ -579,13 +572,13 @@ public class AugmentManager<C extends Augment> {
 
             if (nbt_compound != null) {
 
-                if (nbt_compound.contains("data")) {
-                    return nbt_compound.getCompound("data");
-                } else if (nbt_compound.contains("Data")) {
-                    return nbt_compound.getCompound("Data");
+                NbtCompound result = BibData.getPropertyOfType(nbt_compound, "data", NbtCompound.TYPE);
+
+                if (result == null) {
+                    result = BibData.getPropertyOfType(nbt_compound, "Data", NbtCompound.TYPE);
                 }
 
-                return null;
+                return result;
             }
 
         } catch (Throwable t) {
@@ -680,32 +673,29 @@ public class AugmentManager<C extends Augment> {
             return null;
         }
 
-        BibLog.log("Reading old Augment data for", this.augment_key, "at", old_path);
-
         nbt_data = this.parseNbt(old_file);
 
         if (nbt_data == null) {
             return null;
         }
 
-        if (nbt_data.contains("cardinal_components")) {
-            nbt_data = nbt_data.getCompound("cardinal_components");
-        } else if (nbt_data.contains("Data")) {
-            // Sometimes "Data" is nested in "data", like in the level.dat file
-            nbt_data = nbt_data.getCompound("Data");
+        NbtCompound result = BibData.getPropertyOfType(nbt_data, "cardinal_components", NbtCompound.TYPE);
 
-            if (nbt_data.contains("cardinal_components")) {
-                nbt_data = nbt_data.getCompound("cardinal_components");
+        if (result == null) {
+            result = BibData.getPropertyOfType(nbt_data, "Data", NbtCompound.TYPE);
+
+            if (result != null && result.contains("cardinal_components")) {
+                result = result.getCompound("cardinal_components").orElse(null);
             }
+        }
+
+        if (result == null) {
+            return null;
         }
 
         String id = this.augment_key.id.toString();
 
-        if (nbt_data.contains(id)) {
-            return nbt_data.getCompound(id);
-        }
-
-        return null;
+        return BibData.getPropertyOfType(result, id, NbtCompound.TYPE);
     }
 
     /**
