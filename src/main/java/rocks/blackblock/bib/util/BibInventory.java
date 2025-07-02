@@ -135,7 +135,7 @@ public final class BibInventory {
      */
     public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty, RegistryWrapper.WrapperLookup registries) {
 
-        ErrorReporter.Impl impl = new ErrorReporter.Impl();
+        ErrorReporter.Impl impl = BibLog.createErrorReporter();
         NbtWriteView nbtWriteView = BibData.createNbtWriteView(impl, registries, nbt);
 
         Inventories.writeData(nbtWriteView, stacks, setIfEmpty);
@@ -153,7 +153,7 @@ public final class BibInventory {
      */
     public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, RegistryWrapper.WrapperLookup registries) {
 
-        ErrorReporter.Impl impl = new ErrorReporter.Impl();
+        ErrorReporter.Impl impl = BibLog.createErrorReporter();
         NbtReadView view = BibData.createNbtReadView(impl, registries, nbt);
 
         Inventories.readData(view, stacks);

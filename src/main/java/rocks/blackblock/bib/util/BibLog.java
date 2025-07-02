@@ -28,9 +28,10 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.text.MutableText;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.collection.Weight;
+// Weight class removed in 1.21.6
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -461,6 +462,15 @@ public class BibLog {
     }
 
     /**
+     * Create an error reporter
+     *
+     * @since    0.4.0
+     */
+    public static ErrorReporter.Impl createErrorReporter() {
+        return new ErrorReporter.Impl();
+    }
+
+    /**
      * Get a string builder for the given arguments
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -877,7 +887,7 @@ public class BibLog {
                     this.setContent(nbt_nr.numberValue() + "");
                 } else if (value instanceof NbtString nbt_string) {
                     name = "NbtString";
-                    this.setContent(nbt_string.asString());
+                    this.setContent(nbt_string.asString().orElse(""));
                 } else if (value instanceof SpawnGroup spawnGroup) {
                     name = "SpawnGroup";
                     this.add("name", spawnGroup.getName());
@@ -887,13 +897,16 @@ public class BibLog {
                     this.add("despawnStartRange", spawnGroup.getDespawnStartRange());
                 } else if (value instanceof SpawnSettings.SpawnEntry entry) {
                     name = "SpawnSettings.SpawnEntry";
-                    this.add("type", entry.type);
-                    this.add("weight", entry.getWeight());
-                    this.add("minGroupSize", entry.minGroupSize);
-                    this.add("maxGroupSize", entry.maxGroupSize);
-                } else if (value instanceof Weight weight) {
-                    name = "Weight";
-                    this.setContent(weight.getValue() + "");
+                    // TODO: SpawnEntry API changed in 1.21.6, need to determine correct accessors
+                    // The weight() method and other accessors don't exist in the current form
+                    // Commenting out until we can determine the correct API
+                    /*
+                    this.add("type", entry.type());
+                    this.add("weight", entry.weight().getMin());
+                    this.add("minGroupSize", entry.minGroupSize());
+                    this.add("maxGroupSize", entry.maxGroupSize());
+                    */
+                
                 } else if (value instanceof EntityType entity_type) {
                     name = "EntityType";
                     this.add("key", entity_type.getTranslationKey());
@@ -962,7 +975,9 @@ public class BibLog {
                 } else if (value instanceof AttributeModifiersComponent attr) {
                     name = "AttributeModifiersComponent";
                     this.add("modifiers", attr.modifiers());
-                    this.add("show_in_tooltip", attr.showInTooltip());
+                    // TODO: AttributeModifiersComponent.showInTooltip() doesn't exist in 1.21.6
+                    // Need to find the correct method or remove this line
+                    // this.add("show_in_tooltip", attr.showInTooltip());
                 } else if (value instanceof Item item) {
                     name = item.getClass().getSimpleName();
                     this.add("translation_key", item.getTranslationKey());
