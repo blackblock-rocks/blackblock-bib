@@ -18,6 +18,7 @@ import net.minecraft.storage.NbtReadView;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
@@ -178,7 +179,7 @@ public final class BibData {
     }
 
     /**
-     * See if the NBTCompount contains a property of the given type
+     * See if the NBTCompound contains a property of the given type
      *
      * @since    0.3.0
      */
@@ -188,7 +189,7 @@ public final class BibData {
     }
 
     /**
-     * See if the NBTCompount contains a property of the given type
+     * See if the NBTCompound contains a property of the given type
      *
      * @since    0.3.0
      */
@@ -198,7 +199,57 @@ public final class BibData {
     }
 
     /**
-     * Get a string from a compount
+     * See if the NBTCompound contains a property that is a UUID
+     *
+     * @since    0.4.0
+     */
+    public static boolean containsUuid(NbtCompound target, String key) {
+        try {
+            UUID result = getUuid(target, key);
+            return result != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get a uuid from a compound
+     *
+     * @since    0.4.0
+     */
+    public static UUID getUuid(NbtCompound target, String key) {
+
+        var element = target.get(key);
+
+        if (element == null) {
+            return null;
+        }
+
+        NbtString stringValue = getPropertyOfType(target, key, NbtString.TYPE);
+
+        if (stringValue != null && stringValue.value() != null) {
+            UUID result = UUID.fromString(stringValue.value());
+            return result;
+        }
+
+        // Probably an int-stream
+        var result = decode(Uuids.INT_STREAM_CODEC, element);
+
+        return result.orElse(null);
+    }
+
+    /**
+     * Put a uuid in a compound
+     *
+     * @since    0.4.0
+     */
+    public static void putUuid(NbtCompound target, String key, UUID value) {
+        var element = encode(Uuids.INT_STREAM_CODEC, value);
+        target.put(key, element);
+    }
+
+    /**
+     * Get a string from a compound
      *
      * @since    0.3.0
      */

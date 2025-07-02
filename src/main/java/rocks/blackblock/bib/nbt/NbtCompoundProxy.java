@@ -5,6 +5,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.bib.util.BibData;
 
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public interface NbtCompoundProxy {
      * @since    0.1.0
      */
     default boolean containsUuid(String key) {
-        return this.getProxiedNbtCompound().containsUuid(key);
+        return BibData.containsUuid(this.getProxiedNbtCompound(), key);
     }
 
     /**
@@ -66,12 +67,13 @@ public interface NbtCompoundProxy {
     default UUID getUuid(String key, UUID default_value) {
 
         NbtCompound nbt = this.getProxiedNbtCompound();
+        UUID result = BibData.getUuid(nbt, key);
 
-        if (nbt.containsUuid(key)) {
-            return nbt.getUuid(key);
+        if (result == null) {
+            result = default_value;
         }
 
-        return default_value;
+        return result;
     }
 
     /**
@@ -86,7 +88,7 @@ public interface NbtCompoundProxy {
         if (new_value == null) {
             nbt.remove(key);
         } else {
-            nbt.putUuid(key, new_value);
+            BibData.putUuid(nbt, key, new_value);
         }
 
         this.markDirty();
@@ -107,14 +109,8 @@ public interface NbtCompoundProxy {
      * @since    0.1.0
      */
     default Integer getInteger(String key, Integer default_value) {
-
         NbtCompound nbt = this.getProxiedNbtCompound();
-
-        if (nbt.contains(key, NbtElement.INT_TYPE)) {
-            return nbt.getInt(key);
-        }
-
-        return default_value;
+        return nbt.getInt(key).orElse(default_value);
     }
 
     /**
@@ -150,14 +146,8 @@ public interface NbtCompoundProxy {
      * @since    0.1.0
      */
     default String getString(String key, String default_value) {
-
         NbtCompound nbt = this.getProxiedNbtCompound();
-
-        if (nbt.contains(key, NbtElement.STRING_TYPE)) {
-            return nbt.getString(key);
-        }
-
-        return default_value;
+        return nbt.getString(key).orElse(default_value);
     }
 
     /**
@@ -193,14 +183,8 @@ public interface NbtCompoundProxy {
      * @since    0.1.0
      */
     default Boolean getBoolean(String key, Boolean default_value) {
-
         NbtCompound nbt = this.getProxiedNbtCompound();
-
-        if (nbt.contains(key, NbtElement.BYTE_TYPE)) {
-            return nbt.getBoolean(key);
-        }
-
-        return default_value;
+        return nbt.getBoolean(key).orElse(default_value);
     }
 
     /**
@@ -239,8 +223,8 @@ public interface NbtCompoundProxy {
 
         NbtCompound nbt = this.getProxiedNbtCompound();
 
-        if (nbt.contains(key, NbtElement.LONG_TYPE)) {
-            return nbt.getLong(key);
+        if (nbt.contains(key)) {
+            return nbt.getLong(key).orElse(default_value);
         }
 
         return default_value;
@@ -270,12 +254,12 @@ public interface NbtCompoundProxy {
      * @since    0.1.0
      */
     @Nullable
-    default NbtList getList(String key, int type) {
+    default NbtList getList(String key) {
 
         NbtCompound nbt = this.getProxiedNbtCompound();
 
-        if (nbt.contains(key, NbtElement.LIST_TYPE)) {
-            return nbt.getList(key, type);
+        if (nbt.contains(key)) {
+            return nbt.getList(key).orElse(null);
         }
 
         return null;
@@ -291,8 +275,8 @@ public interface NbtCompoundProxy {
 
         NbtCompound nbt = this.getProxiedNbtCompound();
 
-        if (nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
-            return nbt.getCompound(key);
+        if (nbt.contains(key)) {
+            return nbt.getCompound(key).orElse(null);
         }
 
         return null;
