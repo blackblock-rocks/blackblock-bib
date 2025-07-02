@@ -321,7 +321,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                     ServerPlayerEntity player = source.getPlayer();
 
                     if (player != null) {
-                        world = player.getServerWorld();
+                        world = player.getWorld();
                     }
                 }
             }
@@ -409,7 +409,7 @@ public class TweaksConfiguration extends MapParameter<AbstractBvType<?, ?>> {
                     ServerPlayerEntity player = source.getPlayer();
 
                     if (player != null) {
-                        world = player.getServerWorld();
+                        world = player.getWorld();
                     }
                 }
             }

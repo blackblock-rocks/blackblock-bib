@@ -2,7 +2,7 @@ package rocks.blackblock.bib.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
+
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +25,7 @@ public class PlayerEntityMixin extends EntityMixin {
             ),
             cancellable = false
     )
-    protected void afterSettingUUIDInInit(World world, BlockPos pos, float yaw, GameProfile gameProfile, CallbackInfo ci) {
+    protected void afterSettingUUIDInInit(World world, GameProfile gameProfile, CallbackInfo ci) {
         // Ignore
     }
 }

@@ -103,6 +103,6 @@ public final class BibPlayer {
      * @since    0.3.0
      */
     public static void spawnParticles(ServerPlayerEntity player, ParticleEffect particle, double x, double y, double z, int count) {
-        player.getServerWorld().spawnParticles(player, particle, true, true, x, y, z, count, 0, 0, 0, 0);
+        player.getWorld().spawnParticles(player, particle, true, true, x, y, z, count, 0, 0, 0, 0);
     }
 }
