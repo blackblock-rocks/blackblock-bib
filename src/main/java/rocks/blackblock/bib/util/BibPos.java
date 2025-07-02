@@ -136,15 +136,22 @@ public final class BibPos {
             return null;
         }
 
-        if (element instanceof NbtIntArray nbt_int_array) {
+        if (element instanceof NbtIntArray nbt_int_array && nbt_int_array.size() == 3) {
             var int_arr = nbt_int_array.getIntArray();
             return new BlockPos(int_arr[0], int_arr[1], int_arr[2]);
         }
 
         if (element instanceof NbtCompound compound) {
             if (compound.contains("X") && compound.contains("Y") && compound.contains("Z")) {
-                return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
+                return new BlockPos(compound.getInt("X").orElse(0), compound.getInt("Y").orElse(0), compound.getInt("Z").orElse(0));
             }
+        }
+
+        try {
+            var result = BlockPos.CODEC.decode(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), element);
+            return result.getOrThrow().getFirst();
+        } catch (Exception e) {
+            BibServer.registerThrowable(e, "Failed to parse BlockPos");
         }
 
         return null;
@@ -158,7 +165,11 @@ public final class BibPos {
      */
     @Nullable
     public static NbtElement serializeBlockPos(BlockPos pos) {
-        return NbtHelper.fromBlockPos(pos);
+        if (pos == null) {
+            return null;
+        }
+
+        return BlockPos.CODEC.encodeStart(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), pos).getOrThrow();
     }
 
     /**
@@ -201,7 +212,7 @@ public final class BibPos {
 
         if (element instanceof NbtCompound compound) {
             if (compound.contains("X") && compound.contains("Z")) {
-                return new ChunkPos(compound.getInt("X"), compound.getInt("Z"));
+                return new ChunkPos(compound.getInt("X").orElse(0), compound.getInt("Z").orElse(0));
             }
         }
 
