@@ -16,12 +16,14 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.storage.NbtReadView;
 import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
+import rocks.blackblock.bib.mixin.NbtReadViewMixin;
 import rocks.blackblock.bib.mixin.NbtWriteViewMixin;
 import rocks.blackblock.bib.mixin.dfu.DataFixerBuilderAccessor;
 import rocks.blackblock.bib.monitor.GlitchGuru;
@@ -556,6 +558,24 @@ public final class BibData {
         var reporter = BibLog.createErrorReporter();
         var registries = BibServer.getDynamicRegistry();
         return (NbtReadView) NbtReadView.create(reporter, registries, source);
+    }
+
+    /**
+     * Get the NBTCompound of a ReadView
+     */
+    public static NbtCompound extractCompound(ReadView view) {
+        if (view instanceof NbtReadView nbtView) {
+            return extractCompound(nbtView);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the NBTCompound of a ReadView
+     */
+    public static NbtCompound extractCompound(NbtReadView nbtView) {
+        return ((NbtReadViewMixin) nbtView).bb$getNbt();
     }
 
     private record CustomFixer(String name, Consumer<Dynamic<?>> consumer) {
