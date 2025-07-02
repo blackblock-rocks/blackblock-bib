@@ -672,7 +672,7 @@ public class BibPerf {
                 } else {
                     stateChangeInfo = "Ramping up to " + this.target_state.name();
                 }
-                stateText.setStyle(stateText.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(stateChangeInfo))));
+                stateText.setStyle(stateText.getStyle().withHoverEvent(new HoverEvent.ShowText(Text.literal(stateChangeInfo))));
             }
 
             return stateText;
@@ -754,7 +754,7 @@ public class BibPerf {
                 } else {
                     stateChangeInfo = "Ramping up to " + this.target_state.name();
                 }
-                stateText.setStyle(stateText.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(stateChangeInfo))));
+                stateText.setStyle(stateText.getStyle().withHoverEvent(new HoverEvent.ShowText(Text.literal(stateChangeInfo))));
             }
 
             line.append(stateText);
