@@ -133,7 +133,18 @@ public final class BibText {
      * @since    0.1.0
      */
     public static MutableText deserializeFromJson(@Nullable JsonElement json) {
-        return Text.Serialization.fromJsonTree(json, BibMod.getDynamicRegistry());
+        // Text.Serialization was removed in 1.21.6, use TextCodecs instead
+        if (json == null || json.isJsonNull()) {
+            return Text.empty();
+        }
+        
+        // Use TextCodecs.CODEC for deserialization
+        return (MutableText) TextCodecs.CODEC.parse(
+            BibMod.getDynamicRegistry().getOps(JsonOps.INSTANCE),
+            json
+        ).resultOrPartial(errorMsg -> {
+            BibLog.error("Failed to parse Text from JSON: " + errorMsg);
+        }).orElse(Text.empty());
     }
 
     /**
