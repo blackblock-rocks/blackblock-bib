@@ -1,9 +1,15 @@
 package rocks.blackblock.bib.util;
 
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.inventory.*;
@@ -115,5 +121,46 @@ public final class BibInventory {
         }
 
         return result;
+    }
+
+    /**
+     * Writes the inventory to {@code nbt}.
+     */
+    public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, RegistryWrapper.WrapperLookup registries) {
+        return writeNbt(nbt, stacks, true, registries);
+    }
+
+    /**
+     * Writes the inventory to {@code nbt}.
+     */
+    public static NbtCompound writeNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, boolean setIfEmpty, RegistryWrapper.WrapperLookup registries) {
+
+        ErrorReporter.Impl impl = new ErrorReporter.Impl();
+        NbtWriteView nbtWriteView = BibData.createNbtWriteView(impl, registries, nbt);
+
+        Inventories.writeData(nbtWriteView, stacks, setIfEmpty);
+
+        if (!impl.isEmpty()) {
+            impl.apply((name, error) -> BibLog.log("Found validation problem in", name, ":", error.getMessage()));
+            throw new IllegalStateException("Failed to write nbt, see logs");
+        }
+
+        return nbt;
+    }
+
+    /**
+     * Reads {@code nbt} and sets the elements of {@code stacks} accordingly.
+     */
+    public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks, RegistryWrapper.WrapperLookup registries) {
+
+        ErrorReporter.Impl impl = new ErrorReporter.Impl();
+        NbtReadView view = BibData.createNbtReadView(impl, registries, nbt);
+
+        Inventories.readData(view, stacks);
+
+        if (!impl.isEmpty()) {
+            impl.apply((name, error) -> BibLog.log("Found validation problem in", name, ":", error.getMessage()));
+            throw new IllegalStateException("Failed to read nbt, see logs");
+        }
     }
 }

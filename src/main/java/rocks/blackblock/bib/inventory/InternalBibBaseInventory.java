@@ -2,7 +2,6 @@ package rocks.blackblock.bib.inventory;
 
 
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -11,14 +10,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Nameable;
 import net.minecraft.util.collection.DefaultedList;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.util.BibInventory;
 import rocks.blackblock.bib.util.BibLog;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -105,7 +101,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      */
     @Override
     default boolean isEmpty() {
-        Iterator<ItemStack> var1 = this.getContents().iterator();
+        java.util.Iterator<ItemStack> var1 = this.getContents().iterator();
 
         ItemStack itemStack;
         do {
@@ -243,7 +239,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      */
     default void setContentsFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         DefaultedList<ItemStack> contents = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, contents, registries);
+        BibInventory.readNbt(nbt, contents, registries);
         this.setContents(contents);
     }
 
@@ -259,7 +255,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
             return nbt;
         }
 
-        Inventories.writeNbt(nbt, this.getContents(), registries);
+        BibInventory.writeNbt(nbt, this.getContents(), registries);
         return nbt;
     }
 
@@ -326,7 +322,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      */
     @NotNull
     @Override
-    default Iterator<ItemStack> iterator() {
+    default java.util.Iterator<ItemStack> iterator() {
         return this.getContents().iterator();
     }
 

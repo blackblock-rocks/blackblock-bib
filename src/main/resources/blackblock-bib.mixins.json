@@ -6,6 +6,7 @@
         "EntityTypeMixin",
         "LockableContainerBlockEntityAccessor",
         "MinecraftServerMixin",
+        "NbtWriteViewMixin",
         "SerializedChunk_ChunkAugmentsMixin",
         "ServerChunkLoadingManager_ChunkAugmentMixin",
         "ServerCrashSafePacketListenerMixin",

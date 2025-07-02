@@ -12,10 +12,15 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
+import rocks.blackblock.bib.mixin.NbtWriteViewMixin;
 import rocks.blackblock.bib.mixin.dfu.DataFixerBuilderAccessor;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 
@@ -446,6 +451,20 @@ public final class BibData {
         var version_fixers = CUSTOM_FIXERS.computeIfAbsent(version, v -> new Object2ObjectOpenHashMap<>());
         var type_fixers = version_fixers.computeIfAbsent(type, t -> new ArrayList<>());
         type_fixers.add(new CustomFixer(name, consumer));
+    }
+
+    /**
+     * Create an NbtWriteView with the given NBT compound as the target
+     */
+    public static NbtWriteView createNbtWriteView(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, NbtCompound target) {
+        return NbtWriteViewMixin.bb$createNbtWriteView(reporter, registries.getOps(NbtOps.INSTANCE), target);
+    }
+
+    /**
+     * Create an NbtReadView with the given NBT compound as the source
+     */
+    public static NbtReadView createNbtReadView(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, NbtCompound source) {
+        return (NbtReadView) NbtReadView.create(reporter, registries, source);
     }
 
     private record CustomFixer(String name, Consumer<Dynamic<?>> consumer) {
