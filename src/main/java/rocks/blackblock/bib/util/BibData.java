@@ -4,6 +4,7 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -112,6 +113,36 @@ public final class BibData {
         for (CustomFixer fixer : fixersForType) {
             fixer.performFix(input);
         }
+    }
+
+    /**
+     * Decode an NBT element
+     *
+     * @since 0.4.0
+     */
+    public static <T> Optional<T> decode(Codec<T> codec, NbtElement element) {
+
+        var decoded = codec.decode(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), element);
+
+        if (decoded.isError()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(decoded.getOrThrow().getFirst());
+    }
+
+    /**
+     * Encode to an NBT element
+     *
+     * @since 0.4.0
+     */
+    public static <T> NbtElement encode(Codec<T> codec, T input) {
+
+        if (input == null) {
+            return null;
+        }
+
+        return codec.encodeStart(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), input).getOrThrow();
     }
 
     /**

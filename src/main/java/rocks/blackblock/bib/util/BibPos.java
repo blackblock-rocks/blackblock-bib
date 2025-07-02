@@ -147,14 +147,9 @@ public final class BibPos {
             }
         }
 
-        try {
-            var result = BlockPos.CODEC.decode(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), element);
-            return result.getOrThrow().getFirst();
-        } catch (Exception e) {
-            BibServer.registerThrowable(e, "Failed to parse BlockPos");
-        }
+        var result = BibData.decode(BlockPos.CODEC, element);
 
-        return null;
+        return result.orElse(null);
     }
 
     /**
@@ -169,7 +164,7 @@ public final class BibPos {
             return null;
         }
 
-        return BlockPos.CODEC.encodeStart(BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), pos).getOrThrow();
+        return BibData.encode(BlockPos.CODEC, pos);
     }
 
     /**
