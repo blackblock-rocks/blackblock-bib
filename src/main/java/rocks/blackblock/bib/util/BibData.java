@@ -549,6 +549,15 @@ public final class BibData {
         return (NbtReadView) NbtReadView.create(reporter, registries, source);
     }
 
+    /**
+     * Create a NbtReadView with the given NBT compound as the source
+     */
+    public static NbtReadView createNbtReadView(NbtCompound source) {
+        var reporter = BibLog.createErrorReporter();
+        var registries = BibServer.getDynamicRegistry();
+        return (NbtReadView) NbtReadView.create(reporter, registries, source);
+    }
+
     private record CustomFixer(String name, Consumer<Dynamic<?>> consumer) {
         public void performFix(Dynamic<?> input) {
             try {
