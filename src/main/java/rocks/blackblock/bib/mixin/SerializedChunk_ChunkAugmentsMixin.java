@@ -1,7 +1,6 @@
 package rocks.blackblock.bib.mixin;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
@@ -16,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rocks.blackblock.bib.augment.AugmentManager;
+import rocks.blackblock.bib.util.BibData;
 
 @Mixin(SerializedChunk.class)
 public class SerializedChunk_ChunkAugmentsMixin {
@@ -35,19 +35,13 @@ public class SerializedChunk_ChunkAugmentsMixin {
             return;
         }
 
-        NbtCompound chunk_augments_nbt = null;
-
-        if (source_nbt.contains("BlackBlockAugments", NbtElement.COMPOUND_TYPE)) {
-            chunk_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockAugments");
-        } else if (source_nbt.contains("BlackBlockComponents", NbtElement.COMPOUND_TYPE)) {
-            chunk_augments_nbt = (NbtCompound) source_nbt.get("BlackBlockComponents");
-        }
+        NbtCompound chunk_augments_nbt = BibData.getCompound(source_nbt, "BlackBlockAugments");
 
         if (chunk_augments_nbt == null) {
-            return;
+            chunk_augments_nbt = BibData.getCompound(source_nbt, "BlackBlockComponents");
         }
 
-        if (chunk_augments_nbt.isEmpty()) {
+        if (chunk_augments_nbt == null || chunk_augments_nbt.isEmpty()) {
             return;
         }
 
