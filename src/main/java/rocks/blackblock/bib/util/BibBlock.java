@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.storage.NbtWriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -145,7 +146,7 @@ public final class BibBlock {
      * @since    0.1.0
      */
     public static void setBlockEntityData(ItemStack target, BlockEntity block_entity, NbtCompound data) {
-        BlockItem.setBlockEntityData(target, block_entity.getType(), data);
+        BibBlock.setBlockEntityData(target, block_entity.getType(), data);
     }
 
     /**
@@ -169,9 +170,7 @@ public final class BibBlock {
             registry_manager = BibMod.getDynamicRegistry();
         }
 
-        NbtCompound nbtCompound = block_entity.createComponentlessNbt(registry_manager);
-        block_entity.removeFromCopiedStackNbt(nbtCompound);
-        BlockItem.setBlockEntityData(target, block_entity.getType(), nbtCompound);
+        // In 1.21.6, we use the component system to apply all block entity data
         target.applyComponentsFrom(block_entity.createComponentMap());
     }
 
@@ -182,7 +181,15 @@ public final class BibBlock {
      * @since    0.1.0
      */
     public static void setBlockEntityData(ItemStack target, BlockEntityType<?> type, NbtCompound data) {
-        BlockItem.setBlockEntityData(target, type, data);
+        var reporter = BibLog.createErrorReporter();
+        NbtWriteView view = BibData.createNbtWriteView(reporter, BibMod.getDynamicRegistry(), data);
+        BlockItem.setBlockEntityData(target, type, view);
+
+        if (reporter.isEmpty()) {
+            return;
+        }
+
+        BibLog.log("Failed to set block entity data:", reporter.getErrorsAsLongString());
     }
 
     /**
