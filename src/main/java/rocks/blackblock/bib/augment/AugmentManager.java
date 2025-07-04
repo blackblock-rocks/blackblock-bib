@@ -7,6 +7,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -140,6 +142,17 @@ public class AugmentManager<C extends Augment> {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
+    public static void serializePlayerAugments(ServerPlayerEntity player, WriteView target_view) {
+        NbtCompound nbt = BibData.extractCompound(target_view);
+
+    }
+
+    /**
+     * Handle a player serialization
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
     public static void serializePlayerAugments(ServerPlayerEntity player, NbtCompound target_nbt) {
 
         NbtCompound player_augments_nbt = null;
@@ -176,6 +189,22 @@ public class AugmentManager<C extends Augment> {
         if (saves > 0) {
             target_nbt.put("BlackBlockAugments", player_augments_nbt);
         }
+    }
+
+    /**
+     * Handle a player deserialization
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.4.0
+     */
+    public static void deserializePlayerAugments(ServerPlayerEntity player, ReadView view) {
+        NbtCompound source_nbt = BibData.extractCompound(view);
+
+        if (source_nbt == null) {
+            return;
+        }
+
+        deserializePlayerAugments(player, source_nbt);
     }
 
     /**
@@ -392,6 +421,21 @@ public class AugmentManager<C extends Augment> {
         if (saves.get() > 0) {
             target_nbt.put("BlackBlockAugments", chunk_augments_nbt_ref.get());
         }
+    }
+
+    /**
+     * Handle a chunk deserialization
+     *
+     * @since    0.4.0
+     */
+    public static void deserializeChunkAugments(ServerWorld world, Chunk chunk, ReadView view) {
+        NbtCompound chunk_augments_nbt = BibData.extractCompound(view);
+
+        if (chunk_augments_nbt == null) {
+            return;
+        }
+
+        deserializeChunkAugments(world, chunk, chunk_augments_nbt);
     }
 
     /**

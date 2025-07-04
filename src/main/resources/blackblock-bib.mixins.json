@@ -6,6 +6,8 @@
         "EntityTypeMixin",
         "LockableContainerBlockEntityAccessor",
         "MinecraftServerMixin",
+        "NbtListReadViewMixin",
+        "NbtListWriteViewMixin",
         "NbtReadViewMixin",
         "NbtWriteViewMixin",
         "SerializedChunk_ChunkAugmentsMixin",

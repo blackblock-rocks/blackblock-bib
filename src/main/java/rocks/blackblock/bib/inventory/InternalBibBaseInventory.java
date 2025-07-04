@@ -10,10 +10,14 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.util.BibData;
 import rocks.blackblock.bib.util.BibInventory;
 import rocks.blackblock.bib.util.BibLog;
+import rocks.blackblock.bib.util.BibServer;
 
 import java.util.List;
 
@@ -232,6 +236,15 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
     }
 
     /**
+     * Set the contents from a ReadView
+     *
+     * @since    0.4.0
+     */
+    default void setContentsFromView(ReadView view) {
+        this.setContentsFromNbt(BibData.extractCompound(view), view.getRegistries());
+    }
+
+    /**
      * Set the contents from nbt data
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -241,6 +254,15 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
         DefaultedList<ItemStack> contents = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         BibInventory.readNbt(nbt, contents, registries);
         this.setContents(contents);
+    }
+
+    /**
+     * Write the contents to a WriteView
+     *
+     * @since    0.4.0
+     */
+    default void writeInventoryToView(WriteView view) {
+        this.setContentsFromNbt(BibData.extractCompound(view), BibServer.getDynamicRegistry());
     }
 
     /**

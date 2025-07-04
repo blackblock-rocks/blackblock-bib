@@ -17,12 +17,15 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.storage.NbtReadView;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
+import rocks.blackblock.bib.mixin.NbtListReadViewMixin;
+import rocks.blackblock.bib.mixin.NbtListWriteViewMixin;
 import rocks.blackblock.bib.mixin.NbtReadViewMixin;
 import rocks.blackblock.bib.mixin.NbtWriteViewMixin;
 import rocks.blackblock.bib.mixin.dfu.DataFixerBuilderAccessor;
@@ -299,6 +302,16 @@ public final class BibData {
     }
 
     /**
+     * Get a list that contains the given type
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
+    public static NbtList getListOfCompounds(NbtCompound compound, String key) {
+        return BibData.getListContainingType(compound, key, NbtCompound.TYPE);
+    }
+
+    /**
      * Get a compound
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -306,6 +319,22 @@ public final class BibData {
      */
     public static NbtCompound getCompound(NbtCompound compound, String key) {
         return BibData.getPropertyOfType(compound, key, NbtCompound.TYPE);
+    }
+
+    /**
+     * Get a compound or create it
+     *
+     * @since    0.4.0
+     */
+    public static NbtCompound getOrCreateCompound(NbtCompound compound, String key) {
+        NbtCompound data = BibData.getPropertyOfType(compound, key, NbtCompound.TYPE);
+
+        if (data == null) {
+            data = new NbtCompound();
+            compound.put(key, data);
+        }
+
+        return data;
     }
 
     /**
@@ -545,6 +574,14 @@ public final class BibData {
     }
 
     /**
+     * Create an NbtWriteView with the given NBT compound as the target
+     */
+    public static NbtWriteView createNbtWriteView(NbtCompound target) {
+        var reporter = BibLog.createErrorReporter();
+        return NbtWriteViewMixin.bb$createNbtWriteView(reporter, BibServer.getDynamicRegistry().getOps(NbtOps.INSTANCE), target);
+    }
+
+    /**
      * Create an NbtReadView with the given NBT compound as the source
      */
     public static NbtReadView createNbtReadView(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, NbtCompound source) {
@@ -576,6 +613,62 @@ public final class BibData {
      */
     public static NbtCompound extractCompound(NbtReadView nbtView) {
         return ((NbtReadViewMixin) nbtView).bb$getNbt();
+    }
+
+    /**
+     * Get the NBTCompound of a ReadView
+     */
+    public static NbtCompound extractCompound(WriteView view) {
+        if (view instanceof NbtWriteView nbtView) {
+            return extractCompound(nbtView);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the NBTCompound of a ReadView
+     */
+    public static NbtCompound extractCompound(NbtWriteView nbtView) {
+        return ((NbtWriteViewMixin) nbtView).bb$getNbt();
+    }
+
+    /**
+     * Get the list of a ReadListView
+     */
+    public static List<NbtCompound> extractList(ReadView.ListReadView view) {
+
+        if (view instanceof NbtReadView.NbtListReadView nbtView) {
+            return extractList(nbtView);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the underling list of an NbtListReadView
+     */
+    public static List<NbtCompound> extractList(NbtReadView.NbtListReadView view) {
+        return ((NbtListReadViewMixin) view).bb$getListOfCompounds();
+    }
+
+    /**
+     * Get the list of a WriteView.ListView
+     */
+    public static NbtList extractList(WriteView.ListView view) {
+
+        if (view instanceof NbtWriteView.NbtListView nbtView) {
+            return extractList(nbtView);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the underlying NbtList instance
+     */
+    public static NbtList extractList(NbtWriteView.NbtListView view) {
+        return ((NbtListWriteViewMixin) view).bb$getNbtList();
     }
 
     private record CustomFixer(String name, Consumer<Dynamic<?>> consumer) {
