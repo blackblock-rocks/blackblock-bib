@@ -220,10 +220,10 @@ public class AugmentManager<C extends Augment> {
             key.get(player);
         }
 
-        NbtCompound player_augments_nbt = BibData.getPropertyOfType(source_nbt, "BlackBlockAugments", NbtCompound.TYPE);
+        NbtCompound player_augments_nbt = BibData.getCompound(source_nbt, "BlackBlockAugments");
 
         if (player_augments_nbt == null) {
-            player_augments_nbt = BibData.getPropertyOfType(source_nbt, "BlackBlockComponents", NbtCompound.TYPE);
+            player_augments_nbt = BibData.getCompound(source_nbt, "BlackBlockComponents");
         }
 
         if (player_augments_nbt == null || player_augments_nbt.isEmpty()) {
@@ -233,9 +233,9 @@ public class AugmentManager<C extends Augment> {
         // Augments that store their data in the chunk should always be deserialized
         for (AugmentKey.PerPlayer<?> key : Augment.PerPlayer.REGISTRY.keySet()) {
 
-            NbtCompound augment_nbt = player_augments_nbt.getCompound(key.getId().toString()).orElse(new NbtCompound());
+            NbtCompound augment_nbt = BibData.getCompound(player_augments_nbt, key.getId().toString());
 
-            if (augment_nbt.isEmpty()) {
+            if (augment_nbt == null || augment_nbt.isEmpty()) {
                 continue;
             }
 

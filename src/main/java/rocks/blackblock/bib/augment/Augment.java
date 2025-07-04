@@ -76,9 +76,7 @@ public interface Augment {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
-    default void markDirty() {
-        this.setDirty(true);
-    }
+    void markDirty();
 
     /**
      * Set this augment instance as dirty
@@ -178,6 +176,15 @@ public interface Augment {
         interface Instantiator<GC extends Global> {
             GC create();
         }
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @since    0.4.0
+         */
+        default void markDirty() {
+            this.setDirty(true);
+        }
     }
 
     /**
@@ -230,6 +237,16 @@ public interface Augment {
          * @since    0.1.0
          */
         default void onTick() {}
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @since    0.4.0
+         */
+        @Override
+        default void markDirty() {
+            this.setDirty(true);
+        }
 
         /**
          * Get the registry manager from the World instance
@@ -416,6 +433,15 @@ public interface Augment {
         @FunctionalInterface
         interface Instantiator<CC extends PerPlayer> {
             CC create(ServerPlayerEntity player);
+        }
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @since    0.4.0
+         */
+        default void markDirty() {
+            // Ignore
         }
 
         /**
@@ -673,6 +699,7 @@ public interface Augment {
          *
          * @since    0.1.0
          */
+        @Override
         default void markDirty() {
             this.setDirty(true);
         }
@@ -694,6 +721,16 @@ public interface Augment {
         @FunctionalInterface
         interface Instantiator<C extends InternalPerBlock> {
             C create(World world, BlockPos origin);
+        }
+
+        /**
+         * Mark this augment instance as dirty
+         *
+         * @since    0.4.0
+         */
+        @Override
+        default void markDirty() {
+            this.setDirty(true);
         }
 
         /**
