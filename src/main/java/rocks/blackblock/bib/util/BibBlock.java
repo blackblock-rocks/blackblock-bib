@@ -141,16 +141,7 @@ public final class BibBlock {
 
     /**
      * Set the BlockEntity data in the given ItemStack.
-     *
-     * @author   Jelle De Loecker <jelle@elevenways.be>
-     * @since    0.1.0
-     */
-    public static void setBlockEntityData(ItemStack target, BlockEntity block_entity, NbtCompound data) {
-        BibBlock.setBlockEntityData(target, block_entity.getType(), data);
-    }
-
-    /**
-     * Set the BlockEntity data in the given ItemStack.
+     * Based on the ServerPlayNetworkHandler's copyBlockDataToStack method
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
@@ -170,7 +161,14 @@ public final class BibBlock {
             registry_manager = BibMod.getDynamicRegistry();
         }
 
-        // In 1.21.6, we use the component system to apply all block entity data
+        var reporter = BibLog.createErrorReporter();
+        NbtWriteView view = BibData.createNbtWriteView(reporter, registry_manager);
+
+        block_entity.writeComponentlessData(view);
+        block_entity.removeFromCopiedStackData(view);
+
+        BlockItem.setBlockEntityData(target, block_entity.getType(), view);
+
         target.applyComponentsFrom(block_entity.createComponentMap());
     }
 
@@ -180,7 +178,21 @@ public final class BibBlock {
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0
      */
+    public static void setBlockEntityData(ItemStack target, BlockEntity block_entity, NbtCompound data) {
+        BibBlock.setBlockEntityData(target, block_entity.getType(), data);
+    }
+
+    /**
+     * Set the BlockEntity data in the given ItemStack.
+     *
+     * @author   Jelle De Loecker <jelle@elevenways.be>
+     * @since    0.1.0
+     */
     public static void setBlockEntityData(ItemStack target, BlockEntityType<?> type, NbtCompound data) {
+
+        BibLog.log("Are we still supposed to call setBlockEntityData with an NbtCompound?");
+        BibLog.printStackTrace();
+
         var reporter = BibLog.createErrorReporter();
         NbtWriteView view = BibData.createNbtWriteView(reporter, BibMod.getDynamicRegistry(), data);
         BlockItem.setBlockEntityData(target, type, view);

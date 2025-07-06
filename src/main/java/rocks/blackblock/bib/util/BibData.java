@@ -567,6 +567,13 @@ public final class BibData {
     }
 
     /**
+     * Create an empty NbtWriteView
+     */
+    public static NbtWriteView createNbtWriteView(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries) {
+        return NbtWriteView.create(reporter, registries);
+    }
+
+    /**
      * Create an NbtWriteView with the given NBT compound as the target
      */
     public static NbtWriteView createNbtWriteView(ErrorReporter reporter, RegistryWrapper.WrapperLookup registries, NbtCompound target) {
