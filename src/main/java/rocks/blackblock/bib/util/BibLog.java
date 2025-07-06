@@ -702,6 +702,11 @@ public class BibLog {
                     for (Component<?> component : components) {
                         this.add(String.valueOf(component.type()), component.value());
                     }
+                } else if (value instanceof ComponentMap components) {
+                    name = "ComponentMap";
+                    for (Component<?> component : components) {
+                        this.add(String.valueOf(component.type()), component.value());
+                    }
                 } else if (value instanceof WrapperProtoChunk roc) {
                     name = "WrapperProtoChunk";
                     this.add("pos", roc.getPos());
