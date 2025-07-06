@@ -262,7 +262,7 @@ public interface InternalBibBaseInventory extends Inventory, Iterable<ItemStack>
      * @since    0.4.0
      */
     default void writeInventoryToView(WriteView view) {
-        this.setContentsFromNbt(BibData.extractCompound(view), BibServer.getDynamicRegistry());
+        this.writeInventoryToNbt(BibData.extractCompound(view), BibServer.getDynamicRegistry());
     }
 
     /**
