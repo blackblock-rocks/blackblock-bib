@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocks.blackblock.bib.interfaces.HasDisconnectionInfo;
+import rocks.blackblock.bib.util.BibLog;
 
 /**
  * Implement the HasDisconnectionInfo interface
@@ -44,6 +45,13 @@ public class ServerCommonNetworkHandlerMixinForDisconnectInfo implements HasDisc
 
         if (this.bb$is_disconnecting) {
             return true;
+        }
+
+        if (this.connection == null) {
+            // This happens, but does it happen before a connection is made or after a user disconnects?
+            BibLog.log("Connection is null, bb$isDisconnecting() will return false?");
+            BibLog.printStackTrace();
+            return false;
         }
 
         return this.connection.bb$isDisconnecting();
