@@ -31,7 +31,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-// Weight class removed in 1.21.6
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -575,6 +574,7 @@ public class BibLog {
             } catch (Throwable t) {
                 entry = "Error formatting argument: " + t;
                 entry = RedText.format(entry);
+                t.printStackTrace();
             }
         }
 
@@ -879,8 +879,14 @@ public class BibLog {
                 } else if (value instanceof NbtCompound nbt_compound) {
                     name = "NbtCompound";
 
-                    for (String key : nbt_compound.getKeys()) {
-                        this.add(key, nbt_compound.get(key));
+                    int size = nbt_compound.getSize();
+
+                    if (size == 0) {
+                        this.add("#empty", true);
+                    } else {
+                        for (String key : nbt_compound.getKeys()) {
+                            this.add(key, nbt_compound.get(key));
+                        }
                     }
                 } else if (value instanceof AbstractNbtNumber nbt_nr) {
                     name = nbt_nr.getClass().getSimpleName();
@@ -1034,6 +1040,14 @@ public class BibLog {
          * @since    0.2.0
          */
         private String cleanupContent(String message) {
+
+            if (message == null) {
+                message = "";
+            }
+
+            if (message.isEmpty()) {
+                return message;
+            }
 
             if (BibYarn.INSTANCE != null) {
                 message = BibYarn.INSTANCE.deobfuscateStackTrace(message);
