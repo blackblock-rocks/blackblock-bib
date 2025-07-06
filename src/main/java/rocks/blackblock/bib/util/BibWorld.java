@@ -103,7 +103,11 @@ public final class BibWorld {
         }
 
         for (Function<World, Integer> calculator : WORLD_BORDER_RADIUS_CALCULATOR) {
-            int result = calculator.apply(world);
+            Integer result = calculator.apply(world);
+
+            if (result == null) {
+                continue;
+            }
 
             if (result != 0) {
                 return result;
