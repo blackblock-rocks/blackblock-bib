@@ -45,7 +45,7 @@ public abstract class InternalBibBlockBaseInteraction {
     protected BlockHitResult block_hit;
 
     /**
-     * Keep the constructor private
+     * Initialize the interaction
      *
      * @author   Jelle De Loecker <jelle@elevenways.be>
      * @since    0.1.0

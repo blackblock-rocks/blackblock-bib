@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
@@ -39,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.collection.CompareForScenario;
 import rocks.blackblock.bib.interfaces.HasItemStackInventory;
+import rocks.blackblock.bib.item.InternalBaseBlockItem;
+import rocks.blackblock.bib.item.InternalBaseItem;
 import rocks.blackblock.bib.monitor.GlitchGuru;
 
 import java.util.ArrayList;
@@ -59,6 +62,26 @@ public final class BibItem {
     private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Item.ENTRY_CODEC;
     private static final Codec<ItemStack> ITEM_DATA_COPY_CODEC = RecordCodecBuilder.create((instance) -> instance.group(ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry), ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(ItemStack::getComponentChanges)).apply(instance, (id, components) -> new ItemStack(id, 1, components)));
     private static final MapCodec<Optional<ItemStack>> ORIGINAL_ITEM_CODEC = ITEM_DATA_COPY_CODEC.optionalFieldOf(UNWRAPPED_ITEM_KEY);
+
+    /**
+     * A base Item class
+     * @since    0.4.1
+     */
+    public static class BaseItem extends InternalBaseItem {
+        public BaseItem(Settings settings) {
+            super(settings);
+        }
+    }
+
+    /**
+     * A base BlockItem class
+     * @since    0.4.1
+     */
+    public static class BlockItem extends InternalBaseBlockItem {
+        public BlockItem(Block block, Settings settings) {
+            super(block, settings);
+        }
+    }
 
     /**
      * Don't let anyone instantiate this class
