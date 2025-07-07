@@ -34,6 +34,7 @@ import rocks.blackblock.bib.monitor.GlitchGuru;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.PushbackInputStream;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -233,7 +234,22 @@ public final class BibData {
         NbtString stringValue = getPropertyOfType(target, key, NbtString.TYPE);
 
         if (stringValue != null && stringValue.value() != null) {
-            UUID result = UUID.fromString(stringValue.value());
+            String value = stringValue.value();
+            UUID result = null;
+
+            try {
+                // Java's UUID methods require dashes
+                if (value.length() == 32) {
+                    BigInteger bi1 = new BigInteger(value.substring(0, 16), 16);
+                    BigInteger bi2 = new BigInteger(value.substring(16, 32), 16);
+                    result = new UUID(bi1.longValue(), bi2.longValue());
+                } else {
+                    result = UUID.fromString(stringValue.value());
+                }
+            } catch (Exception e) {
+                GlitchGuru.registerThrowable(e, "Failed to parse UUID");
+            }
+
             return result;
         }
 
