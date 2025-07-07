@@ -162,11 +162,19 @@ public abstract class InternalLore<T extends InternalLore<?>> implements Supplie
     protected abstract T createEmptyLore();
 
     /**
+     * Create a new instance with some extra info
+     * @since    0.4.1
+     */
+    protected T createCopyWithoutText() {
+        return this.createEmptyLore();
+    }
+
+    /**
      * Create a copy of this Lore
      * @since    0.2.0
      */
     public T copy() {
-        var copy = this.createEmptyLore();
+        var copy = this.createCopyWithoutText();
         copy.lines.addAll(this.lines);
         return copy;
     }
@@ -177,7 +185,7 @@ public abstract class InternalLore<T extends InternalLore<?>> implements Supplie
      */
     public T formatted(Formatting formatting) {
 
-        var result = this.createEmptyLore();
+        var result = this.createCopyWithoutText();
 
         for (Text line : this.lines) {
             result.lines.add(line.copy().formatted(formatting));

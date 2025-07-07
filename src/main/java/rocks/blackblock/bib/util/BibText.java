@@ -6,6 +6,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.SharedConstants;
+import net.minecraft.component.type.TooltipDisplayComponent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -16,11 +20,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.text.InternalLore;
+import rocks.blackblock.bib.text.InternalTooltipBuilder;
 
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Library class for working with strings and Texts
@@ -42,6 +48,28 @@ public final class BibText {
          */
         protected Lore createEmptyLore() {
             return new Lore();
+        }
+    }
+
+    /**
+     * The tooltip builder class
+     * @since    0.4.1
+     */
+    public static class TooltipBuilder extends InternalTooltipBuilder<TooltipBuilder> {
+        /**
+         * Initialize the builder
+         * @since 0.4.1
+         */
+        public TooltipBuilder(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+            super(stack, context, displayComponent, textConsumer, type);
+        }
+
+        /**
+         * Create a new empty instance
+         * @since    0.4.1
+         */
+        protected TooltipBuilder createEmptyLore() {
+            return new TooltipBuilder(this.stack, this.context, this.displayComponent, this.textConsumer, this.type);
         }
     }
 
