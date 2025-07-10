@@ -3,6 +3,10 @@ package rocks.blackblock.bib.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.VexEntity;
+import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -198,6 +202,29 @@ public final class BibEntity {
         boolean has_ceiling = BibPos.spiralAroundPosition(pos.getX(), pos.getZ(), radius, (x, z) -> world.isSkyVisible(mutable.set(x, start_y, z)));
 
         return has_ceiling;
+    }
+
+    /**
+     * Is this a flying entity?
+     * @since    0.4.1
+     */
+    public static boolean canFly(Entity entity) {
+
+        if (entity instanceof LivingEntity living) {
+            var speed = living.getAttributeValue(EntityAttributes.FLYING_SPEED);
+            if (speed > 0) {
+                return true;
+            }
+
+            return switch (living) {
+                case BatEntity batEntity -> true;
+                case PhantomEntity phantomEntity -> true;
+                case VexEntity vexEntity -> true;
+                default -> false;
+            };
+        }
+
+        return false;
     }
 
     /**
