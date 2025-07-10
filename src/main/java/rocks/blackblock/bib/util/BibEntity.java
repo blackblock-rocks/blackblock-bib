@@ -211,8 +211,10 @@ public final class BibEntity {
     public static boolean canFly(Entity entity) {
 
         if (entity instanceof LivingEntity living) {
-            var speed = living.getAttributeValue(EntityAttributes.FLYING_SPEED);
-            if (speed > 0) {
+
+            var attributes = living.getAttributes();
+
+            if (attributes != null && attributes.hasAttribute(EntityAttributes.FLYING_SPEED)) {
                 return true;
             }
 
