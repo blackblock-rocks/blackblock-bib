@@ -4,6 +4,8 @@ package rocks.blackblock.bib.util;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.component.Component;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.type.*;
@@ -736,6 +738,29 @@ public class BibLog {
                 } else if (value instanceof ChunkPos pos) {
                     name = "ChunkPos";
                     this.add("x", pos.x).add("z", pos.z);
+                } else if (value instanceof BlockState state) {
+                    name = "BlockState";
+                    this.add("block", state.getBlock());
+
+                    try {
+                        for (var prop : state.getProperties()) {
+                            var prop_value = state.get(prop);
+                            this.add(prop.getName(), prop_value);
+                        }
+                    } catch (Throwable t) {
+                        // Ignore
+                    }
+
+                } else if (value instanceof Block block) {
+                    name = "Block";
+
+                    try {
+                        var id = Registries.BLOCK.getId(block);
+                        this.setContent(id.getNamespace() + ":" + id.getPath());
+                    } catch (Throwable t) {
+                        this.setContent(block.getTranslationKey());
+                        // Ignore
+                    }
                 } else if (value instanceof Identifier id) {
                     name = "Identifier";
                     this.setContent(id.getNamespace() + ":" + BrightWhiteText.format(id.getPath()));
