@@ -1,12 +1,13 @@
 package rocks.blackblock.bib.placeholder;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import org.jetbrains.annotations.NotNull;
-import rocks.blackblock.bib.util.BibItem;
-import rocks.blackblock.bib.util.BibLog;
+import rocks.blackblock.bib.util.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,6 +119,13 @@ public class BlockPlaceholderResolver implements BibLog.Argable {
             }
         }
 
+        // See if there is a target stack suggestion
+        ItemStack targetSuggestion = context.getTargetStackSuggestion();
+
+        if (targetSuggestion != null && !targetSuggestion.isEmpty()) {
+            // @TODO: Use target suggestions when trying to resolve an item to a block?
+        }
+
         // If the item is a BlockItem, suggest the source block
         // Don't just suggest the block_item.getBlock() because
         // it might be a BlockEntity that needs data to be valid
@@ -181,6 +189,23 @@ public class BlockPlaceholderResolver implements BibLog.Argable {
      * @since    0.2.0
      */
     public static List<ItemStack> filterAllBlockItemStacks(ItemStack stack_with_inventory, PlaceholderContext context) {
+
+        // Some items are block placeholders, always return them as is
+        if (stack_with_inventory.getItem() instanceof BlockPlaceholder placeholder) {
+            var suggestion = placeholder.getBlockPlaceholderReplacementStack(context);
+
+            if (suggestion == null || suggestion.isEmpty()) {
+                return List.of();
+            }
+
+            ItemStack result = suggestion.getStack();
+
+            if (result != null) {
+                return List.of(result);
+            }
+
+            return List.of();
+        }
 
         List<ItemStack> result = BibItem.extractInventoryItems(stack_with_inventory);
 
