@@ -12,6 +12,7 @@ import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventory;
@@ -151,13 +152,18 @@ public final class BibItem {
      */
     public static boolean hasCustomNbt(ItemStack stack) {
 
-        NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
+        try {
+            NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
 
-        if (data == null) {
+            if (data == null) {
+                return false;
+            }
+
+            return !data.isEmpty();
+        } catch (Exception e) {
+            GlitchGuru.registerThrowable(e, "Failed to get custom NBT data");
             return false;
         }
-
-        return !data.isEmpty();
     }
 
     /**
@@ -168,13 +174,18 @@ public final class BibItem {
      */
     @Nullable
     public static NbtCompound getCustomNbt(ItemStack stack) {
-        NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
+        try {
+            NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
 
-        if (data == null) {
+            if (data == null) {
+                return null;
+            }
+
+            return data.getNbt();
+        } catch (Exception e) {
+            GlitchGuru.registerThrowable(e, "Failed to get custom NBT data");
             return null;
         }
-
-        return data.getNbt();
     }
 
     /**
@@ -185,14 +196,20 @@ public final class BibItem {
      */
     @NotNull
     public static NbtCompound getOrCreateCustomNbt(ItemStack stack) {
-        NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
+        NbtComponent data = null;
 
-        if (data == null) {
-            data = NbtComponent.of(new NbtCompound());
-            stack.set(DataComponentTypes.CUSTOM_DATA, data);
+        try {
+            data = stack.get(DataComponentTypes.CUSTOM_DATA);
+            if (data == null) {
+                data = NbtComponent.of(new NbtCompound());
+                stack.set(DataComponentTypes.CUSTOM_DATA, data);
+            }
+
+            return data.getNbt();
+        } catch (Exception e) {
+            GlitchGuru.registerThrowable(e, "Failed to get or create custom NBT data");
+            return new NbtCompound();
         }
-
-        return data.getNbt();
     }
 
     /**
@@ -203,13 +220,22 @@ public final class BibItem {
      */
     public static void setCustomNbt(ItemStack stack, @Nullable NbtCompound nbt) {
 
-        if (nbt == null) {
-            stack.remove(DataComponentTypes.CUSTOM_DATA);
+        try {
+            if (nbt == null) {
+                stack.remove(DataComponentTypes.CUSTOM_DATA);
+                return;
+            }
+        } catch (Exception e) {
+            GlitchGuru.registerThrowable(e, "Failed to remove custom NBT data");
             return;
         }
 
-        NbtComponent data = NbtComponent.of(nbt);
-        stack.set(DataComponentTypes.CUSTOM_DATA, data);
+        try {
+            NbtComponent data = NbtComponent.of(nbt);
+            stack.set(DataComponentTypes.CUSTOM_DATA, data);
+        } catch (Exception e) {
+            GlitchGuru.registerThrowable(e, "Failed to set custom NBT data");
+        }
     }
 
     /**
