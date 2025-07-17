@@ -32,6 +32,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -1081,6 +1083,29 @@ public final class BibItem {
         }
 
         ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+        itemEntity.setToDefaultPickupDelay();
+        world.spawnEntity(itemEntity);
+        return itemEntity;
+    }
+
+    /**
+     * Drop a stack in the given world at the given block position
+     *
+     * @since    0.4.1
+     */
+    @Nullable
+    public static ItemEntity dropStack(ServerWorld world, ItemStack stack, BlockPos pos) {
+
+        if (stack.isEmpty()) {
+            return null;
+        }
+
+        double d = (double) EntityType.ITEM.getHeight() / (double)2.0F;
+        double x = (double)pos.getX() + (double)0.5F + MathHelper.nextDouble(world.random, -0.25F, 0.25F);
+        double y = (double)pos.getY() + (double)0.5F + MathHelper.nextDouble(world.random, -0.25F, 0.25F) - d;
+        double z = (double)pos.getZ() + (double)0.5F + MathHelper.nextDouble(world.random, -0.25F, 0.25F);
+
+        ItemEntity itemEntity = new ItemEntity(world, x, y, z, stack);
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
         return itemEntity;
