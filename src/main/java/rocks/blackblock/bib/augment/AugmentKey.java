@@ -1259,7 +1259,6 @@ public abstract class AugmentKey<$C extends Augment> {
                 // Create a new instance
                 instance = this.instantiator.create(world, origin);
                 this.cache.put(world, origin, instance);
-                BibLog.log(" -- CREATED:", instance, "at", origin);
             }
 
             return instance;
