@@ -4,6 +4,7 @@ package rocks.blackblock.bib.util;
 import com.diogonunes.jcolor.AnsiFormat;
 import com.diogonunes.jcolor.Attribute;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.Component;
@@ -803,6 +804,19 @@ public class BibLog {
                         }
 
                         this.add("" + i, list.get(i));
+                    }
+
+                } else if (value instanceof Either<?, ?> either) {
+
+                    if (either.left().isPresent()) {
+                        name = "Either.Left";
+                        this.add("left", either.left().get());
+                    } else if (either.right().isPresent()) {
+                        name = "Either.Right";
+                        this.add("right", either.right().get());
+                    } else {
+                        name = "Either";
+                        this.setContent(either.toString());
                     }
 
                 } else if (value instanceof NetworkSide side) {
