@@ -3,8 +3,11 @@ package rocks.blackblock.bib.util;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import rocks.blackblock.bib.interop.BibInterop;
+
+import java.util.List;
 
 /**
  * Library class for working with player instances
@@ -104,5 +107,14 @@ public final class BibPlayer {
      */
     public static void spawnParticles(ServerPlayerEntity player, ParticleEffect particle, double x, double y, double z, int count) {
         player.getWorld().spawnParticles(player, particle, true, true, x, y, z, count, 0, 0, 0, 0);
+    }
+
+    /**
+     * Get all the active players in a world
+     *
+     * @since    0.4.1
+     */
+    public static List<ServerPlayerEntity> getActivePlayers(ServerWorld world) {
+        return world.getPlayers().stream().filter(p -> !p.bb$isAfk() && !p.isSpectator()).toList();
     }
 }
