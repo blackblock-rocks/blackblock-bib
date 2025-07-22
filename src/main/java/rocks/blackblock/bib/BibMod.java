@@ -4,10 +4,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import rocks.blackblock.bib.advancement.NamedCriterion;
 import rocks.blackblock.bib.augment.AugmentManager;
 import rocks.blackblock.bib.bv.operator.BvOperators;
 import rocks.blackblock.bib.bv.parameter.MapParameter;
@@ -38,6 +41,10 @@ public class BibMod implements ModInitializer {
 	// The "perf" tweaks, available under `/blackblock tweaks perf`
 	public static final MapParameter<?> PERF_TWEAKS = GLOBAL_TWEAKS.add(new MapParameter<>("perf"));
 
+	// Simple named criteria
+	public static final NamedCriterion GUI_CRITERION = new NamedCriterion(Identifier.of("blackblock", "view_gui"));
+	public static final NamedCriterion NAMED_CRITERION = new NamedCriterion(Identifier.of("blackblock", "named"));
+
 	@Override
 	public void onInitialize() {
 
@@ -48,6 +55,9 @@ public class BibMod implements ModInitializer {
 		Config.initializeAllConfigs();
 		CommandRegistrationCallback.EVENT.register(BibServer::setCommandCanBeRegistered);
 		BibPerf.start();
+
+		Registry.register(Registries.CRITERION, GUI_CRITERION.getId(), GUI_CRITERION);
+		Registry.register(Registries.CRITERION, NAMED_CRITERION.getId(), NAMED_CRITERION);
 
 		// Initialize the augments when everything has registered
 		BibServer.withReadyServer(minecraftServer -> {

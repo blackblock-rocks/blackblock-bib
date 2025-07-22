@@ -5,6 +5,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
+import rocks.blackblock.bib.BibMod;
 import rocks.blackblock.bib.interop.BibInterop;
 
 import java.util.List;
@@ -116,5 +117,14 @@ public final class BibPlayer {
      */
     public static List<ServerPlayerEntity> getActivePlayers(ServerWorld world) {
         return world.getPlayers().stream().filter(p -> !p.bb$isAfk() && !p.isSpectator()).toList();
+    }
+
+    /**
+     * Trigger a simple named criteria
+     *
+     * @since    0.4.1
+     */
+    public static void triggerNamedCriteria(ServerPlayerEntity player, String name) {
+        BibMod.NAMED_CRITERION.trigger(player, name);
     }
 }
