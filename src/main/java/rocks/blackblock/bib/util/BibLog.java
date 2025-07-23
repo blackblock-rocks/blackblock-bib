@@ -28,6 +28,7 @@ import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.text.MutableText;
@@ -822,6 +823,14 @@ public class BibLog {
                 } else if (value instanceof NetworkSide side) {
                     name = "NetworkSide";
                     this.setContent(side.name());
+                } else if (value instanceof Slot slot) {
+                    name = slot.getClass().getSimpleName();
+                    this.add("id", slot.id);
+                    this.add("index", slot.getIndex());
+                    this.add("stack", slot.getStack());
+                    this.add("x", slot.x);
+                    this.add("y", slot.y);
+                    this.add("inventory", slot.inventory);
                 } else if (value instanceof DataTracker.SerializedEntry<?> serialized) {
 
                     if (BibYarn.INSTANCE != null) {
