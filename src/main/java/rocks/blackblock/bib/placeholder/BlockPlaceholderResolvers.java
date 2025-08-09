@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.CheckedRandom;
+import rocks.blackblock.bib.interfaces.TrialSpawnerEntitySetter;
 import rocks.blackblock.bib.util.BibBlock;
 
 import java.util.ArrayList;
@@ -99,8 +100,12 @@ public class BlockPlaceholderResolvers {
                     spawner_be.setEntityType(type, new CheckedRandom(0));
                     target_be = spawner_be;
                 } else if (target_item == Items.TRIAL_SPAWNER) {
+                    // AIDEV-NOTE: Trial spawners use Mixin to set entity type without world
                     var spawner_be = new TrialSpawnerBlockEntity(new BlockPos(0, 0, 0), Blocks.TRIAL_SPAWNER.getDefaultState());
-                    spawner_be.setEntityType(type, new CheckedRandom(0));
+
+                    // Use our mixin interface to set the entity type without needing a world
+                    ((TrialSpawnerEntitySetter) spawner_be).bib$setEntityTypeWithoutWorld(type);
+                    
                     target_be = spawner_be;
                 } else if (target_item == Items.MINECART) {
                     return placeholderContext.suggest((world, pos) -> {
