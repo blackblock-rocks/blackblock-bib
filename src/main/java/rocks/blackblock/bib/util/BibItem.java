@@ -183,7 +183,7 @@ public final class BibItem {
                 return null;
             }
 
-            return data.getNbt();
+            return BibData.extractCompound(data);
         } catch (Exception e) {
             GlitchGuru.registerThrowable(e, "Failed to get custom NBT data");
             return null;
@@ -207,7 +207,7 @@ public final class BibItem {
                 stack.set(DataComponentTypes.CUSTOM_DATA, data);
             }
 
-            return data.getNbt();
+            return BibData.extractCompound(data);
         } catch (Exception e) {
             GlitchGuru.registerThrowable(e, "Failed to get or create custom NBT data");
             return new NbtCompound();
@@ -250,12 +250,7 @@ public final class BibItem {
     public static NbtCompound getCustomSubNbt(ItemStack stack, String key) {
 
         NbtComponent data = stack.get(DataComponentTypes.CUSTOM_DATA);
-
-        if (data == null) {
-            return null;
-        }
-
-        NbtCompound nbt = data.getNbt();
+        NbtCompound nbt = BibData.extractCompound(data);
 
         if (nbt == null) {
             return null;
@@ -787,7 +782,9 @@ public final class BibItem {
             return;
         }
 
-        stack.damage(damage_amount, entity, LivingEntity.getSlotForHand(entity.getActiveHand()));
+
+
+        stack.damage(damage_amount, entity, entity.getActiveHand().getEquipmentSlot());
     }
 
     /**
@@ -856,7 +853,7 @@ public final class BibItem {
         RegistryOps<NbtElement> registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
 
         // Put the entire original item into the custom NBT data
-        NbtComponent.DEFAULT.with(registry_ops, overlay_codec, Optional.of(original_stack)).result().ifPresent((nbt) -> {
+        BibData.nbtComponentWith(NbtComponent.DEFAULT, registry_ops, overlay_codec, Optional.of(original_stack)).result().ifPresent((nbt) -> {
             wrapped_stack.set(DataComponentTypes.CUSTOM_DATA, nbt);
         });
 
@@ -910,7 +907,7 @@ public final class BibItem {
         }
 
         var registry_ops = BibMod.getDynamicRegistry().getOps(NbtOps.INSTANCE);
-        DataResult<Optional<ItemStack>> unwrap_result = custom_data.get(registry_ops, overlay_codec);
+        DataResult<Optional<ItemStack>> unwrap_result = BibData.nbtComponentGet(custom_data, registry_ops, overlay_codec);
 
         if (unwrap_result.error().isPresent()) {
             DataResult.Error<?> error = unwrap_result.error().get();
@@ -1051,8 +1048,8 @@ public final class BibItem {
      */
     @Nullable
     public static ItemEntity dropStack(Entity entity, ItemStack item, float offset_y) {
-        Vec3d position = entity.getPos().add(0, offset_y, 0);
-        return dropStack(entity.getWorld(), item, position);
+        Vec3d position = entity.getEntityPos().add(0, offset_y, 0);
+        return dropStack(entity.getEntityWorld(), item, position);
     }
 
     /**

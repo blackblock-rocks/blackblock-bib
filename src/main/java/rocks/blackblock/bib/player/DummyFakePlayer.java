@@ -84,7 +84,7 @@ public class DummyFakePlayer extends FakePlayer {
         }
 
         public ServerWorld getServerWorld() {
-            return this.player.getWorld();
+            return this.player.getEntityWorld();
         }
 
         public DummyFakePlayer getPlayer() {

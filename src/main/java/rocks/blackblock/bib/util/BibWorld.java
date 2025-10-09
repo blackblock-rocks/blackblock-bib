@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -157,7 +158,7 @@ public final class BibWorld {
         for (ServerPlayerEntity serverPlayerEntity : serverWorld.getPlayers()) {
             if (serverPlayerEntity.squaredDistanceTo(vec3d) < 4096.0) {
                 Optional<Vec3d> optional = Optional.ofNullable(explosionImpl.getKnockbackByPlayer().get(serverPlayerEntity));
-                serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(vec3d, optional, particleEffect, SoundEvents.ENTITY_GENERIC_EXPLODE));
+                serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(vec3d, 3, 1, optional, particleEffect, SoundEvents.ENTITY_GENERIC_EXPLODE, Pool.empty()));
             }
         }
     }

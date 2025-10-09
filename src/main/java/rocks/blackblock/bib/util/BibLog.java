@@ -868,7 +868,7 @@ public class BibLog {
 
                     this.add("name", entity.getName().getString());
 
-                    String world = entity.getWorld() == null ? "~NULL~" : entity.getWorld().toString();
+                    String world = entity.getEntityWorld() == null ? "~NULL~" : entity.getEntityWorld().toString();
                     BlockPos pos = entity.getBlockPos();
 
                     this.add("l", world);
@@ -927,8 +927,8 @@ public class BibLog {
                     this.add("id", Registries.STRUCTURE_TYPE.getId(type));
                 } else if (value instanceof NbtComponent nbt_component) {
                     name = "NbtComponent";
-                    this.add("nbt", nbt_component.getNbt());
-                    this.add("size", nbt_component.getSize());
+                    var nbt = BibData.extractCompound(nbt_component);
+                    this.add("nbt", nbt);
                 } else if (value instanceof NbtCompound nbt_compound) {
                     name = "NbtCompound";
 

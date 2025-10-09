@@ -36,7 +36,7 @@ public abstract class BibSound {
 
         World world = be.getWorld();
 
-        if (world == null || world.isClient) {
+        if (world == null || world.isClient()) {
             return false;
         }
 

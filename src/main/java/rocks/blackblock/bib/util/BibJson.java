@@ -501,7 +501,7 @@ public final class BibJson {
         entity_data.addProperty("uuid", entity.getUuidAsString());
         entity_data.addProperty("entity_type", entity.getClass().getSimpleName());
         entity_data.add("block_pos", jsonify(entity.getBlockPos()));
-        entity_data.addProperty("world", entity.getWorld().getRegistryKey().toString());
+        entity_data.addProperty("world", entity.getEntityWorld().getRegistryKey().toString());
 
         if (entity instanceof LivingEntity living) {
             entity_data.addProperty("health", living.getHealth());

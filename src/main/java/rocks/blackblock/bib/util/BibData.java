@@ -4,12 +4,12 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.*;
@@ -23,6 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.interfaces.BlackblockDataFixerEntrypoint;
 import rocks.blackblock.bib.mixin.NbtListReadViewMixin;
 import rocks.blackblock.bib.mixin.NbtListWriteViewMixin;
@@ -618,6 +619,36 @@ public final class BibData {
         var reporter = BibLog.createErrorReporter();
         var registries = BibServer.getDynamicRegistry();
         return (NbtReadView) NbtReadView.create(reporter, registries, source);
+    }
+
+    /**
+     * Implementation of the removed `NbtComponent.with` method
+     */
+    public static <T> DataResult<NbtComponent> nbtComponentWith(NbtComponent component, DynamicOps<NbtElement> ops, MapEncoder<T> encoder, T value) {
+        NbtCompound nbtCompound = extractCompound(component);
+        return encoder.encode(value, ops, ops.mapBuilder()).build(nbtCompound).map(nbt -> NbtComponent.of((NbtCompound)nbt));
+    }
+
+    /**
+     * Implementation of the removed `NbtComponent.get` method
+     */
+    public static <T> DataResult<T> nbtComponentGet(NbtComponent component, DynamicOps<NbtElement> ops, MapDecoder<T> decoder) {
+        NbtCompound nbtCompound = extractCompound(component);
+        MapLike<NbtElement> mapLike = ops.getMap(nbtCompound).getOrThrow();
+        return decoder.decode(ops, mapLike);
+    }
+
+    /**
+     * Get the NBTCompound of a component
+     */
+    public static @Nullable NbtCompound extractCompound(@Nullable NbtComponent component) {
+
+        if (component == null) {
+            return null;
+        }
+
+        // @TODO: return the un-copied version
+        return component.copyNbt();
     }
 
     /**

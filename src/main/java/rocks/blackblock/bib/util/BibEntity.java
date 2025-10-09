@@ -70,7 +70,7 @@ public final class BibEntity {
      */
     public static boolean hasRoofAbove(Entity entity) {
         BlockPos pos = entity.getBlockPos();
-        return !entity.getWorld().isSkyVisible(pos);
+        return !entity.getEntityWorld().isSkyVisible(pos);
     }
 
     /**
@@ -83,7 +83,7 @@ public final class BibEntity {
             return false;
         }
 
-        return hasRoofAbove(entity.getWorld(), entity.getBlockPos().mutableCopy(), entity.getBlockPos().getY(), max_y_range);
+        return hasRoofAbove(entity.getEntityWorld(), entity.getBlockPos().mutableCopy(), entity.getBlockPos().getY(), max_y_range);
     }
 
     /**
@@ -153,7 +153,7 @@ public final class BibEntity {
      */
     public static boolean isInEnclosedSpace(Entity entity) {
 
-        World world = entity.getWorld();
+        World world = entity.getEntityWorld();
         BlockPos pos = entity.getBlockPos();
         BlockPos.Mutable mutable = pos.mutableCopy();
         int start_y = pos.getY();
@@ -178,7 +178,7 @@ public final class BibEntity {
      */
     public static boolean isInCave(Entity entity) {
 
-        World world = entity.getWorld();
+        World world = entity.getEntityWorld();
         BlockPos pos = entity.getBlockPos();
         int start_y = pos.getY();
 

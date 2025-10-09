@@ -1,10 +1,10 @@
 package rocks.blackblock.bib.inventory;
 
+import net.minecraft.entity.ContainerUser;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -120,8 +120,8 @@ public interface InternalBibProxyInventory extends Inventory {
      * @since 0.1.0
      */
     @Override
-    default void onOpen(PlayerEntity player) {
-        this.getProxiedInventory().onOpen(player);
+    default void onOpen(ContainerUser user) {
+        this.getProxiedInventory().onOpen(user);
     }
 
     /**
@@ -130,8 +130,8 @@ public interface InternalBibProxyInventory extends Inventory {
      * @since 0.1.0
      */
     @Override
-    default void onClose(PlayerEntity player) {
-        this.getProxiedInventory().onClose(player);
+    default void onClose(ContainerUser user) {
+        this.getProxiedInventory().onClose(user);
     }
 
     /**

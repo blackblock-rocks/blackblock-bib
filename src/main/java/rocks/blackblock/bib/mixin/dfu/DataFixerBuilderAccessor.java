@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(DataFixerBuilder.class)
 public interface DataFixerBuilderAccessor {
-    @Accessor("schemas")
+    @Accessor(value = "schemas", remap = false)
     Int2ObjectSortedMap<Schema> bb$getSchemas();
 }

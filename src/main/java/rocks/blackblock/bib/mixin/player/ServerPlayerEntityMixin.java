@@ -23,7 +23,7 @@ import rocks.blackblock.bib.util.BibPerf;
 public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implements PlayerActivityInfo, HasDisconnectionInfo {
 
     @Shadow
-    public abstract ServerWorld getWorld();
+    public abstract ServerWorld getEntityWorld();
 
     @Shadow
     public ServerPlayNetworkHandler networkHandler;
@@ -129,7 +129,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
             return;
         }
 
-        BibPerf.Info info = BibPerf.getWorldInfo(this.getWorld());
+        BibPerf.Info info = BibPerf.getWorldInfo(this.getEntityWorld());
 
         if (info.isCritical()) {
             this.bb$is_ignored = true;

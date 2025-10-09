@@ -83,7 +83,7 @@ public class BlockPlaceholderResolvers {
 
 
         if (item instanceof SpawnEggItem spawn_egg_item) {
-            EntityType<?> type = spawn_egg_item.getEntityType(placeholderContext.getWorld().getRegistryManager(), source);
+            EntityType<?> type = spawn_egg_item.getEntityType(source);
 
             if (type != null) {
                 var stack = placeholderContext.getTargetStackSuggestion();
@@ -111,7 +111,7 @@ public class BlockPlaceholderResolvers {
                     return placeholderContext.suggest((world, pos) -> {
                         MinecartEntity minecart = EntityType.MINECART.spawn(world, pos, SpawnReason.STRUCTURE);
                         var passenger = type.create(world, SpawnReason.STRUCTURE);
-                        passenger.startRiding(minecart, true);
+                        passenger.startRiding(minecart, true, true);
                         return true;
                     });
                 }

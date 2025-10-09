@@ -5,7 +5,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
@@ -213,13 +212,15 @@ public final class BibBlock {
     @Nullable
     public static NbtCompound getBlockEntityData(ItemStack source) {
 
-        NbtComponent nbtComponent = source.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+        var data = source.get(DataComponentTypes.BLOCK_ENTITY_DATA);
 
-        if (nbtComponent == null) {
+        if (data == null) {
             return null;
         }
 
-        return nbtComponent.getNbt();
+        // This method is deprecated in 1.21.10,
+        // So we might have to add a mixin in later versions
+        return data.getNbtWithoutId();
     }
 
     /**
