@@ -62,9 +62,13 @@ repositories {
 	}
 
 	// Lucko (spark)
-	maven {
-		url 'https://oss.sonatype.org/content/repositories/snapshots'
-	}
+    maven {
+        name 'luck-repo'
+        url 'https://repo.lucko.me/'
+        content {
+            includeModule 'me.lucko', 'spark-api'
+        }
+    }
 
 	// NucleoidMC
 	maven {
@@ -84,9 +88,9 @@ repositories {
 	}
 
 	// Blackblock
-	maven {
-		url 'https://maven.blackblock.rocks/releases'
-	}
+	//maven {
+	//	url 'https://maven.blackblock.rocks/releases'
+	//}
 
 	// Modrinth offers a maven repository
 	exclusiveContent {
