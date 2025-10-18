@@ -4,11 +4,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.polymer.common.api.PolymerCommonUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.bib.command.CommandCreator;
@@ -76,6 +78,38 @@ public final class BibServer {
     @Nullable
     public static MinecraftServer getServer() {
         return SERVER;
+    }
+
+    /**
+     * Get the server of a player
+     * @since 0.5.0
+     */
+    public static MinecraftServer getServer(Entity entity) {
+
+        if (entity == null) {
+            return getServer();
+        }
+
+        var world = entity.getEntityWorld();
+
+        if (world != null) {
+            return world.getServer();
+        }
+
+        return getServer();
+    }
+
+    /**
+     * Get the server of a world
+     * @since 0.5.0
+     */
+    public static MinecraftServer getServer(World world) {
+
+        if (world == null) {
+            return getServer();
+        }
+
+        return world.getServer();
     }
 
     /**
