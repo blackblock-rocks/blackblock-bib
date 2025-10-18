@@ -86,6 +86,19 @@ public final class BibWorld {
     }
 
     /**
+     * Get the world this entity is in
+     * @since    0.5.0
+     */
+    public static ServerWorld getWorld(Entity entity) {
+
+        if (entity == null) {
+            return null;
+        }
+
+        return (ServerWorld) entity.getEntityWorld();
+    }
+
+    /**
      * Register a world border radius calculator
      * @since    0.2.0
      */
