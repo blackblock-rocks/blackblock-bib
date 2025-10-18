@@ -1,10 +1,10 @@
 package rocks.blackblock.bib.mixin;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.chunk.PalettesFactory;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.SerializedChunk;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -27,7 +27,7 @@ public class SerializedChunk_ChunkAugmentsMixin {
         method = "fromNbt",
         at = @At("RETURN")
     )
-    private static void onFromNbt(HeightLimitView world, DynamicRegistryManager registryManager, NbtCompound source_nbt, CallbackInfoReturnable<SerializedChunk> cir) {
+    private static void onFromNbt(HeightLimitView world, PalettesFactory palettesFactory, NbtCompound source_nbt, CallbackInfoReturnable<SerializedChunk> cir) {
 
         SerializedChunk result = cir.getReturnValue();
 
