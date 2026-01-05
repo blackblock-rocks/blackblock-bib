@@ -10,6 +10,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -171,7 +173,7 @@ public class CommandLeaf {
             ServerPlayerEntity player = source.getPlayer();
 
             if (player == null) {
-                return source.hasPermissionLevel(2);
+                return source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(2)));
             }
 
             var result = BibPlayer.hasPermission(player, permission);

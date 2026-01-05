@@ -7,6 +7,8 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.bib.util.BibLog;
@@ -116,7 +118,7 @@ public class InteropLuckPerms {
             return false;
         }
 
-        if (player.hasPermissionLevel(2)) {
+        if (player.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(2)))) {
             return true;
         }
 

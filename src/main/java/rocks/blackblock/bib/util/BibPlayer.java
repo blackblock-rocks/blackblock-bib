@@ -1,5 +1,7 @@
 package rocks.blackblock.bib.util;
 
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -54,7 +56,7 @@ public final class BibPlayer {
      */
     public static boolean hasPermission(PlayerEntity player, String permission) {
 
-        if (player != null && player.hasPermissionLevel(2)) {
+        if (player != null && player.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(2)))) {
             return true;
         }
 
