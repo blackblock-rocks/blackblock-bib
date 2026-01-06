@@ -155,7 +155,7 @@ dependencies {
 	modImplementation include("org.apache.commons:commons-text:${project.apache_commons_text}")
 
 	// JColor allows you to print messages with a colored font or background on a terminal
-	modImplementation include("com.diogonunes:JColor:${project.jcolor_version}")
+	include implementation("com.diogonunes:JColor:${project.jcolor_version}")
 
 	// Spark is a performance profiler
 	modImplementation "me.lucko:spark-api:${project.spark_api_version}"
