@@ -1,8 +1,8 @@
 package rocks.blackblock.bib.util;
 
 
-import com.diogonunes.jcolor.AnsiFormat;
-import com.diogonunes.jcolor.Attribute;
+// AIDEV-NOTE: Delayed import of jcolor classes to avoid class loading issues
+// They are dynamically imported in initializeFormats() to support environments without jcolor
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.block.Block;
@@ -52,8 +52,6 @@ import rocks.blackblock.bib.debug.logging.BibYarn;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.diogonunes.jcolor.Attribute.*;
-
 /**
  * A colourful logger class.
  *
@@ -62,20 +60,95 @@ import static com.diogonunes.jcolor.Attribute.*;
  */
 public class BibLog {
 
-    // Log colours & formats
-    private static AnsiFormat YellowText = new AnsiFormat(BRIGHT_YELLOW_TEXT());
-    private static AnsiFormat RedText = new AnsiFormat(BRIGHT_RED_TEXT());
-    private static AnsiFormat GreenText = new AnsiFormat(BRIGHT_GREEN_TEXT());
-    private static AnsiFormat BlueText = new AnsiFormat(BRIGHT_BLUE_TEXT());
-    private static AnsiFormat MagentaText = new AnsiFormat(BRIGHT_MAGENTA_TEXT());
-    private static AnsiFormat WhiteText = new AnsiFormat(WHITE_TEXT());
-    private static AnsiFormat BrightWhiteText = new AnsiFormat(BRIGHT_WHITE_TEXT());
+    // Log colours & formats - using Object type to delay jcolor class loading
+    // These are initialized to the actual AnsiFormat instances in initializeFormats()
+    private static Object YellowText;
+    private static Object RedText;
+    private static Object GreenText;
+    private static Object BlueText;
+    private static Object MagentaText;
+    private static Object WhiteText;
+    private static Object BrightWhiteText;
 
-    private static Attribute BLACK_BACK = BACK_COLOR(0, 0, 0);
-    private static AnsiFormat BoldYellowOnRed = new AnsiFormat(YELLOW_TEXT(), RED_BACK(), BOLD());
-    private static AnsiFormat BoldGrayOnBlack = new AnsiFormat(TEXT_COLOR(120, 120, 120), BLACK_BACK, BOLD());
-    private static AnsiFormat CyanOnBlack = new AnsiFormat(CYAN_TEXT(), BLACK_BACK);
-    private static AnsiFormat RedOnBlack = new AnsiFormat(RED_TEXT(), BLACK_BACK);
+    private static Object BLACK_BACK;
+    private static Object BoldYellowOnRed;
+    private static Object BoldGrayOnBlack;
+    private static Object CyanOnBlack;
+    private static Object RedOnBlack;
+
+    // Initialization flag to ensure formats are only initialized once
+    private static boolean formats_initialized = false;
+
+    /**
+     * Initialize the AnsiFormat fields on first use using reflection to delay class loading
+     */
+    private static void initializeFormats() {
+        if (formats_initialized) {
+            return;
+        }
+
+        try {
+            // Dynamically load jcolor classes to avoid startup failures if jcolor is unavailable
+            Class<?> ansiFormatClass = Class.forName("com.diogonunes.jcolor.AnsiFormat");
+            Class<?> attributeClass = Class.forName("com.diogonunes.jcolor.Attribute");
+
+            // Get methods from Attribute class
+            java.lang.reflect.Method bright_yellow = attributeClass.getMethod("BRIGHT_YELLOW_TEXT");
+            java.lang.reflect.Method bright_red = attributeClass.getMethod("BRIGHT_RED_TEXT");
+            java.lang.reflect.Method bright_green = attributeClass.getMethod("BRIGHT_GREEN_TEXT");
+            java.lang.reflect.Method bright_blue = attributeClass.getMethod("BRIGHT_BLUE_TEXT");
+            java.lang.reflect.Method bright_magenta = attributeClass.getMethod("BRIGHT_MAGENTA_TEXT");
+            java.lang.reflect.Method white = attributeClass.getMethod("WHITE_TEXT");
+            java.lang.reflect.Method bright_white = attributeClass.getMethod("BRIGHT_WHITE_TEXT");
+            java.lang.reflect.Method back_color = attributeClass.getMethod("BACK_COLOR", int.class, int.class, int.class);
+            java.lang.reflect.Method yellow = attributeClass.getMethod("YELLOW_TEXT");
+            java.lang.reflect.Method red = attributeClass.getMethod("RED_TEXT");
+            java.lang.reflect.Method red_back = attributeClass.getMethod("RED_BACK");
+            java.lang.reflect.Method cyan = attributeClass.getMethod("CYAN_TEXT");
+            java.lang.reflect.Method text_color = attributeClass.getMethod("TEXT_COLOR", int.class, int.class, int.class);
+            java.lang.reflect.Method bold = attributeClass.getMethod("BOLD");
+
+            // AnsiFormat constructor
+            java.lang.reflect.Constructor<?> ansiFormatCtor1 = ansiFormatClass.getConstructor(attributeClass);
+            java.lang.reflect.Constructor<?> ansiFormatCtor2 = ansiFormatClass.getConstructor(attributeClass, attributeClass);
+            java.lang.reflect.Constructor<?> ansiFormatCtor3 = ansiFormatClass.getConstructor(attributeClass, attributeClass, attributeClass);
+
+            // Create formatters
+            YellowText = ansiFormatCtor1.newInstance(bright_yellow.invoke(null));
+            RedText = ansiFormatCtor1.newInstance(bright_red.invoke(null));
+            GreenText = ansiFormatCtor1.newInstance(bright_green.invoke(null));
+            BlueText = ansiFormatCtor1.newInstance(bright_blue.invoke(null));
+            MagentaText = ansiFormatCtor1.newInstance(bright_magenta.invoke(null));
+            WhiteText = ansiFormatCtor1.newInstance(white.invoke(null));
+            BrightWhiteText = ansiFormatCtor1.newInstance(bright_white.invoke(null));
+
+            BLACK_BACK = back_color.invoke(null, 0, 0, 0);
+            BoldYellowOnRed = ansiFormatCtor3.newInstance(yellow.invoke(null), red_back.invoke(null), bold.invoke(null));
+            BoldGrayOnBlack = ansiFormatCtor3.newInstance(text_color.invoke(null, 120, 120, 120), BLACK_BACK, bold.invoke(null));
+            CyanOnBlack = ansiFormatCtor2.newInstance(cyan.invoke(null), BLACK_BACK);
+            RedOnBlack = ansiFormatCtor2.newInstance(red.invoke(null), BLACK_BACK);
+        } catch (Throwable e) {
+            // If jcolor isn't available, the formatters will be null and safeFormat will handle it
+        }
+
+        formats_initialized = true;
+    }
+
+    /**
+     * Format a string with an AnsiFormat, handling null gracefully
+     */
+    private static String safeFormat(Object formatter, String text) {
+        if (formatter == null) {
+            return text;
+        }
+        try {
+            // Use reflection to call format method
+            java.lang.reflect.Method formatMethod = formatter.getClass().getMethod("format", String.class);
+            return (String) formatMethod.invoke(formatter, text);
+        } catch (Throwable e) {
+            return text;
+        }
+    }
 
     private static long last_log = 0;
 
@@ -110,10 +183,6 @@ public class BibLog {
         if (DEBUG) {
             enabled_categories.add("debug");
             enable_verbose_logging = true;
-        }
-
-        if (!enabled_categories.isEmpty()) {
-            BibLog.attention("Enabled categories: " + enabled_categories);
         }
 
         VERBOSE_LOGGING = enable_verbose_logging;
@@ -291,16 +360,17 @@ public class BibLog {
      * @since    0.1.0
      */
     private static String getPrefix(Level level) {
+        initializeFormats();
 
-        String result = BoldGrayOnBlack.format("[");
+        String result = safeFormat(BoldGrayOnBlack, "[");
 
         if (level == Level.DEBUG) {
-            result += RedOnBlack.format("BB");
+            result += safeFormat(RedOnBlack, "BB");
         } else {
-            result += CyanOnBlack.format("BB");
+            result += safeFormat(CyanOnBlack, "BB");
         }
 
-        result += BoldGrayOnBlack.format("]") + " ";
+        result += safeFormat(BoldGrayOnBlack, "]") + " ";
 
         return result;
     }
@@ -455,11 +525,12 @@ public class BibLog {
      * @param    message  The actual message
      */
     public static void attention(Object... message) {
+        initializeFormats();
 
         String output = "\n"
-                + BoldYellowOnRed.format("»»»»»»»»»»»»»»»»»»»»»»»»»»»» Attention ««««««««««««««««««««««««««««") + "\n"
+                + safeFormat(BoldYellowOnRed, "»»»»»»»»»»»»»»»»»»»»»»»»»»»» Attention ««««««««««««««««««««««««««««") + "\n"
                 + concatenateArguments(message) + "\n"
-                + BoldYellowOnRed.format("===================================================================") + "\n";
+                + safeFormat(BoldYellowOnRed, "===================================================================") + "\n";
 
         outputLevel(Level.WARN, output);
     }
@@ -521,7 +592,7 @@ public class BibLog {
                 entry = unsafeStringifyArgument(arg);
             } catch (Throwable e) {
                 entry = "Error formatting argument: " + e;
-                entry = "[" + RedText.format(entry) + "]";
+                entry = "[" + safeFormat(RedText, entry) + "]";
 
                 if (arg != null) {
                     entry = arg.getClass().getSimpleName() + entry;
@@ -536,6 +607,7 @@ public class BibLog {
     }
 
     private static String unsafeStringifyArgument(Object arg) {
+        initializeFormats();
         String entry;
 
         if (arg instanceof Argable argable) {
@@ -555,29 +627,29 @@ public class BibLog {
                 entry = arg.toString();
 
                 if (arg instanceof Number) {
-                    entry = BlueText.format(entry);
+                    entry = safeFormat(BlueText, entry);
                 } else if (arg instanceof Boolean bool) {
                     if (bool) {
-                        entry = GreenText.format(entry);
+                        entry = safeFormat(GreenText, entry);
                     } else {
-                        entry = RedText.format(entry);
+                        entry = safeFormat(RedText, entry);
                     }
                 } else if (arg instanceof String) {
-                    entry = YellowText.format(entry);
+                    entry = safeFormat(YellowText, entry);
                 } else if (arg instanceof BlockPos pos) {
                     entry = "BlockPos{" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "}";
-                    entry = MagentaText.format(entry);
+                    entry = safeFormat(MagentaText, entry);
                 } else {
 
                     Arg sarg = createArg(arg);
                     sarg.setFallbackContent(entry);
                     entry = sarg.toIndentedString(0);
 
-                    entry = MagentaText.format(entry);
+                    entry = safeFormat(MagentaText, entry);
                 }
             } catch (Throwable t) {
                 entry = "Error formatting argument: " + t;
-                entry = RedText.format(entry);
+                entry = safeFormat(RedText, entry);
                 t.printStackTrace();
             }
         }
@@ -681,6 +753,7 @@ public class BibLog {
         private String fallback_body_content = null;
 
         public Arg(Object value) {
+            initializeFormats();
             this.value = value;
 
             if (LOG_MEMORY_ADDRESSES) {
@@ -765,7 +838,7 @@ public class BibLog {
                     }
                 } else if (value instanceof Identifier id) {
                     name = "Identifier";
-                    this.setContent(id.getNamespace() + ":" + BrightWhiteText.format(id.getPath()));
+                    this.setContent(id.getNamespace() + ":" + safeFormat(BrightWhiteText, id.getPath()));
                 } else if (value instanceof UUID uuid) {
                     name = "UUID";
                     this.add("uuid", uuid.toString());
@@ -1192,7 +1265,7 @@ public class BibLog {
 
             // If there is a full_override string, return that
             if (this.full_override != null) {
-                return MagentaText.format(this.full_override);
+                return safeFormat(MagentaText, this.full_override);
             }
 
             if (seen.containsKey(this)) {
@@ -1211,7 +1284,7 @@ public class BibLog {
 
             StringBuilder builder = new StringBuilder();
 
-            builder.append(MagentaText.format(class_name));
+            builder.append(safeFormat(MagentaText, class_name));
 
             String body_content = this.body_content;
 
@@ -1271,7 +1344,7 @@ public class BibLog {
 
                     builder.append("  ".repeat(indent_count));
 
-                    builder.append(WhiteText.format(entry.getKey()));
+                    builder.append(safeFormat(WhiteText, entry.getKey()));
                     builder.append("=");
                     builder.append(entry.getValue());
 
@@ -1293,7 +1366,7 @@ public class BibLog {
 
                     builder.append("  ".repeat(indent_count));
 
-                    builder.append(WhiteText.format(entry.getKey()));
+                    builder.append(safeFormat(WhiteText, entry.getKey()));
                     builder.append("=");
 
                     if (entry.getValue() instanceof Arg arg) {
